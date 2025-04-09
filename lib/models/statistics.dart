@@ -9,10 +9,8 @@ class CategoryStats {
     final values = <PracticeCategory, int>{};
     for (final key in json.keys) {
       final cat = PracticeCategoryExtension.fromString(key);
-      if (cat != null) {
-        values[cat] = json[key] ?? 0;
-      }
-    }
+      values[cat] = json[key] ?? 0;
+        }
     return CategoryStats(values: values);
   }
 }

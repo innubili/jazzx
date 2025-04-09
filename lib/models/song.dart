@@ -39,7 +39,8 @@ class Song {
     required this.year,
   });
 
-  factory Song.fromJson(String title, Map<String, dynamic> json) => Song(
+  factory Song.fromJson(String title, Map<String, dynamic> json) =>
+      Song(
         title: title,
         key: json['key'] ?? '',
         type: json['type'] ?? '',
@@ -49,5 +50,8 @@ class Song {
         recommendedVersions: json['recommendedversions'] ?? '',
         songwriters: json['songwriters'] ?? '',
         year: json['year'] ?? '',
-        links: (json['links'] as List?)?.map((l) => SongLink.fromJson(l)).toList() ?? [],
+        links: (json['links'] as List?)
+            ?.map((l) => SongLink.fromJson(l))
+            .toList() ?? [],
       );
+}

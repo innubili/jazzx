@@ -38,18 +38,17 @@ class Session {
     for (var key in json.keys) {
       if (['duration', 'ended', 'instrument', 'warmup'].contains(key)) continue;
       final cat = PracticeCategoryExtension.fromString(key);
-      if (cat != null) {
-        categories[cat] = SessionCategory.fromJson(json[key]);
-      }
+      categories[cat] = SessionCategory.fromJson(json[key]);
     }
 
     final warmup = json['warmup'] ?? {};
     return Session(
-      duration: json['duration'] ?? 0,
-      ended: json['ended'] ?? 0,
-      instrument: json['instrument'] ?? '',
-      categories: categories,
-      warmupTime: warmup['time'],
-      warmupBpm: warmup['bpm'],
+        duration: json['duration'] ?? 0,
+        ended: json['ended'] ?? 0,
+        instrument: json['instrument'] ?? '',
+        categories: categories,
+        warmupTime: warmup['time'],
+        warmupBpm: warmup['bpm']
     );
   }
+}

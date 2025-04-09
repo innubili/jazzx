@@ -1,0 +1,27 @@
+name: jazzx_app
+description: A music practice app
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.0.4
+  firebase_core: ^1.10.6
+  firebase_auth: ^3.4.2
+  firebase_database: ^9.0.0
+  flutter_sound: ^8.0.2
+  google_fonts: ^2.3.0
+  google_sign_in: ^5.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/sounds/ding.wav
+    # Add other assets if needed (images, fonts, etc.)
+
+environment:
+  sdk: '^3.7.0'

@@ -131,7 +131,7 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
             ),
             const SizedBox(width: 16),
             TextButton.icon(
-              icon: const Icon(Icons.timer_check_outlined),
+              icon: const Icon(Icons.done_all_outlined),
               label: const Text("Done"),
               onPressed: widget.onSessionDone,
             )
