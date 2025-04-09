@@ -1,0 +1,41 @@
+
+{
+  "project_info": {
+    "project_number": "824026860782",
+    "firebase_url": "https://jazzx-97daf-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "jazzx-97daf",
+    "storage_bucket": "jazzx-97daf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824026860782:android:d3dd15914d9e252f77f7ff",
+        "android_client_info": {
+          "package_name": "com.innubili.jazzx"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "824026860782-hqi7uac02gb6hljf9hl7f90lsdthlncl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaijaL5PCJ-3yPduDWMo-MOF0-4Cg_Ffk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "824026860782-hqi7uac02gb6hljf9hl7f90lsdthlncl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
