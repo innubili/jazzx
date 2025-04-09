@@ -6,6 +6,21 @@ enum LinkType {
 }
 
 extension LinkTypeExtension on LinkType {
+  static LinkType fromString(String value) {
+    switch (value.toLowerCase()) {
+      case 'youtube':
+        return LinkType.youtube;
+      case 'irealpro':
+        return LinkType.irealPro;
+      case 'spotify':
+        return LinkType.spotify;
+      case 'localfile':
+        return LinkType.localFile;
+      default:
+        return LinkType.youtube; // Fallback (or throw error if preferred)
+    }
+  }
+
   String get name {
     switch (this) {
       case LinkType.youtube:
@@ -16,23 +31,20 @@ extension LinkTypeExtension on LinkType {
         return 'Spotify';
       case LinkType.localFile:
         return 'Local File';
-      default:
-        return 'Unknown';
     }
   }
 
   String get icon {
     switch (this) {
       case LinkType.youtube:
-        return 'assets/icons/youtube.png'; // Update with your actual icon
+        return 'assets/icons/youtube.png';
       case LinkType.irealPro:
-        return 'assets/icons/irealpro.png'; // Update with your actual icon
+        return 'assets/icons/irealpro.png';
       case LinkType.spotify:
-        return 'assets/icons/spotify.png'; // Update with your actual icon
+        return 'assets/icons/spotify.png';
       case LinkType.localFile:
-        return 'assets/icons/file.png'; // Update with your actual icon
-      default:
-        return 'assets/icons/default.png'; // Default icon
+        return 'assets/icons/file.png';
     }
   }
 }
+

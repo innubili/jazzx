@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../widgets/metronome_controller.dart';
 import '../widgets/practice_timer_widget.dart';
 import '../widgets/metronome_widget.dart';
 import '../widgets/practice_mode_buttons_widget.dart';
@@ -8,7 +9,7 @@ import '../providers/user_profile_provider.dart';
 import '../models/practice_category.dart';
 import '../services/firebase_song_service.dart';
 import '../screens/session_summary_screen.dart';
-import '../utils/play_ding_sound.dart';
+import '../utils/session_utils.dart';
 
 class SessionScreen extends StatefulWidget {
   const SessionScreen({Key? key}) : super(key: key);
@@ -34,7 +35,7 @@ class _SessionScreenState extends State<SessionScreen> {
   final Map<PracticeCategory, Map<String, dynamic>> _sessionData = {};
 
   void _onWarmupComplete() {
-    playDingSound();
+    _metronomeController.stop();
     if (_queuedMode != null) {
       _startPracticeMode(_queuedMode!);
     }
@@ -60,7 +61,7 @@ class _SessionScreenState extends State<SessionScreen> {
         _metronomeController.start();
       }
 
-      _timerController.startCountdown(warmupTime);
+      _timerController.startCountdown?.call(warmupTime);
       return;
     }
 
@@ -69,7 +70,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
   void _startPracticeMode(PracticeCategory mode) {
     _metronomeController.stop();
-    _timerController.start();
+    _timerController.start?.call();
 
     setState(() {
       _hasStartedFirstPractice = true;
@@ -84,7 +85,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
   void _stopPractice() {
     _metronomeController.stop();
-    _timerController.stop();
+    _timerController.stop?.call();
 
     if (_activeMode != null) {
       final time = _timerController.elapsedSeconds;
@@ -143,7 +144,7 @@ class _SessionScreenState extends State<SessionScreen> {
         child: Column(
           children: [
             Text(
-              _activeMode != null ? "Practice: ${_activeMode!.name}" : "Select a practice mode",
+              _activeMode != null ? "Practice: \${_activeMode!.name}" : "Select a practice mode",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -159,20 +160,25 @@ class _SessionScreenState extends State<SessionScreen> {
               height: screenHeight * 0.18,
               child: MetronomeWidget(
                 controller: _metronomeController,
-                disableToggle: false,
               ),
             ),
             if (_activeMode != null)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: PracticeDetailWidget(
-                  category: _activeMode!.name,
-                  initialNote: _note,
-                  selectedSong: _newSong,
-                  repertoireSongs: _repertoireSongs,
+                  category: _activeMode!,
+                  note: _note,
+                  songs: _activeMode == PracticeCategory.repertoire
+                      ? _repertoireSongs
+                      : _newSong != null ? [_newSong!] : [],
                   onNoteChanged: (val) => setState(() => _note = val),
-                  onSongSelected: (song) => setState(() => _newSong = song),
-                  onRepertoireUpdated: (songs) => setState(() => _repertoireSongs = songs),
+                  onSongsChanged: (songs) {
+                    if (_activeMode == PracticeCategory.repertoire) {
+                      setState(() => _repertoireSongs = songs);
+                    } else if (songs.isNotEmpty) {
+                      setState(() => _newSong = songs.first);
+                    }
+                  },
                 ),
               ),
             Expanded(
@@ -180,7 +186,7 @@ class _SessionScreenState extends State<SessionScreen> {
                 height: screenHeight * 0.33,
                 child: PracticeModeButtonsWidget(
                   activeMode: _activeMode?.name,
-                  onModeSelected: (mode) => _startPractice(PracticeCategoryExtension.fromString(mode)!),
+                  onModeSelected: (mode) => _startPractice(mode.toPracticeCategory()),
                 ),
               ),
             ),
@@ -214,15 +220,15 @@ class _SessionScreenState extends State<SessionScreen> {
                 child: profile == null
                     ? const Text("JazzX", style: TextStyle(color: Colors.white, fontSize: 24))
                     : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.account_circle, size: 48, color: Colors.white),
-                          const SizedBox(height: 8),
-                          Text(profile.name, style: const TextStyle(fontSize: 20, color: Colors.white)),
-                          Text(profile.instrument, style: const TextStyle(color: Colors.white70)),
-                        ],
-                      ),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.account_circle, size: 48, color: Colors.white),
+                    const SizedBox(height: 8),
+                    Text(profile.profile.name, style: const TextStyle(fontSize: 20, color: Colors.white)),
+                    Text(profile.profile.instrument, style: const TextStyle(color: Colors.white70)),
+                  ],
+                ),
               );
             },
           ),

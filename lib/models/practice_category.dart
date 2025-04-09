@@ -1,3 +1,5 @@
+// lib/models/practice_categoru.dart
+
 enum PracticeCategory {
   exercise,
   newsong,
@@ -7,6 +9,31 @@ enum PracticeCategory {
   video,
   gig,
   fun
+}
+
+extension PracticeCategoryParsing on String {
+  PracticeCategory toPracticeCategory() {
+    switch (toLowerCase()) {
+      case 'exercise':
+        return PracticeCategory.exercise;
+      case 'new song':
+        return PracticeCategory.newsong;
+      case 'repertoire':
+        return PracticeCategory.repertoire;
+      case 'lesson':
+        return PracticeCategory.lesson;
+      case 'theory':
+        return PracticeCategory.theory;
+      case 'video':
+        return PracticeCategory.video;
+      case 'gig':
+        return PracticeCategory.gig;
+      case 'fun':
+        return PracticeCategory.fun;
+      default:
+        throw ArgumentError('Invalid practice category: $this');
+    }
+  }
 }
 
 extension PracticeCategoryExtension on PracticeCategory {
@@ -28,29 +55,6 @@ extension PracticeCategoryExtension on PracticeCategory {
         return 'Gig';
       case PracticeCategory.fun:
         return 'Fun';
-    }
-  }
-
-  static PracticeCategory fromString(String key) {
-    switch (key) {
-      case 'Exercise':
-        return PracticeCategory.exercise;
-      case 'New Song':
-        return PracticeCategory.newsong;
-      case 'Repertoire':
-        return PracticeCategory.repertoire;
-      case 'Lesson':
-        return PracticeCategory.lesson;
-      case 'Theory':
-        return PracticeCategory.theory;
-      case 'Video':
-        return PracticeCategory.video;
-      case 'Gig':
-        return PracticeCategory.gig;
-      case 'Fun':
-        return PracticeCategory.fun;
-      default:
-        throw ArgumentError('Invalid practice category: \$key');
     }
   }
 }

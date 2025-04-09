@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jazzx_app/models/link_type.dart';
 import '../models/song.dart';
 import '../widgets/song_link_widget.dart';
 
@@ -23,8 +24,11 @@ class SongDetailsScreen extends StatelessWidget {
             Text('BPM: ${song.bpm}'),
             const SizedBox(height: 16),
             const Text('Links:', style: TextStyle(fontWeight: FontWeight.bold)),
-            ...song.links.map((link) => SongLinkWidget(link: link)).toList(),
-          ],
+            ...song.links.map((link) => SongLinkWidget(
+                link: link.link,
+                type: LinkTypeExtension.fromString(link.kind),
+              )).toList(),
+                    ],
         ),
       ),
     );

@@ -8,7 +8,7 @@ class CategoryStats {
   factory CategoryStats.fromJson(Map<String, dynamic> json) {
     final values = <PracticeCategory, int>{};
     for (final key in json.keys) {
-      final cat = PracticeCategoryExtension.fromString(key);
+      final cat = key.toPracticeCategory();
       values[cat] = json[key] ?? 0;
         }
     return CategoryStats(values: values);

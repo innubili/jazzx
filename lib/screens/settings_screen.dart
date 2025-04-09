@@ -18,8 +18,8 @@ class SettingsScreen extends StatelessWidget {
             if (profile != null)
               Column(
                 children: [
-                  Text('Name: ${profile.name}', style: Theme.of(context).textTheme.headline6),
-                  Text('Instrument: ${profile.instrument}', style: Theme.of(context).textTheme.subtitle1),
+                  Text('Name: ${profile.profile.name}', style: Theme.of(context).textTheme.headlineSmall),
+                  Text('Instrument: ${profile.profile.instrument}', style: Theme.of(context).textTheme.bodyMedium),
                 ],
               )
             else

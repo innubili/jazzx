@@ -1,18 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-
-class UserProfile {
-  final String name;
-  final String instrument;
-
-  UserProfile({required this.name, required this.instrument});
-
-  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
-        name: json['name'] ?? '',
-        instrument: json['instrument'] ?? '',
-      );
-}
+import '../models/user_profile.dart';
 
 class UserProfileProvider extends ChangeNotifier {
   UserProfile? _profile;
@@ -32,7 +21,7 @@ class UserProfileProvider extends ChangeNotifier {
     if (!snapshot.exists) return;
 
     final json = Map<String, dynamic>.from(snapshot.value as Map);
-    _profile = UserProfile.fromJson(json);
+    _profile = UserProfile.fromJson(emailKey, json);
     _rawJson = json;
     _userId = emailKey;
     notifyListeners();

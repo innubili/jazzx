@@ -11,6 +11,7 @@ dependencies:
   flutter_sound: ^8.0.2
   google_fonts: ^2.3.0
   google_sign_in: ^5.0.7
+  flutter_ringtone_player: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -18,10 +19,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-  assets:
-    - assets/sounds/ding.wav
-    # Add other assets if needed (images, fonts, etc.)
 
 environment:
   sdk: '^3.7.0'

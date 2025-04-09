@@ -1,3 +1,5 @@
+// lib/models/session.dart
+
 import 'practice_category.dart';
 
 class SessionCategory {
@@ -37,7 +39,7 @@ class Session {
     final categories = <PracticeCategory, SessionCategory>{};
     for (var key in json.keys) {
       if (['duration', 'ended', 'instrument', 'warmup'].contains(key)) continue;
-      final cat = PracticeCategoryExtension.fromString(key);
+      final cat = key.toPracticeCategory();
       categories[cat] = SessionCategory.fromJson(json[key]);
     }
 
@@ -50,5 +52,31 @@ class Session {
         warmupTime: warmup['time'],
         warmupBpm: warmup['bpm']
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> json = {
+      'duration': duration,
+      'ended': ended,
+      'instrument': instrument,
+    };
+
+    // Encode each practice category
+    for (var entry in categories.entries) {
+      json[entry.key.name] = {
+        'time': entry.value.time,
+        if (entry.value.note != null) 'note': entry.value.note,
+        if (entry.value.bpm != null) 'bpm': entry.value.bpm,
+        if (entry.value.songs != null) 'songs': entry.value.songs,
+      };
+    }
+
+    // Warmup
+    json['warmup'] = {
+      'time': warmupTime ?? 0,
+      'bpm': warmupBpm ?? 0,
+    };
+
+    return json;
   }
 }
