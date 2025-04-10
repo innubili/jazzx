@@ -5,7 +5,11 @@ class PracticeModeButtonsWidget extends StatelessWidget {
   final String? activeMode;
   final void Function(String mode) onModeSelected;
 
-  const PracticeModeButtonsWidget({super.key, this.activeMode, required this.onModeSelected});
+  const PracticeModeButtonsWidget({
+    super.key,
+    this.activeMode,
+    required this.onModeSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +28,7 @@ class PracticeModeButtonsWidget extends StatelessWidget {
           onPressed: () => onModeSelected(mode.name),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.access_alarm),
-              Text(mode.name.capitalize()),
-            ],
+            children: [Icon(Icons.access_alarm), Text(mode.name.capitalize())],
           ),
         );
       },
@@ -36,5 +37,6 @@ class PracticeModeButtonsWidget extends StatelessWidget {
 }
 
 extension StringCapitalize on String {
-  String capitalize() => this.isEmpty ? this : '${this[0].toUpperCase()}${this.substring(1)}';
+  String capitalize() =>
+      isEmpty ? this : '${this[0].toUpperCase()}${substring(1)}';
 }

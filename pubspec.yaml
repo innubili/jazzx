@@ -1,24 +1,33 @@
 name: jazzx_app
 description: A music practice app
 
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
 dependencies:
   flutter:
     sdk: flutter
+  cupertino_icons: ^1.0.8
+
   provider: ^6.0.4
-  firebase_core: ^1.10.6
-  firebase_auth: ^3.4.2
-  firebase_database: ^9.0.0
-  flutter_sound: ^8.0.2
+  # firebase_core: ^1.10.6
+  # firebase_auth: ^3.4.2
+  # firebase_database: ^9.0.0
+  # flutter_sound: ^8.0.2
   google_fonts: ^2.3.0
-  google_sign_in: ^5.0.7
-  flutter_ringtone_player: ^3.0.0
+  path_provider: ^2.1.5
+  # google_sign_in: ^5.0.7
+  # audioplayers: ^0.20.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true
 
 environment:
-  sdk: '^3.7.0'
+  sdk: ^3.7.2
+
+

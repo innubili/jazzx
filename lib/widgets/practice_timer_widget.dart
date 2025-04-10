@@ -108,9 +108,15 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final displayTime = _isCountdown && _countdownFrom != null
-        ? Duration(seconds: (_countdownFrom! - _elapsed.inSeconds).clamp(0, _countdownFrom!))
-        : _elapsed;
+    final displayTime =
+        _isCountdown && _countdownFrom != null
+            ? Duration(
+              seconds: (_countdownFrom! - _elapsed.inSeconds).clamp(
+                0,
+                _countdownFrom!,
+              ),
+            )
+            : _elapsed;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -134,7 +140,7 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
               icon: const Icon(Icons.done_all_outlined),
               label: const Text("Done"),
               onPressed: widget.onSessionDone,
-            )
+            ),
           ],
         ),
       ],
@@ -144,7 +150,7 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
 
 class Ticker {
   final void Function(Duration) onTick;
-  Duration _interval = const Duration(seconds: 1);
+  final Duration _interval = const Duration(seconds: 1);
   bool _running = false;
   late final Stopwatch _tickerStopwatch;
 

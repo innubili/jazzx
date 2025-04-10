@@ -5,11 +5,7 @@ class SongLinkWidget extends StatelessWidget {
   final String link; // The link URL
   final LinkType type; // The type of link (YouTube, iRealPro, etc.)
 
-  const SongLinkWidget({
-    Key? key,
-    required this.link,
-    required this.type,
-  }) : super(key: key);
+  const SongLinkWidget({super.key, required this.link, required this.type});
 
   @override
   Widget build(BuildContext context) {

@@ -3,7 +3,7 @@ import '../widgets/metronome_widget.dart';
 import '../widgets/metronome_controller.dart';
 
 class MetronomeScreen extends StatefulWidget {
-  const MetronomeScreen({Key? key}) : super(key: key);
+  const MetronomeScreen({super.key});
 
   @override
   State<MetronomeScreen> createState() => _MetronomeScreenState();
@@ -15,9 +15,7 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Metronome"),
-      ),
+      appBar: AppBar(title: const Text("Metronome")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -38,7 +36,7 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
                   child: const Text("Stop"),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

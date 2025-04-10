@@ -29,7 +29,9 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
   @override
   void initState() {
     super.initState();
-    widget.controller.attach(this);  // Attach the widget's state to the controller
+    widget.controller.attach(
+      this,
+    ); // Attach the widget's state to the controller
     _parseTimeSignature();
     _parseBitsPattern();
   }
@@ -37,11 +39,12 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
   @override
   void dispose() {
     stopMetronome();
-    widget.controller.detach();  // Detach the widget's state from the controller
+    widget.controller.detach(); // Detach the widget's state from the controller
     super.dispose();
   }
 
-  Duration get _interval => Duration(milliseconds: (60000 / bpm / subdivisionMultiplier).round());
+  Duration get _interval =>
+      Duration(milliseconds: (60000 / bpm / subdivisionMultiplier).round());
 
   // Public Method to start the metronome
   void startMetronome() {
@@ -104,10 +107,14 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
 
   // Private Method to parse the bits pattern (subdivision)
   void _parseBitsPattern() {
-    if (bitsPattern == "1/4") subdivisionMultiplier = 1;
-    else if (bitsPattern == "1/8") subdivisionMultiplier = 2;
-    else if (bitsPattern.toLowerCase().contains("triplet")) subdivisionMultiplier = 3;
-    else subdivisionMultiplier = 1;
+    if (bitsPattern == "1/4") {
+      subdivisionMultiplier = 1;
+    } else if (bitsPattern == "1/8")
+      subdivisionMultiplier = 2;
+    else if (bitsPattern.toLowerCase().contains("triplet"))
+      subdivisionMultiplier = 3;
+    else
+      subdivisionMultiplier = 1;
   }
 
   // Private Method for tap tempo to calculate BPM based on user taps
@@ -128,20 +135,26 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
   }
 
   // Private Method to show the bottom sheet picker for various options
-  Future<void> _pick<T>(List<T> values, T current, Function(T) onSelected) async {
+  Future<void> _pick<T>(
+    List<T> values,
+    T current,
+    Function(T) onSelected,
+  ) async {
     final index = values.indexOf(current);
     await showModalBottomSheet(
       context: context,
-      builder: (_) => Container(
-        height: 250,
-        child: CupertinoPicker(
-          backgroundColor: Colors.white,
-          itemExtent: 32,
-          scrollController: FixedExtentScrollController(initialItem: index),
-          onSelectedItemChanged: (i) => onSelected(values[i]),
-          children: values.map((v) => Center(child: Text(v.toString()))).toList(),
-        ),
-      ),
+      builder:
+          (_) => SizedBox(
+            height: 250,
+            child: CupertinoPicker(
+              backgroundColor: Colors.white,
+              itemExtent: 32,
+              scrollController: FixedExtentScrollController(initialItem: index),
+              onSelectedItemChanged: (i) => onSelected(values[i]),
+              children:
+                  values.map((v) => Center(child: Text(v.toString()))).toList(),
+            ),
+          ),
     );
   }
 
@@ -175,42 +188,32 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
               onPressed: toggleMetronome,
             ),
             ElevatedButton(
-              onPressed: () => _pick(
-                ["1/2", "2/3", "3/4", "4/4", "5/4", "6/8"],
-                timeSignature,
-                setTimeSignature,
-              ),
+              onPressed:
+                  () => _pick(
+                    ["1/2", "2/3", "3/4", "4/4", "5/4", "6/8"],
+                    timeSignature,
+                    setTimeSignature,
+                  ),
               child: Text(timeSignature),
             ),
-            IconButton(
-              icon: Icon(Icons.remove),
-              onPressed: decrementBpm,
-            ),
+            IconButton(icon: Icon(Icons.remove), onPressed: decrementBpm),
             ElevatedButton(
-              onPressed: () => _pick(
-                List.generate(169, (i) => (i + 40)),
-                bpm,
-                setBpm,
-              ),
+              onPressed:
+                  () => _pick(List.generate(169, (i) => (i + 40)), bpm, setBpm),
               child: Text(
                 '$bpm',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: incrementBpm,
-            ),
-            IconButton(
-              icon: Icon(Icons.touch_app),
-              onPressed: tapTempo,
-            ),
+            IconButton(icon: Icon(Icons.add), onPressed: incrementBpm),
+            IconButton(icon: Icon(Icons.touch_app), onPressed: tapTempo),
             ElevatedButton(
-              onPressed: () => _pick(
-                ["1/4", "1/8", "Triplets"],
-                bitsPattern,
-                setBitsPattern,
-              ),
+              onPressed:
+                  () => _pick(
+                    ["1/4", "1/8", "Triplets"],
+                    bitsPattern,
+                    setBitsPattern,
+                  ),
               child: Text(bitsPattern),
             ),
           ],

@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:path_provider/path_provider.dart'; // Added for local storage.
 import '../widgets/metronome_controller.dart';
 import '../widgets/practice_timer_widget.dart';
 import '../widgets/metronome_widget.dart';
@@ -7,12 +10,12 @@ import '../widgets/practice_mode_buttons_widget.dart';
 import '../widgets/practice_detail_widget.dart';
 import '../providers/user_profile_provider.dart';
 import '../models/practice_category.dart';
-import '../services/firebase_song_service.dart';
+// Removed: import '../services/firebase_song_service.dart';
 import '../screens/session_summary_screen.dart';
 import '../utils/session_utils.dart';
 
 class SessionScreen extends StatefulWidget {
-  const SessionScreen({Key? key}) : super(key: key);
+  const SessionScreen({super.key});
 
   @override
   State<SessionScreen> createState() => _SessionScreenState();
@@ -42,7 +45,8 @@ class _SessionScreenState extends State<SessionScreen> {
   }
 
   void _startPractice(PracticeCategory mode) {
-    final profile = Provider.of<UserProfileProvider>(context, listen: false).rawJson;
+    final profile =
+        Provider.of<UserProfileProvider>(context, listen: false).rawJson;
 
     if (!_hasStartedFirstPractice && (profile["warmupEnabled"] ?? false)) {
       final warmupTime = profile["warmupTime"] ?? 300;
@@ -95,7 +99,8 @@ class _SessionScreenState extends State<SessionScreen> {
         if (_activeMode == PracticeCategory.exercise) "bpm": 80,
         if (_activeMode == PracticeCategory.newsong && _newSong != null)
           "songs": [_newSong],
-        if (_activeMode == PracticeCategory.repertoire && _repertoireSongs.isNotEmpty)
+        if (_activeMode == PracticeCategory.repertoire &&
+            _repertoireSongs.isNotEmpty)
           "songs": _repertoireSongs,
       };
       _sessionData[_activeMode!] = data;
@@ -115,21 +120,45 @@ class _SessionScreenState extends State<SessionScreen> {
       practiceData: _sessionData.map((key, value) => MapEntry(key.name, value)),
     );
 
-    Navigator.push(context, MaterialPageRoute(
-      builder: (_) => SessionSummaryScreen(
-        sessionData: sessionMap,
-        onConfirm: (confirmedData) async {
-          final uid = Provider.of<UserProfileProvider>(context, listen: false).userId;
-          if (uid != null) {
-            await FirebaseSongService().saveSession(uid, confirmedData);
-            Navigator.popUntil(context, (route) => route.isFirst);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Session saved!")),
-            );
-          }
-        },
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => SessionSummaryScreen(
+              sessionData: sessionMap,
+              onConfirm: (confirmedData) async {
+                // Instead of using FirebaseSongService, we now save the session locally.
+                await _saveSessionLocally(confirmedData);
+                Navigator.popUntil(context, (route) => route.isFirst);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Session saved locally!")),
+                );
+              },
+            ),
       ),
-    ));
+    );
+  }
+
+  /// Saves the confirmed session data as JSON to a local file.
+  Future<void> _saveSessionLocally(Map<String, dynamic> confirmedData) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/sessions.json';
+      final file = File(filePath);
+      List<dynamic> sessions = [];
+      if (await file.exists()) {
+        try {
+          String existingData = await file.readAsString();
+          sessions = json.decode(existingData);
+        } catch (e) {
+          print("Error reading existing sessions: $e");
+        }
+      }
+      sessions.add(confirmedData);
+      await file.writeAsString(json.encode(sessions));
+    } catch (e) {
+      print("Error saving session locally: $e");
+    }
   }
 
   @override
@@ -144,7 +173,9 @@ class _SessionScreenState extends State<SessionScreen> {
         child: Column(
           children: [
             Text(
-              _activeMode != null ? "Practice: \${_activeMode!.name}" : "Select a practice mode",
+              _activeMode != null
+                  ? "Practice: ${_activeMode!.name}"
+                  : "Select a practice mode",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -158,9 +189,7 @@ class _SessionScreenState extends State<SessionScreen> {
             const SizedBox(height: 16),
             SizedBox(
               height: screenHeight * 0.18,
-              child: MetronomeWidget(
-                controller: _metronomeController,
-              ),
+              child: MetronomeWidget(controller: _metronomeController),
             ),
             if (_activeMode != null)
               Padding(
@@ -168,9 +197,12 @@ class _SessionScreenState extends State<SessionScreen> {
                 child: PracticeDetailWidget(
                   category: _activeMode!,
                   note: _note,
-                  songs: _activeMode == PracticeCategory.repertoire
-                      ? _repertoireSongs
-                      : _newSong != null ? [_newSong!] : [],
+                  songs:
+                      _activeMode == PracticeCategory.repertoire
+                          ? _repertoireSongs
+                          : _newSong != null
+                          ? [_newSong!]
+                          : [],
                   onNoteChanged: (val) => setState(() => _note = val),
                   onSongsChanged: (songs) {
                     if (_activeMode == PracticeCategory.repertoire) {
@@ -186,7 +218,8 @@ class _SessionScreenState extends State<SessionScreen> {
                 height: screenHeight * 0.33,
                 child: PracticeModeButtonsWidget(
                   activeMode: _activeMode?.name,
-                  onModeSelected: (mode) => _startPractice(mode.toPracticeCategory()),
+                  onModeSelected:
+                      (mode) => _startPractice(mode.toPracticeCategory()),
                 ),
               ),
             ),
@@ -196,7 +229,12 @@ class _SessionScreenState extends State<SessionScreen> {
     );
   }
 
-  Widget _drawerItem(BuildContext context, String label, IconData icon, VoidCallback onTap) {
+  Widget _drawerItem(
+    BuildContext context,
+    String label,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
     return ListTile(
       leading: Icon(icon),
       title: Text(label),
@@ -217,18 +255,35 @@ class _SessionScreenState extends State<SessionScreen> {
               final profile = profileProvider.profile;
               return DrawerHeader(
                 decoration: const BoxDecoration(color: Colors.deepPurple),
-                child: profile == null
-                    ? const Text("JazzX", style: TextStyle(color: Colors.white, fontSize: 24))
-                    : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.account_circle, size: 48, color: Colors.white),
-                    const SizedBox(height: 8),
-                    Text(profile.profile.name, style: const TextStyle(fontSize: 20, color: Colors.white)),
-                    Text(profile.profile.instrument, style: const TextStyle(color: Colors.white70)),
-                  ],
-                ),
+                child:
+                    profile == null
+                        ? const Text(
+                          "JazzX",
+                          style: TextStyle(color: Colors.white, fontSize: 24),
+                        )
+                        : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.account_circle,
+                              size: 48,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              profile.profile.name,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              profile.profile.instrument,
+                              style: const TextStyle(color: Colors.white70),
+                            ),
+                          ],
+                        ),
               );
             },
           ),
