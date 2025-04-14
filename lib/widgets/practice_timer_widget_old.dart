@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-// import '../utils/log.dart';
+import '../utils/log.dart';
 
 class PracticeTimerController {
-  void Function({bool triggerCallback})? stop;
   VoidCallback? start;
+  VoidCallback? stop;
   VoidCallback? reset;
   void Function({required int startFrom, bool countDown})? startCount;
 
@@ -37,79 +35,95 @@ class PracticeTimerWidget extends StatefulWidget {
 }
 
 class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
+  late Stopwatch _stopwatch;
   late final Ticker _ticker;
-  int _elapsedSeconds = 0;
-  int _startFrom = 0;
+  Duration _elapsed = Duration.zero;
+  int? _countFrom;
   bool _isRunning = false;
   bool _isCounting = false;
 
   @override
   void initState() {
     super.initState();
+    _stopwatch = Stopwatch();
     _ticker = Ticker(_onTick);
 
-    widget.controller.start = _start;
-    widget.controller.reset = _reset;
-
-    widget.controller.stop = ({bool triggerCallback = true}) {
-      _stop(triggerCallback: triggerCallback);
-    };
-
+    widget.controller.start = start;
+    widget.controller.stop = stop;
+    widget.controller.reset = reset;
     widget.controller.startCount = ({
       required int startFrom,
       bool countDown = false,
     }) {
-      _ticker.reset(startFrom: 0);
-      _elapsedSeconds = startFrom;
-      _startFrom = startFrom;
+      _ticker.reset(); // 🛠️ 1. reset ticker first
+
+      _stopwatch.reset(); // 🛠️ 2. reset stopwatch
+      _stopwatch.start(); // 🛠️ 3. start fresh
+
+      _countFrom = startFrom;
       _isCounting = countDown;
+      _elapsed = Duration(seconds: startFrom);
       widget.controller.elapsedSeconds = startFrom;
-      _ticker.start();
+
+      _ticker.start(); // 🛠️ 4. now start ticker
+
       setState(() => _isRunning = true);
     };
   }
 
-  void _onTick(int seconds) {
+  void _onTick(Duration ticked) {
     if (!mounted) return;
 
+    final elapsed = ticked;
+    widget.controller.elapsedSeconds = elapsed.inSeconds;
+
+    log.info(
+      "⏳ Tick: stopwatch = ${elapsed.inSeconds}s, _startFrom = ${_countFrom ?? 0}, total = ${(_countFrom ?? 0) + elapsed.inSeconds}s",
+    );
+
     setState(() {
-      _elapsedSeconds = seconds;
+      _elapsed = elapsed;
     });
 
-    widget.controller.elapsedSeconds =
-        _isCounting ? (_startFrom - seconds).clamp(0, _startFrom) : seconds;
-
-    if (_isCounting && seconds >= _startFrom) {
-      _stop();
-      widget.onCountComplete?.call();
+    if (_isCounting && _countFrom != null) {
+      final remaining = _countFrom! - elapsed.inSeconds;
+      if (remaining <= 0) {
+        stop();
+        widget.onCountComplete?.call();
+      }
     }
   }
 
-  void _start() {
+  void start() {
+    _stopwatch.start();
     _ticker.start();
     setState(() => _isRunning = true);
   }
 
-  void _stop({bool triggerCallback = true}) {
+  void stop() {
     if (!_isRunning) return;
 
-    _ticker.stop();
-    setState(() => _isRunning = false);
-
-    if (triggerCallback) {
+    try {
+      _stopwatch.stop();
+      _ticker.stop();
+      if (mounted) {
+        setState(() => _isRunning = false);
+      }
       widget.onStopped?.call();
+    } catch (e) {
+      log.warning("Error in PracticeTimerWidget.stop(): $e");
     }
   }
 
-  void _reset() {
-    _ticker.reset(startFrom: 0);
-    _elapsedSeconds = 0;
-    widget.controller.elapsedSeconds = 0;
-    setState(() => _isRunning = false);
+  void reset() {
+    _stopwatch.reset();
+    _elapsed = Duration.zero;
+    if (mounted) {
+      setState(() {});
+    }
   }
 
-  String _formatTime(int seconds) {
-    final d = Duration(seconds: seconds);
+  String _formatTime(Duration d) {
     final h = d.inHours.toString().padLeft(2, '0');
     final m = (d.inMinutes % 60).toString().padLeft(2, '0');
     final s = (d.inSeconds % 60).toString().padLeft(2, '0');
@@ -125,9 +139,11 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
   @override
   Widget build(BuildContext context) {
     final displayTime =
-        _isCounting
-            ? (_startFrom - _elapsedSeconds).clamp(0, _startFrom)
-            : _elapsedSeconds;
+        _isCounting && _countFrom != null
+            ? Duration(
+              seconds: (_countFrom! - _elapsed.inSeconds).clamp(0, _countFrom!),
+            )
+            : _elapsed;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -151,8 +167,7 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
               width: 72,
               height: 72,
               child: RawMaterialButton(
-                onPressed:
-                    widget.enabled ? (_isRunning ? _stop : _start) : null,
+                onPressed: widget.enabled ? (_isRunning ? stop : start) : null,
                 shape: const CircleBorder(),
                 fillColor: Theme.of(context).colorScheme.secondaryContainer,
                 child: Icon(
@@ -184,32 +199,40 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
 }
 
 class Ticker {
-  final void Function(int seconds) onTick;
-  int _elapsed = 0;
-  Timer? _timer;
+  final void Function(Duration) onTick;
+  final Duration _interval = const Duration(seconds: 1);
+  bool _running = false;
+  Stopwatch? _tickerStopwatch;
 
   Ticker(this.onTick);
 
-  void reset({int startFrom = 0}) {
-    _elapsed = startFrom;
-    stop();
-  }
-
   void start() {
-    if (_timer != null && _timer!.isActive) return;
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      _elapsed++;
-      onTick(_elapsed);
-    });
+    if (_running) return;
+    _running = true;
+    _tickerStopwatch = Stopwatch()..start();
+    _tick();
   }
 
   void stop() {
-    _timer?.cancel();
-    _timer = null;
+    _running = false;
+    _tickerStopwatch?.stop();
+    _tickerStopwatch = null;
   }
 
   void dispose() {
     stop();
+  }
+
+  void reset() {
+    _tickerStopwatch?.stop();
+    _tickerStopwatch?.reset();
+    _tickerStopwatch = Stopwatch(); // 🛠️ Force fresh instance
+  }
+
+  Future<void> _tick() async {
+    while (_running) {
+      await Future.delayed(_interval);
+      if (_running) onTick(_tickerStopwatch?.elapsed ?? Duration.zero);
+    }
   }
 }

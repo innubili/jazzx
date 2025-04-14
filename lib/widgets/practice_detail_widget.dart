@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/practice_category.dart'; // Import PracticeCategory enum
 
 class PracticeDetailWidget extends StatelessWidget {
-  final PracticeCategory category; // The practice category (e.g., exercise, new song)
+  final PracticeCategory
+  category; // The practice category (e.g., exercise, new song)
   final String note; // The note or song information
   final List<String> songs; // List of songs for the "repertoire" category
   final ValueChanged<String> onNoteChanged;
@@ -35,10 +36,11 @@ class PracticeDetailWidget extends StatelessWidget {
             DropdownButtonFormField<String>(
               value: songs.isNotEmpty ? songs.first : null,
               hint: const Text("Select a song"),
-              // TODO implement song finder...
-              items: ["All the Things You Are", "Blue Bossa", "Autumn Leaves"]
-                  .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                  .toList(),
+              // TBD implement song finder...
+              items:
+                  ["All the Things You Are", "Blue Bossa", "Autumn Leaves"]
+                      .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                      .toList(),
               onChanged: (val) => onSongsChanged(val != null ? [val] : []),
             ),
 
@@ -46,11 +48,14 @@ class PracticeDetailWidget extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Repertoire Songs", style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text(
+                  "Repertoire Songs",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 ...songs.map((s) => Text("• $s")),
                 TextButton(
                   onPressed: () {
-                    // TODO: Implement multi-song picker
+                    // TBD: Implement multi-song picker
                   },
                   child: const Text("Edit Songs"),
                 ),

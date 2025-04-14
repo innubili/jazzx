@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import '../models/song.dart';
+import '../utils/log.dart';
 
 class UserSongsProvider extends ChangeNotifier {
   final List<Song> _songs = [];
@@ -28,7 +29,7 @@ class UserSongsProvider extends ChangeNotifier {
       });
       notifyListeners();
     } catch (e) {
-      print("Error loading user songs: $e");
+      log.warning("Error loading user songs: $e");
     }
   }
 }

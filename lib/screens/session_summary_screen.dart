@@ -5,10 +5,10 @@ class SessionSummaryScreen extends StatefulWidget {
   final void Function(Map<String, dynamic>) onConfirm;
 
   const SessionSummaryScreen({
-    Key? key,
+    super.key,
     required this.sessionData,
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   State<SessionSummaryScreen> createState() => _SessionSummaryScreenState();
@@ -48,7 +48,9 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen> {
   @override
   Widget build(BuildContext context) {
     final session = widget.sessionData;
-    final categories = session.keys.where((k) => session[k] is Map && k != 'warmup');
+    final categories = session.keys.where(
+      (k) => session[k] is Map && k != 'warmup',
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text("Session Summary")),
@@ -58,14 +60,19 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen> {
           Text("Duration: ${session['duration']} sec"),
           const SizedBox(height: 12),
           if (session.containsKey("warmup"))
-            Text("Warmup: ${session['warmup']['time']} sec @ BPM ${session['warmup']['bpm'] ?? '?'}"),
+            Text(
+              "Warmup: ${session['warmup']['time']} sec @ BPM ${session['warmup']['bpm'] ?? '?'}",
+            ),
           const Divider(),
           ...categories.map((cat) {
             final data = session[cat] as Map;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(cat.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  cat.toUpperCase(),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 Text("Time: ${data['time']} sec"),
                 if (_noteControllers.containsKey(cat))
                   TextField(
@@ -78,14 +85,16 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text("Songs:"),
-                      ...((data['songs'] as Map).entries.map((e) => Text("- ${e.key} (${e.value}s)"))),
+                      ...((data['songs'] as Map).entries.map(
+                        (e) => Text("- ${e.key} (${e.value}s)"),
+                      )),
                     ],
                   ),
                 const SizedBox(height: 16),
                 const Divider(),
               ],
             );
-          })
+          }),
         ],
       ),
       bottomNavigationBar: Padding(

@@ -24,11 +24,13 @@ class SongDetailsScreen extends StatelessWidget {
             Text('BPM: ${song.bpm}'),
             const SizedBox(height: 16),
             const Text('Links:', style: TextStyle(fontWeight: FontWeight.bold)),
-            ...song.links.map((link) => SongLinkWidget(
+            ...song.links.map(
+              (link) => SongLinkWidget(
                 link: link.link,
                 type: LinkTypeExtension.fromString(link.kind),
-              )).toList(),
-                    ],
+              ),
+            ),
+          ],
         ),
       ),
     );

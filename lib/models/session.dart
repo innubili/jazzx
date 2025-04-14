@@ -10,7 +10,8 @@ class SessionCategory {
 
   SessionCategory({required this.time, this.note, this.bpm, this.songs});
 
-  factory SessionCategory.fromJson(Map<String, dynamic> json) => SessionCategory(
+  factory SessionCategory.fromJson(Map<String, dynamic> json) =>
+      SessionCategory(
         time: json['time'] ?? 0,
         note: json['note'],
         bpm: json['bpm'],
@@ -37,20 +38,24 @@ class Session {
 
   factory Session.fromJson(Map<String, dynamic> json) {
     final categories = <PracticeCategory, SessionCategory>{};
-    for (var key in json.keys) {
-      if (['duration', 'ended', 'instrument', 'warmup'].contains(key)) continue;
-      final cat = key.toPracticeCategory();
-      categories[cat] = SessionCategory.fromJson(json[key]);
+
+    final categoriesJson = json['categories'] as Map<String, dynamic>? ?? {};
+
+    for (var entry in categoriesJson.entries) {
+      final category = entry.key.tryToPracticeCategory();
+      if (category != null) {
+        categories[category] = SessionCategory.fromJson(entry.value);
+      }
     }
 
     final warmup = json['warmup'] ?? {};
     return Session(
-        duration: json['duration'] ?? 0,
-        ended: json['ended'] ?? 0,
-        instrument: json['instrument'] ?? '',
-        categories: categories,
-        warmupTime: warmup['time'],
-        warmupBpm: warmup['bpm']
+      duration: json['duration'] ?? 0,
+      ended: json['ended'] ?? 0,
+      instrument: json['instrument'] ?? '',
+      categories: categories,
+      warmupTime: warmup['time'],
+      warmupBpm: warmup['bpm'],
     );
   }
 
@@ -61,7 +66,6 @@ class Session {
       'instrument': instrument,
     };
 
-    // Encode each practice category
     for (var entry in categories.entries) {
       json[entry.key.name] = {
         'time': entry.value.time,
@@ -71,12 +75,22 @@ class Session {
       };
     }
 
-    // Warmup
-    json['warmup'] = {
-      'time': warmupTime ?? 0,
-      'bpm': warmupBpm ?? 0,
-    };
+    json['warmup'] = {'time': warmupTime ?? 0, 'bpm': warmupBpm ?? 0};
 
     return json;
+  }
+
+  /// Returns a session with all zero durations and no content.
+  static Session getDefault({String instrument = 'guitar'}) {
+    return Session(
+      duration: 0,
+      ended: 0,
+      instrument: instrument,
+      warmupTime: 0,
+      warmupBpm: 0,
+      categories: {
+        for (var cat in PracticeCategory.values) cat: SessionCategory(time: 0),
+      },
+    );
   }
 }

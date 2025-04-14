@@ -1,4 +1,4 @@
-// lib/models/user_profile.dart
+import '../utils/log.dart';
 import 'session.dart';
 import 'song.dart';
 import 'statistics.dart';
@@ -6,7 +6,7 @@ import 'video.dart';
 
 class UserProfile {
   final String id; // typically the user's email or UID
-  final ProfileSettings profile;
+  final ProfilePreferences preferences;
   final Map<String, Session> sessions;
   final Map<String, Song> songs;
   final Statistics statistics;
@@ -14,15 +14,27 @@ class UserProfile {
 
   UserProfile({
     required this.id,
-    required this.profile,
+    required this.preferences,
     required this.sessions,
     required this.songs,
     required this.statistics,
     required this.videos,
   });
 
+  // Static method to provide a default UserProfile
+  static UserProfile defaultProfile() {
+    return UserProfile(
+      id: 'none',
+      preferences: ProfilePreferences.defaultPreferences(),
+      sessions: {},
+      songs: {},
+      statistics: Statistics.defaultStatistics(),
+      videos: {},
+    );
+  }
+
   factory UserProfile.fromJson(String id, Map<String, dynamic> json) {
-    final profileData = json['profile'] ?? {};
+    final preferencesData = json['preferences'] ?? {};
     final sessionsData = json['sessions'] ?? {};
     final songsData = json['songs'] ?? {};
     final statisticsData = json['statistics'] ?? {};
@@ -30,25 +42,33 @@ class UserProfile {
 
     return UserProfile(
       id: id,
-      profile: ProfileSettings.fromJson(profileData),
-      sessions: Map.fromEntries(
-        sessionsData.entries.map((entry) =>
-            MapEntry(entry.key, Session.fromJson(entry.value))),
+      preferences: ProfilePreferences.fromJson(preferencesData),
+      sessions: (sessionsData as Map<String, dynamic>).map(
+        (key, value) => MapEntry(key, Session.fromJson(value)),
       ),
-      songs: Map.fromEntries(
-        songsData.entries.map((entry) =>
-            MapEntry(entry.key, Song.fromJson(entry.key, entry.value))),
-      ),
+      songs:
+          (() {
+            final Map<String, Song> parsedSongs = {};
+            songsData.forEach((key, value) {
+              if (value is Map<String, dynamic>) {
+                parsedSongs[key] = Song.fromJson(key, value);
+              } else {
+                log.warning('Invalid song entry for key "$key" — skipped.');
+              }
+            });
+            return parsedSongs;
+          })(),
       statistics: Statistics.fromJson(statisticsData),
-      videos: Map.fromEntries(
-        videosData.entries.map((entry) =>
-            MapEntry(entry.key, Video.fromJson(entry.value))),
-      ),
+      videos:
+          (json['videos'] as Map?)?.map(
+            (key, value) => MapEntry(key as String, Video.fromJson(value)),
+          ) ??
+          {},
     );
   }
 }
 
-class ProfileSettings {
+class ProfilePreferences {
   final bool darkMode;
   final int exerciseBpm;
   final String instrument;
@@ -61,8 +81,27 @@ class ProfileSettings {
   final int warmupBpm;
   final bool warmupEnabled;
   final int warmupTime;
+  final String lastSessionId;
 
-  ProfileSettings({
+  static ProfilePreferences defaultPreferences() {
+    return ProfilePreferences(
+      darkMode: false,
+      exerciseBpm: 100,
+      instrument: '',
+      admin: false,
+      pro: false,
+      metronomeEnabled: true,
+      multiEnabled: false,
+      name: '',
+      teacher: '',
+      warmupBpm: 80,
+      warmupEnabled: true,
+      warmupTime: 300,
+      lastSessionId: '',
+    );
+  }
+
+  ProfilePreferences({
     required this.darkMode,
     required this.exerciseBpm,
     required this.instrument,
@@ -75,11 +114,12 @@ class ProfileSettings {
     required this.warmupBpm,
     required this.warmupEnabled,
     required this.warmupTime,
+    required this.lastSessionId,
   });
 
-  factory ProfileSettings.fromJson(Map<String, dynamic> json) {
+  factory ProfilePreferences.fromJson(Map<String, dynamic> json) {
     final internal = json['internal'] ?? {};
-    return ProfileSettings(
+    return ProfilePreferences(
       darkMode: json['darkMode'] ?? false,
       exerciseBpm: json['exerciseBpm'] ?? 100,
       instrument: json['instrument'] ?? '',
@@ -92,6 +132,7 @@ class ProfileSettings {
       warmupBpm: json['warmupBpm'] ?? 80,
       warmupEnabled: json['warmupEnabled'] ?? true,
       warmupTime: json['warmupTime'] ?? 300,
+      lastSessionId: json['lastSessionId'] ?? '',
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jazzx_app/models/link_type.dart'; // Import the LinkType enum
+import 'package:jazzx_app/models/link_type.dart';
+import '../utils/log.dart';
 
 class SongLinkWidget extends StatelessWidget {
   final String link; // The link URL
@@ -14,7 +15,7 @@ class SongLinkWidget extends StatelessWidget {
       child: InkWell(
         onTap: () {
           // Handle tap to open link using url_launcher or custom logic
-          print("Open ${type.name} link: $link");
+          log.warning("Open ${type.name} link: $link");
         },
         child: Card(
           elevation: 4,

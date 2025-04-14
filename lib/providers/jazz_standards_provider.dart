@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import '../models/song.dart';
+import '../utils/log.dart';
 
 class JazzStandardsProvider extends ChangeNotifier {
   final List<Song> _standards = [];
@@ -24,7 +25,7 @@ class JazzStandardsProvider extends ChangeNotifier {
       });
       notifyListeners();
     } catch (e) {
-      print("Error loading jazz standards: $e");
+      log.warning("Error loading jazz standards: $e");
     }
   }
 }

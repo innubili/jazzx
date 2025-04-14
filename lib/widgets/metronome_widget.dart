@@ -109,12 +109,15 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
   void _parseBitsPattern() {
     if (bitsPattern == "1/4") {
       subdivisionMultiplier = 1;
-    } else if (bitsPattern == "1/8")
+    } else if (bitsPattern == "1/8") {
       subdivisionMultiplier = 2;
-    else if (bitsPattern.toLowerCase().contains("triplet"))
+    } else if (bitsPattern == "1/16") {
+      subdivisionMultiplier = 4;
+    } else if (bitsPattern.toLowerCase().contains("triplet")) {
       subdivisionMultiplier = 3;
-    else
+    } else {
       subdivisionMultiplier = 1;
+    }
   }
 
   // Private Method for tap tempo to calculate BPM based on user taps
@@ -175,55 +178,106 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: Icon(
-                isPlaying ? Icons.music_note : Icons.music_off,
-                color: isPlaying ? Colors.green : Colors.grey,
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade900,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      //constraints: const BoxConstraints(minHeight: 80), // ensure enough height
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                icon: Icon(
+                  isPlaying ? Icons.music_note : Icons.music_off,
+                  color: Colors.white,
+                ),
+                onPressed: toggleMetronome,
+                tooltip: isPlaying ? 'Metronome On' : 'Metronome Off',
               ),
-              onPressed: toggleMetronome,
-            ),
-            ElevatedButton(
-              onPressed:
-                  () => _pick(
-                    ["1/2", "2/3", "3/4", "4/4", "5/4", "6/8"],
-                    timeSignature,
-                    setTimeSignature,
+              IconButton(
+                icon: const Icon(Icons.numbers, color: Colors.white),
+                tooltip: timeSignature,
+                onPressed:
+                    () => _pick(
+                      ["1/2", "2/3", "3/4", "4/4", "5/4", "6/8"],
+                      timeSignature,
+                      setTimeSignature,
+                    ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.remove, color: Colors.white),
+                onPressed: decrementBpm,
+              ),
+              TextButton(
+                onPressed:
+                    () =>
+                        _pick(List.generate(169, (i) => (i + 40)), bpm, setBpm),
+                child: Text(
+                  '$bpm',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-              child: Text(timeSignature),
-            ),
-            IconButton(icon: Icon(Icons.remove), onPressed: decrementBpm),
-            ElevatedButton(
-              onPressed:
-                  () => _pick(List.generate(169, (i) => (i + 40)), bpm, setBpm),
-              child: Text(
-                '$bpm',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.add, color: Colors.white),
+                onPressed: incrementBpm,
+              ),
+              IconButton(
+                icon: const Icon(Icons.touch_app, color: Colors.white),
+                onPressed: tapTempo,
+              ),
+              IconButton(
+                icon: const Icon(Icons.more_horiz, color: Colors.white),
+                tooltip: bitsPattern,
+                onPressed:
+                    () => _pick(
+                      ["1/4", "1/8", "1/16", "Triplets"],
+                      bitsPattern,
+                      setBitsPattern,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          AnimatedOpacity(
+            opacity: isPlaying ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 300),
+            child: Visibility(
+              visible: true,
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainState: true,
+              child: SizedBox(
+                height: 16,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(beatsPerMeasure, (index) {
+                    final isActive = tickCount % beatsPerMeasure == index;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 100),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: 40,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: isActive ? Colors.red : Colors.grey.shade600,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    );
+                  }),
+                ),
               ),
             ),
-            IconButton(icon: Icon(Icons.add), onPressed: incrementBpm),
-            IconButton(icon: Icon(Icons.touch_app), onPressed: tapTempo),
-            ElevatedButton(
-              onPressed:
-                  () => _pick(
-                    ["1/4", "1/8", "Triplets"],
-                    bitsPattern,
-                    setBitsPattern,
-                  ),
-              child: Text(bitsPattern),
-            ),
-          ],
-        ),
-        AnimatedOpacity(
-          opacity: isTick ? 1.0 : 0.0,
-          duration: Duration(milliseconds: 100),
-          child: Icon(Icons.circle, color: Colors.red, size: 40),
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }

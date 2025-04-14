@@ -8,25 +8,69 @@ class CategoryStats {
   factory CategoryStats.fromJson(Map<String, dynamic> json) {
     final values = <PracticeCategory, int>{};
     for (final key in json.keys) {
-      final cat = key.toPracticeCategory();
-      values[cat] = json[key] ?? 0;
-        }
+      final cat = key.tryToPracticeCategory();
+      if (cat != null) values[cat] = json[key] ?? 0;
+    }
     return CategoryStats(values: values);
+  }
+
+  factory CategoryStats.empty() {
+    return CategoryStats(
+      values: {for (var category in PracticeCategory.values) category: 0},
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      for (var entry in values.entries)
+        entry.key.name.toLowerCase(): entry.value,
+    };
   }
 }
 
 class MonthlyStats {
   final CategoryStats avgDaily;
-  final List<CategoryStats> day;
+  final Map<int, CategoryStats> days;
   final CategoryStats total;
 
-  MonthlyStats({required this.avgDaily, required this.day, required this.total});
+  MonthlyStats({
+    required this.avgDaily,
+    required this.days,
+    required this.total,
+  });
 
-  factory MonthlyStats.fromJson(Map<String, dynamic> json) => MonthlyStats(
-        avgDaily: CategoryStats.fromJson(json['avgDaily'] ?? {}),
-        day: (json['day'] as List?)?.map((e) => CategoryStats.fromJson(e)).toList() ?? [],
-        total: CategoryStats.fromJson(json['total'] ?? {}),
-      );
+  factory MonthlyStats.fromJson(Map<String, dynamic> json) {
+    final days = <int, CategoryStats>{};
+    final dayJson = json['days'] as Map<String, dynamic>? ?? {};
+    for (final entry in dayJson.entries) {
+      final day = int.tryParse(entry.key);
+      if (day != null) {
+        days[day] = CategoryStats.fromJson(entry.value);
+      }
+    }
+    return MonthlyStats(
+      avgDaily: CategoryStats.fromJson(json['avgDaily'] ?? {}),
+      days: days,
+      total: CategoryStats.fromJson(json['total'] ?? {}),
+    );
+  }
+
+  factory MonthlyStats.empty() => MonthlyStats(
+    avgDaily: CategoryStats.empty(),
+    days: {},
+    total: CategoryStats.empty(),
+  );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'avgDaily': avgDaily.toJson(),
+      'days': {
+        for (var entry in days.entries)
+          entry.key.toString(): entry.value.toJson(),
+      },
+      'total': total.toJson(),
+    };
+  }
 }
 
 class YearlyStats {
@@ -35,7 +79,12 @@ class YearlyStats {
   final CategoryStats total;
   final Map<int, MonthlyStats> months;
 
-  YearlyStats({required this.avgDaily, required this.avgMonthly, required this.total, required this.months});
+  YearlyStats({
+    required this.avgDaily,
+    required this.avgMonthly,
+    required this.total,
+    required this.months,
+  });
 
   factory YearlyStats.fromJson(Map<String, dynamic> json) {
     final months = <int, MonthlyStats>{};
@@ -52,6 +101,25 @@ class YearlyStats {
       months: months,
     );
   }
+
+  factory YearlyStats.empty() => YearlyStats(
+    avgDaily: CategoryStats.empty(),
+    avgMonthly: CategoryStats.empty(),
+    total: CategoryStats.empty(),
+    months: {},
+  );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'avgDaily': avgDaily.toJson(),
+      'avgMonthly': avgMonthly.toJson(),
+      'total': total.toJson(),
+      'months': {
+        for (var entry in months.entries)
+          entry.key.toString(): entry.value.toJson(),
+      },
+    };
+  }
 }
 
 class Statistics {
@@ -61,7 +129,13 @@ class Statistics {
   final CategoryStats total;
   final Map<int, YearlyStats> years;
 
-  Statistics({required this.avgDaily, required this.avgMonthly, required this.avgYearly, required this.total, required this.years});
+  Statistics({
+    required this.avgDaily,
+    required this.avgMonthly,
+    required this.avgYearly,
+    required this.total,
+    required this.years,
+  });
 
   factory Statistics.fromJson(Map<String, dynamic> json) {
     final overall = json['overall'] ?? {};
@@ -80,4 +154,25 @@ class Statistics {
       years: years,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'avgDaily': avgDaily.toJson(),
+      'avgMonthly': avgMonthly.toJson(),
+      'avgYearly': avgYearly,
+      'total': total.toJson(),
+      'years': {
+        for (var entry in years.entries)
+          entry.key.toString(): entry.value.toJson(),
+      },
+    };
+  }
+
+  factory Statistics.defaultStatistics() => Statistics(
+    avgDaily: CategoryStats.empty(),
+    avgMonthly: CategoryStats.empty(),
+    avgYearly: 0,
+    total: CategoryStats.empty(),
+    years: {},
+  );
 }

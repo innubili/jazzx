@@ -18,6 +18,7 @@ dependencies:
   path_provider: ^2.1.5
   # google_sign_in: ^5.0.7
   # audioplayers: ^0.20.1
+  logging: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -26,6 +27,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/jazzx_db.json
 
 environment:
   sdk: ^3.7.2

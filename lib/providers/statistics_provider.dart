@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import '../models/statistics.dart';
+import '../utils/log.dart';
 
 class StatisticsProvider extends ChangeNotifier {
   Statistics? _statistics;
@@ -16,7 +17,7 @@ class StatisticsProvider extends ChangeNotifier {
       _statistics = Statistics.fromJson(jsonData);
       notifyListeners();
     } catch (e) {
-      print("Error loading statistics: $e");
+      log.warning("Error loading statistics: $e");
     }
   }
 }

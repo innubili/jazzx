@@ -1,4 +1,4 @@
-// lib/models/practice_categoru.dart
+// lib/models/practice_category.dart
 
 enum PracticeCategory {
   exercise,
@@ -8,32 +8,7 @@ enum PracticeCategory {
   theory,
   video,
   gig,
-  fun
-}
-
-extension PracticeCategoryParsing on String {
-  PracticeCategory toPracticeCategory() {
-    switch (toLowerCase()) {
-      case 'exercise':
-        return PracticeCategory.exercise;
-      case 'new song':
-        return PracticeCategory.newsong;
-      case 'repertoire':
-        return PracticeCategory.repertoire;
-      case 'lesson':
-        return PracticeCategory.lesson;
-      case 'theory':
-        return PracticeCategory.theory;
-      case 'video':
-        return PracticeCategory.video;
-      case 'gig':
-        return PracticeCategory.gig;
-      case 'fun':
-        return PracticeCategory.fun;
-      default:
-        throw ArgumentError('Invalid practice category: $this');
-    }
-  }
+  fun,
 }
 
 extension PracticeCategoryExtension on PracticeCategory {
@@ -56,5 +31,50 @@ extension PracticeCategoryExtension on PracticeCategory {
       case PracticeCategory.fun:
         return 'Fun';
     }
+  }
+
+  bool get canWarmup {
+    switch (this) {
+      case PracticeCategory.exercise:
+      case PracticeCategory.newsong:
+      case PracticeCategory.repertoire:
+      case PracticeCategory.fun:
+        return true;
+      case PracticeCategory.lesson:
+      case PracticeCategory.theory:
+      case PracticeCategory.video:
+      case PracticeCategory.gig:
+        return false;
+    }
+  }
+
+  static PracticeCategory? fromName(String name) {
+    switch (name.toLowerCase().replaceAll(' ', '')) {
+      case 'exercise':
+        return PracticeCategory.exercise;
+      case 'newsong':
+        return PracticeCategory.newsong;
+      case 'repertoire':
+        return PracticeCategory.repertoire;
+      case 'lesson':
+        return PracticeCategory.lesson;
+      case 'theory':
+        return PracticeCategory.theory;
+      case 'video':
+        return PracticeCategory.video;
+      case 'gig':
+        return PracticeCategory.gig;
+      case 'fun':
+        return PracticeCategory.fun;
+      default:
+        if (name == 'practice') return null; // used in statitstics
+        throw ArgumentError('Invalid practice category name: \$name');
+    }
+  }
+}
+
+extension PracticeCategoryParsing on String {
+  PracticeCategory? tryToPracticeCategory() {
+    return PracticeCategoryExtension.fromName(this);
   }
 }

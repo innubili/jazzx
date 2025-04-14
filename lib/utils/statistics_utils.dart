@@ -1,6 +1,34 @@
-import '../models/statistics.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart' as services;
+import 'package:flutter/material.dart';
 import '../models/session.dart';
+import '../models/statistics.dart';
 import '../models/practice_category.dart';
+import 'log.dart';
+
+Future<void> recalculateAndUpdateStatistics(BuildContext context) async {
+  final rawJson = await services.rootBundle.loadString('assets/jazzx_db.json');
+  final Map<String, dynamic> json = jsonDecode(rawJson);
+
+  final users = json['users'] as Map<String, dynamic>;
+  for (final entry in users.entries) {
+    final userData = entry.value as Map<String, dynamic>;
+    final sessionsMap = userData['sessions'] as Map<String, dynamic>? ?? {};
+    final sessions =
+        sessionsMap.entries.map((e) => Session.fromJson(e.value)).toList();
+
+    final updatedStats = recalculateStatisticsFromSessions(sessions);
+    userData['statistics'] = updatedStats.toJson();
+  }
+
+  final encoded = const JsonEncoder.withIndent('  ').convert(json);
+  await services.rootBundle.loadStructuredData(
+    'assets/jazzx_db.json',
+    (data) async => encoded,
+  );
+
+  log.info('✅ Statistics recalculated and saved to assets.');
+}
 
 Statistics recalculateStatisticsFromSessions(List<Session> sessions) {
   final totalByCategory = <PracticeCategory, int>{};
@@ -77,7 +105,7 @@ Statistics recalculateStatisticsFromSessions(List<Session> sessions) {
   final totalAvgDaily = <PracticeCategory, int>{};
   final totalAvgMonthly = <PracticeCategory, int>{};
   final totalYears = years.length;
-  final totalAvgYearly = sessions.length ~/ (totalYears == 0 ? 1 : totalYears);
+  final totalAvgYearly = sessions.length ~/ totalYears;
 
   for (var cat in totalByCategory.keys) {
     totalAvgMonthly[cat] = (totalByCategory[cat]! / (totalYears * 12)).round();
