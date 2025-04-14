@@ -1,3 +1,4 @@
+// Refactored session_screen.dart using a clean Session object structure
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -30,40 +31,34 @@ class _SessionScreenState extends State<SessionScreen> {
   bool _hasStartedFirstPractice = false;
   bool _isWarmup = false;
 
-  String _note = '';
-  String? _newSong;
-  List<String> _repertoireSongs = [];
   int _warmupTime = 0;
   int _warmupBpm = 0;
 
-  final Map<PracticeCategory, Map<String, dynamic>> _sessionData = {};
+  late Session sessionData;
 
   @override
   void initState() {
     super.initState();
     final profile =
         Provider.of<UserProfileProvider>(context, listen: false).profile;
-    final lastSessionId = profile?.preferences.lastSessionId;
-    final lastSession =
-        lastSessionId != null ? profile?.sessions[lastSessionId] : null;
-    final baseSession =
-        lastSession ??
-        Session.getDefault(
-          instrument: profile?.preferences.instrument ?? 'guitar',
-        );
+    final lastSession = profile?.sessions[profile.preferences.lastSessionId];
 
-    final exerciseNote =
-        baseSession.categories[PracticeCategory.exercise]?.note ?? '';
-    final newsongList =
-        baseSession.categories[PracticeCategory.newsong]?.songs?.keys
-            .toList() ??
-        [];
+    sessionData = Session.getDefault(
+      instrument: profile?.preferences.instrument ?? 'guitar',
+    );
 
-    if (exerciseNote.isNotEmpty) {
-      _sessionData[PracticeCategory.exercise] = {'note': exerciseNote};
-    }
-    if (newsongList.isNotEmpty) {
-      _sessionData[PracticeCategory.newsong] = {'songs': newsongList};
+    if (lastSession != null) {
+      for (final cat in PracticeCategory.values) {
+        final lastCat = lastSession.categories[cat];
+        if (lastCat != null) {
+          sessionData.categories[cat] = SessionCategory(
+            time: 0,
+            note: lastCat.note,
+            bpm: lastCat.bpm,
+            songs: lastCat.songs,
+          );
+        }
+      }
     }
   }
 
@@ -75,33 +70,43 @@ class _SessionScreenState extends State<SessionScreen> {
   }
 
   void _startPractice(PracticeCategory mode) {
+    if (_activeMode != null) {
+      final elapsed = _timerController.getElapsedSeconds();
+      _stopPractice(elapsed);
+    }
+
     final profile =
         Provider.of<UserProfileProvider>(context, listen: false).profile;
-
     final shouldWarmup =
         !_hasStartedFirstPractice &&
         (profile?.preferences.warmupEnabled ?? false) &&
         mode.canWarmup;
 
     if (shouldWarmup) {
-      final warmupTime = profile?.preferences.warmupTime ?? 300;
-      final warmupBpm = profile?.preferences.warmupBpm ?? 80;
+      _warmupTime = profile?.preferences.warmupTime ?? 300;
+      _warmupBpm = profile?.preferences.warmupBpm ?? 80;
       final metronomeOn = profile?.preferences.metronomeEnabled ?? true;
 
       setState(() {
         _queuedMode = mode;
         _activeMode = null;
         _isWarmup = true;
-        _warmupTime = warmupTime;
-        _warmupBpm = warmupBpm;
       });
 
       if (metronomeOn) {
-        _metronomeController.setBpm(warmupBpm);
+        _metronomeController.setBpm(_warmupBpm);
         _metronomeController.start();
       }
 
-      _timerController.startCount?.call(startFrom: warmupTime, countDown: true);
+      log.info(
+        "🟢 SessionScreen: starting ${mode.name} with warmup at ${DateTime.now()}, warmup time: $_warmupTime",
+      );
+
+      _timerController.reset?.call();
+      _timerController.startCount?.call(
+        startFrom: _warmupTime,
+        countDown: true,
+      );
       return;
     }
 
@@ -110,21 +115,9 @@ class _SessionScreenState extends State<SessionScreen> {
 
   void _startPracticeMode(PracticeCategory mode) {
     _metronomeController.stop();
-
-    final profile =
-        Provider.of<UserProfileProvider>(context, listen: false).profile;
-
-    // ✅ Restore previously accumulated time for this category
-    final previousTime =
-        _sessionData[mode]?['time'] ??
-        profile
-            ?.sessions[profile.preferences.lastSessionId]
-            ?.categories[mode]
-            ?.time ??
-        0;
-
+    final previousTime = sessionData.categories[mode]?.time ?? 0;
     log.info(
-      "⏱ Restarting '${mode.name}' with previous time: ${previousTime}s",
+      "🟢 SessionScreen: starting ${mode.name} at ${DateTime.now()}, previous time: ${previousTime}s",
     );
 
     _timerController.reset?.call();
@@ -137,66 +130,34 @@ class _SessionScreenState extends State<SessionScreen> {
       _hasStartedFirstPractice = true;
       _activeMode = mode;
       _queuedMode = null;
-
-      _note = _sessionData[mode]?['note'] ?? '';
-      final songs = _sessionData[mode]?['songs'];
-      if (mode == PracticeCategory.newsong &&
-          songs != null &&
-          songs.isNotEmpty) {
-        _newSong = songs.first;
-      } else if (mode == PracticeCategory.repertoire && songs != null) {
-        _repertoireSongs = List<String>.from(songs);
-      } else {
-        _newSong = null;
-        _repertoireSongs = [];
-      }
+      _isWarmup = false;
     });
   }
 
-  void _skipWarmup() {
-    _onCountComplete();
-  }
-
-  void _stopPractice() {
+  void _stopPractice(int elapsedSeconds) {
     _metronomeController.stop();
-    _timerController.stop?.call(triggerCallback: false);
 
     if (_activeMode != null) {
-      final newTime = _timerController.elapsedSeconds;
-      final prevTime = _sessionData[_activeMode!]?['time'] ?? 0;
-
-      final data = {
-        "time": prevTime + newTime, // ✅ accumulate time
-        if (_note.isNotEmpty) "note": _note,
-        if (_activeMode == PracticeCategory.exercise) "bpm": 80,
-        if (_activeMode == PracticeCategory.newsong && _newSong != null)
-          "songs": [_newSong],
-        if (_activeMode == PracticeCategory.repertoire &&
-            _repertoireSongs.isNotEmpty)
-          "songs": _repertoireSongs,
-      };
-
-      _sessionData[_activeMode!] = {
-        ..._sessionData[_activeMode!] ?? {},
-        ...data,
-      };
+      final cat = sessionData.categories[_activeMode!];
+      sessionData.categories[_activeMode!] = SessionCategory(
+        time: elapsedSeconds, // ✅ overwrite instead of adding
+        note: cat?.note,
+        bpm: cat?.bpm,
+        songs: cat?.songs,
+      );
+      log.info(
+        "_stopPractice($elapsedSeconds), sessionData.categories[$_activeMode]= ${sessionData.categories[_activeMode!]?.time}",
+      );
+    } else {
+      log.info("_stopPractice($elapsedSeconds), warmup(?): $elapsedSeconds");
     }
-
-    setState(() {
-      //  _activeMode = null;
-    });
   }
 
+  void _skipWarmup() => _onCountComplete();
+
   void _onSessionDone() async {
-    _stopPractice();
-    final profile =
-        Provider.of<UserProfileProvider>(context, listen: false).profile;
-    final sessionMap = buildSessionData(
-      instrument: profile?.preferences.instrument ?? 'guitar',
-      warmupTime: _hasStartedFirstPractice ? _warmupTime : null,
-      warmupBpm: _hasStartedFirstPractice ? _warmupBpm : null,
-      practiceData: _sessionData.map((key, value) => MapEntry(key.name, value)),
-    );
+    _stopPractice(_timerController.getElapsedSeconds());
+    final sessionMap = sessionData.toJson();
 
     Navigator.push(
       context,
@@ -207,9 +168,7 @@ class _SessionScreenState extends State<SessionScreen> {
               onConfirm: (confirmedData) async {
                 final navigator = Navigator.of(context);
                 final messenger = ScaffoldMessenger.of(context);
-
                 await _saveSessionLocally(confirmedData);
-
                 navigator.popUntil((route) => route.isFirst);
                 messenger.showSnackBar(
                   const SnackBar(content: Text("Session saved locally!")),
@@ -223,16 +182,12 @@ class _SessionScreenState extends State<SessionScreen> {
   Future<void> _saveSessionLocally(Map<String, dynamic> confirmedData) async {
     try {
       final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/sessions.json';
-      final file = File(filePath);
+      final file = File('${directory.path}/sessions.json');
       List<dynamic> sessions = [];
       if (await file.exists()) {
         try {
-          String existingData = await file.readAsString();
-          sessions = json.decode(existingData);
-        } catch (e) {
-          log.warning("Error reading existing sessions: $e");
-        }
+          sessions = json.decode(await file.readAsString());
+        } catch (_) {}
       }
       sessions.add(confirmedData);
       await file.writeAsString(json.encode(sessions));
@@ -292,20 +247,38 @@ class _SessionScreenState extends State<SessionScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       child: PracticeDetailWidget(
                         category: _activeMode!,
-                        note: _note,
+                        note: sessionData.categories[_activeMode!]?.note ?? '',
                         songs:
-                            _activeMode == PracticeCategory.repertoire
-                                ? _repertoireSongs
-                                : _newSong != null
-                                ? [_newSong!]
-                                : [],
-                        onNoteChanged: (val) => setState(() => _note = val),
+                            sessionData.categories[_activeMode!]?.songs?.keys
+                                .toList() ??
+                            [],
+                        onNoteChanged: (val) {
+                          final cat =
+                              sessionData.categories[_activeMode!] ??
+                              SessionCategory(time: 0);
+                          setState(() {
+                            sessionData
+                                .categories[_activeMode!] = SessionCategory(
+                              time: cat.time,
+                              note: val,
+                              bpm: cat.bpm,
+                              songs: cat.songs,
+                            );
+                          });
+                        },
                         onSongsChanged: (songs) {
-                          if (_activeMode == PracticeCategory.repertoire) {
-                            setState(() => _repertoireSongs = songs);
-                          } else if (songs.isNotEmpty) {
-                            setState(() => _newSong = songs.first);
-                          }
+                          final cat =
+                              sessionData.categories[_activeMode!] ??
+                              SessionCategory(time: 0);
+                          setState(() {
+                            sessionData
+                                .categories[_activeMode!] = SessionCategory(
+                              time: cat.time,
+                              note: cat.note,
+                              bpm: cat.bpm,
+                              songs: {for (var s in songs) s: 1},
+                            );
+                          });
                         },
                       ),
                     ),
@@ -317,9 +290,7 @@ class _SessionScreenState extends State<SessionScreen> {
                       queuedMode: _queuedMode?.name,
                       onModeSelected: (mode) {
                         final category = mode.tryToPracticeCategory();
-                        if (category != null) {
-                          _startPractice(category);
-                        }
+                        if (category != null) _startPractice(category);
                       },
                     ),
                   ),
@@ -390,28 +361,49 @@ class _SessionScreenState extends State<SessionScreen> {
               );
             },
           ),
-          _drawerItem(context, "Metronome", Icons.music_note, () {
-            Navigator.pushNamed(context, "/metronome");
-          }),
-          _drawerItem(context, "My Songs", Icons.bookmark, () {
-            Navigator.pushNamed(context, "/user-songs");
-          }),
-          _drawerItem(context, "Jazz Standards", Icons.library_music, () {
-            Navigator.pushNamed(context, "/jazz-standards");
-          }),
-          _drawerItem(context, "Session Log", Icons.history, () {
-            Navigator.pushNamed(context, "/session-log");
-          }),
-          _drawerItem(context, "Statistics", Icons.bar_chart, () {
-            Navigator.pushNamed(context, "/statistics");
-          }),
+          _drawerItem(
+            context,
+            "Metronome",
+            Icons.music_note,
+            () => Navigator.pushNamed(context, "/metronome"),
+          ),
+          _drawerItem(
+            context,
+            "My Songs",
+            Icons.bookmark,
+            () => Navigator.pushNamed(context, "/user-songs"),
+          ),
+          _drawerItem(
+            context,
+            "Jazz Standards",
+            Icons.library_music,
+            () => Navigator.pushNamed(context, "/jazz-standards"),
+          ),
+          _drawerItem(
+            context,
+            "Session Log",
+            Icons.history,
+            () => Navigator.pushNamed(context, "/session-log"),
+          ),
+          _drawerItem(
+            context,
+            "Statistics",
+            Icons.bar_chart,
+            () => Navigator.pushNamed(context, "/statistics"),
+          ),
           const Divider(),
-          _drawerItem(context, "Settings", Icons.settings, () {
-            Navigator.pushNamed(context, "/settings");
-          }),
-          _drawerItem(context, "About", Icons.info, () {
-            Navigator.pushNamed(context, "/about");
-          }),
+          _drawerItem(
+            context,
+            "Settings",
+            Icons.settings,
+            () => Navigator.pushNamed(context, "/settings"),
+          ),
+          _drawerItem(
+            context,
+            "About",
+            Icons.info,
+            () => Navigator.pushNamed(context, "/about"),
+          ),
           _drawerItem(context, "Logout", Icons.logout, () {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
@@ -421,19 +413,5 @@ class _SessionScreenState extends State<SessionScreen> {
         ],
       ),
     );
-  }
-
-  Map<String, dynamic> buildSessionData({
-    required String instrument,
-    int? warmupTime,
-    int? warmupBpm,
-    required Map<String, dynamic> practiceData,
-  }) {
-    return {
-      'instrument': instrument,
-      if (warmupTime != null || warmupBpm != null)
-        'warmup': {'time': warmupTime ?? 0, 'bpm': warmupBpm ?? 0},
-      ...practiceData,
-    };
   }
 }

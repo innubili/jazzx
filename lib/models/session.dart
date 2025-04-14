@@ -17,6 +17,11 @@ class SessionCategory {
         bpm: json['bpm'],
         songs: (json['songs'] as Map?)?.map((k, v) => MapEntry(k, v as int)),
       );
+
+  @override
+  String toString() {
+    return 'SessionCategory(time: $time, note: $note, bpm: $bpm, songs: ${songs?.keys.toList()})';
+  }
 }
 
 class Session {
@@ -92,5 +97,10 @@ class Session {
         for (var cat in PracticeCategory.values) cat: SessionCategory(time: 0),
       },
     );
+  }
+
+  @override
+  String toString() {
+    return 'Session(instrument: $instrument, categories: ${categories.map((k, v) => MapEntry(k.name, v))})';
   }
 }
