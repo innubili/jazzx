@@ -66,9 +66,7 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
       _stopwatch.start();
       _ticker = Ticker(_onTick)..start();
 
-      log.info(
-        "🕒 TimerWidget: startCount called at ${DateTime.now()}, startFrom: $_startFrom, countDown: $_isCounting",
-      );
+      // log.info("🕒 TimerWidget: startCount called at ${DateTime.now()}, startFrom: $_startFrom, countDown: $_isCounting",);
 
       setState(() => _isRunning = true);
     };
@@ -101,9 +99,7 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
 
     widget.controller.updateElapsed(seconds);
 
-    log.info(
-      "⏱ Tick: elapsed=${seconds}s, display=${_formatTime(Duration(seconds: display))}",
-    );
+    //log.info("⏱ Tick: elapsed=${seconds}s, display=${_formatTime(Duration(seconds: display))}",);
 
     if (_isCounting && seconds >= _startFrom) {
       widget.controller.stop?.call();

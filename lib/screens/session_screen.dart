@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../widgets/metronome_controller.dart';
 import '../widgets/practice_timer_widget.dart';
 import '../widgets/metronome_widget.dart';
@@ -36,6 +37,23 @@ class _SessionScreenState extends State<SessionScreen> {
 
   late Session sessionData;
 
+  void _resetSessionData() {
+    final profile =
+        Provider.of<UserProfileProvider>(context, listen: false).profile;
+    final instrument = profile?.preferences.instrument ?? 'guitar';
+
+    setState(() {
+      sessionData = Session.getDefault(instrument: instrument);
+      _activeMode = null;
+      _queuedMode = null;
+      _hasStartedFirstPractice = false;
+      _isWarmup = false;
+    });
+
+    _metronomeController.stop();
+    _timerController.reset?.call();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -43,9 +61,7 @@ class _SessionScreenState extends State<SessionScreen> {
         Provider.of<UserProfileProvider>(context, listen: false).profile;
     final lastSession = profile?.sessions[profile.preferences.lastSessionId];
 
-    sessionData = Session.getDefault(
-      instrument: profile?.preferences.instrument ?? 'guitar',
-    );
+    _resetSessionData(); // 🧼 clean setup
 
     if (lastSession != null) {
       for (final cat in PracticeCategory.values) {
@@ -98,9 +114,7 @@ class _SessionScreenState extends State<SessionScreen> {
         _metronomeController.start();
       }
 
-      log.info(
-        "🟢 SessionScreen: starting ${mode.name} with warmup at ${DateTime.now()}, warmup time: $_warmupTime",
-      );
+      // log.info("🟢 SessionScreen: starting ${mode.name} with warmup at ${DateTime.now()}, warmup time: $_warmupTime", );
 
       _timerController.reset?.call();
       _timerController.startCount?.call(
@@ -116,9 +130,7 @@ class _SessionScreenState extends State<SessionScreen> {
   void _startPracticeMode(PracticeCategory mode) {
     _metronomeController.stop();
     final previousTime = sessionData.categories[mode]?.time ?? 0;
-    log.info(
-      "🟢 SessionScreen: starting ${mode.name} at ${DateTime.now()}, previous time: ${previousTime}s",
-    );
+    //log.info("🟢 SessionScreen: starting ${mode.name} at ${DateTime.now()}, previous time: ${previousTime}s",);
 
     _timerController.reset?.call();
     _timerController.startCount?.call(
@@ -145,11 +157,9 @@ class _SessionScreenState extends State<SessionScreen> {
         bpm: cat?.bpm,
         songs: cat?.songs,
       );
-      log.info(
-        "_stopPractice($elapsedSeconds), sessionData.categories[$_activeMode]= ${sessionData.categories[_activeMode!]?.time}",
-      );
+      // log.info("_stopPractice($elapsedSeconds), sessionData.categories[$_activeMode]= ${sessionData.categories[_activeMode!]?.time}",);
     } else {
-      log.info("_stopPractice($elapsedSeconds), warmup(?): $elapsedSeconds");
+      // log.info("_stopPractice($elapsedSeconds), warmup(?): $elapsedSeconds");
     }
   }
 
@@ -157,6 +167,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
   void _onSessionDone() async {
     _stopPractice(_timerController.getElapsedSeconds());
+
     final sessionMap = sessionData.toJson();
 
     Navigator.push(
@@ -168,7 +179,36 @@ class _SessionScreenState extends State<SessionScreen> {
               onConfirm: (confirmedData) async {
                 final navigator = Navigator.of(context);
                 final messenger = ScaffoldMessenger.of(context);
+
                 await _saveSessionLocally(confirmedData);
+
+                final shouldReset =
+                    await showDialog<bool>(
+                      context: context,
+                      builder:
+                          (context) => AlertDialog(
+                            title: const Text("Start New Session?"),
+                            content: const Text(
+                              "Do you want to clear session data and start a new session?",
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text("No"),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text("Yes"),
+                              ),
+                            ],
+                          ),
+                    ) ??
+                    false;
+
+                if (shouldReset) {
+                  _resetSessionData();
+                }
+
                 navigator.popUntil((route) => route.isFirst);
                 messenger.showSnackBar(
                   const SnackBar(content: Text("Session saved locally!")),
@@ -180,6 +220,10 @@ class _SessionScreenState extends State<SessionScreen> {
   }
 
   Future<void> _saveSessionLocally(Map<String, dynamic> confirmedData) async {
+    if (kIsWeb) {
+      log.warning("Saving session locally is not supported on web.");
+      return;
+    }
     try {
       final directory = await getApplicationDocumentsDirectory();
       final file = File('${directory.path}/sessions.json');

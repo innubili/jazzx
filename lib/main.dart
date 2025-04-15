@@ -8,8 +8,18 @@ import 'providers/user_songs_provider.dart';
 import 'providers/statistics_provider.dart';
 import 'providers/jazz_standards_provider.dart';
 import 'screens/session_screen.dart';
-import 'models/user_profile.dart';
+import 'screens/jazz_standards_screen.dart';
 import 'utils/log.dart';
+
+// ADDITIONAL SCREENS (placeholders or real ones)
+import 'screens/metronome_screen.dart';
+import 'screens/user_songs_screen.dart';
+import 'screens/session_log_screen.dart';
+// import 'screens/statistics_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/about_screen.dart';
+
+import 'models/user_profile.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,10 +49,18 @@ void main() async {
           create: (_) => UserProfileProvider()..setUserFromObject(userProfile),
         ),
         ChangeNotifierProvider(
-          create: (_) => UserSongsProvider()..loadUserSongs(),
+          create: (_) {
+            final provider = UserSongsProvider();
+            provider.loadUserSongsFromProfile(userProfile);
+            return provider;
+          },
         ),
         ChangeNotifierProvider(
-          create: (_) => JazzStandardsProvider()..loadJazzStandards(),
+          create:
+              (_) =>
+                  JazzStandardsProvider()..setJazzStandards(
+                    Map<String, dynamic>.from(fullJson["jazz_standards"] ?? {}),
+                  ),
         ),
         ChangeNotifierProvider(
           create: (_) => StatisticsProvider()..loadStatistics(),
@@ -62,7 +80,17 @@ class MyApp extends StatelessWidget {
       title: 'JazzX',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.deepPurple),
-      home: const SessionScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SessionScreen(),
+        '/metronome': (context) => const MetronomeScreen(),
+        '/user-songs': (context) => const UserSongsScreen(),
+        '/jazz-standards': (context) => const JazzStandardsScreen(),
+        '/session-log': (context) => const SessionLogScreen(),
+        //       '/statistics': (context) => const StatisticsScreen(),
+        '/settings': (context) => const SettingsScreen(),
+        '/about': (context) => const AboutScreen(),
+      },
     );
   }
 }

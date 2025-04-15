@@ -1,3 +1,19 @@
+enum SongLinkType {
+  iRealBackingTrack,
+  youtubeBackingTrack,
+  spotifyBackingTrack,
+  appleMusicBackingTrack,
+  spotifyPlaylist,
+  appleMusicPlaylist,
+  youtubePlaylist,
+  youtubeVideo,
+  appleMusicVideo,
+  localVideo,
+  localAudio,
+  pdf,
+  skool,
+}
+
 class SongLink {
   final String key;
   final String kind;
@@ -17,6 +33,13 @@ class SongLink {
     link: json['link'] ?? '',
     isDefault: json['default'] ?? false,
   );
+
+  Map<String, dynamic> toJson() => {
+    'key': key,
+    'kind': kind,
+    'link': link,
+    'default': isDefault,
+  };
 }
 
 class Song {
@@ -44,6 +67,32 @@ class Song {
     required this.year,
   });
 
+  Song copyWith({
+    String? title,
+    String? key,
+    String? type,
+    String? form,
+    int? bpm,
+    List<SongLink>? links,
+    String? notes,
+    String? recommendedVersions,
+    String? songwriters,
+    String? year,
+  }) {
+    return Song(
+      title: title ?? this.title,
+      key: key ?? this.key,
+      type: type ?? this.type,
+      form: form ?? this.form,
+      bpm: bpm ?? this.bpm,
+      links: links ?? this.links,
+      notes: notes ?? this.notes,
+      recommendedVersions: recommendedVersions ?? this.recommendedVersions,
+      songwriters: songwriters ?? this.songwriters,
+      year: year ?? this.year,
+    );
+  }
+
   factory Song.fromJson(String title, Map<String, dynamic> json) => Song(
     title: title,
     key: json['key'] ?? '',
@@ -55,10 +104,28 @@ class Song {
     songwriters: json['songwriters'] ?? '',
     year: json['year'] ?? '',
     links:
-        (json['links'] as Map?)?.values
-            .whereType<Map<String, dynamic>>()
-            .map((link) => SongLink.fromJson(link))
+        (json['links'] as Map?)?.entries
+            .where((e) => e.key != 'NA')
+            .map(
+              (e) => SongLink.fromJson({
+                'key': e.value['key'],
+                'kind': e.value['kind'],
+                'link': e.key,
+                'default': e.value['default'] ?? false,
+              }),
+            )
             .toList() ??
         [],
   );
+
+  static void removeSong(List<Song> list, Song song) {
+    list.removeWhere((s) => s.title == song.title);
+  }
+
+  static void updateSong(List<Song> list, Song song) {
+    final index = list.indexWhere((s) => s.title == song.title);
+    if (index != -1) {
+      list[index] = song;
+    }
+  }
 }
