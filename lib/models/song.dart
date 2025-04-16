@@ -43,6 +43,33 @@ class SongLink {
 }
 
 class Song {
+  static const List<String> musicalKeys = [
+    'C',
+    'Cm',
+    'Db',
+    'Dbm',
+    'D',
+    'Dm',
+    'Eb',
+    'Ebm',
+    'E',
+    'Em',
+    'F',
+    'Fm',
+    'Gb',
+    'Gbm',
+    'G',
+    'Gm',
+    'Ab',
+    'Abm',
+    'A',
+    'Am',
+    'Bb',
+    'Bbm',
+    'B',
+    'Bm',
+  ];
+
   final String title;
   final String key;
   final String type;
@@ -53,6 +80,7 @@ class Song {
   final String recommendedVersions;
   final String songwriters;
   final String year;
+  final bool deleted;
 
   Song({
     required this.title,
@@ -65,6 +93,7 @@ class Song {
     required this.recommendedVersions,
     required this.songwriters,
     required this.year,
+    this.deleted = false, // ← Add this line
   });
 
   Song copyWith({
@@ -78,6 +107,7 @@ class Song {
     String? recommendedVersions,
     String? songwriters,
     String? year,
+    bool? deleted, // ← Add this line
   }) {
     return Song(
       title: title ?? this.title,
@@ -90,7 +120,33 @@ class Song {
       recommendedVersions: recommendedVersions ?? this.recommendedVersions,
       songwriters: songwriters ?? this.songwriters,
       year: year ?? this.year,
+      deleted: deleted ?? this.deleted,
     );
+  }
+
+  String get summary =>
+      '$songwriters ($year) • $key • $type • $form • $bpm BPM';
+
+  Map<String, dynamic> toJson() {
+    return {
+      'key': key,
+      'type': type,
+      'form': form,
+      'bpm': bpm,
+      'notes': notes,
+      'recommendedversions': recommendedVersions,
+      'songwriters': songwriters,
+      'year': year,
+      'deleted': deleted,
+      'links': {
+        for (var link in links)
+          link.link: {
+            'key': link.key,
+            'kind': link.kind,
+            'default': link.isDefault,
+          },
+      },
+    };
   }
 
   factory Song.fromJson(String title, Map<String, dynamic> json) => Song(
@@ -103,6 +159,7 @@ class Song {
     recommendedVersions: json['recommendedversions'] ?? '',
     songwriters: json['songwriters'] ?? '',
     year: json['year'] ?? '',
+    deleted: json['deleted'] ?? false,
     links:
         (json['links'] as Map?)?.entries
             .where((e) => e.key != 'NA')

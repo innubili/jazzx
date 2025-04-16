@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/gestures.dart';
 import '../models/song.dart';
 import '../providers/jazz_standards_provider.dart';
 import '../providers/user_profile_provider.dart';
 import 'song_widget.dart';
+import '../utils/log.dart';
 
 enum SongBrowserMode { standards, user }
 
@@ -14,12 +14,14 @@ class SongBrowserWidget extends StatefulWidget {
   final SongBrowserMode mode;
   final bool selectable;
   final SongSelectedCallback? onSelected;
+  final bool showDeleted;
 
   const SongBrowserWidget({
     super.key,
     required this.mode,
     this.selectable = false,
     this.onSelected,
+    this.showDeleted = false,
   });
 
   @override
@@ -30,35 +32,41 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
   String _searchQuery = '';
   String _sortField = 'title';
   bool _ascending = true;
-  String? _expandedTitle;
 
   List<Song> _getSongs(BuildContext context) {
     if (widget.mode == SongBrowserMode.standards) {
-      return Provider.of<JazzStandardsProvider>(
-        context,
-        listen: false,
-      ).standards;
+      return Provider.of<JazzStandardsProvider>(context).standards;
     } else {
-      final userSongs =
+      final songs =
           Provider.of<UserProfileProvider>(
             context,
-            listen: false,
-          ).profile?.songs;
-      return userSongs?.values.toList() ?? [];
+          ).profile?.songs.values.toList() ??
+          [];
+      return widget.showDeleted
+          ? songs
+          : songs.where((s) => !s.deleted).toList();
     }
   }
 
   List<Song> _filteredAndSortedSongs(List<Song> songs) {
+    final query = _searchQuery.toLowerCase();
+
     final filtered =
-        songs
-            .where(
-              (s) =>
-                  s.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                  s.songwriters.toLowerCase().contains(
-                    _searchQuery.toLowerCase(),
-                  ),
-            )
-            .toList();
+        songs.where((s) {
+          final inTitle = s.title.toLowerCase().contains(query);
+          final inSummary = s.summary.toLowerCase().contains(query);
+          final matched = inTitle || inSummary;
+
+          if (matched) {
+            log.info('[MATCH] "${s.title}"');
+            if (inTitle) log.info(' - matched in title');
+            if (inSummary) log.info(' - matched in summary: ${s.summary}');
+          } else {
+            log.info('[NO MATCH] "${s.title}"');
+          }
+
+          return matched;
+        }).toList();
 
     filtered.sort((a, b) {
       final aValue = _getFieldValue(a);
@@ -86,41 +94,20 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
 
   void _copySong(Song song) {
     final profile = Provider.of<UserProfileProvider>(context, listen: false);
-    final copiedSong = song.copyWith(title: '${song.title} (Copy)');
-    profile.addSong(copiedSong);
-    setState(() => _expandedTitle = copiedSong.title);
+    final copied = song.copyWith(title: "${song.title} (copy)");
+    profile.addSong(copied);
   }
 
-  void _deleteSong(Song song) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text("Delete Song"),
-            content: Text("Are you sure you want to delete '${song.title}'?"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text("Cancel"),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text("Delete"),
-              ),
-            ],
-          ),
-    );
+  void _deleteSong(Song song) {
+    final profile = Provider.of<UserProfileProvider>(context, listen: false);
+    final updated = song.copyWith(deleted: true);
+    profile.updateSong(updated);
+  }
 
-    if (confirmed == true) {
-      setState(() {
-        final profile = Provider.of<UserProfileProvider>(
-          context,
-          listen: false,
-        );
-        profile.removeSong(song.title);
-        _expandedTitle = null;
-      });
-    }
+  void _restoreSong(Song song) {
+    final profile = Provider.of<UserProfileProvider>(context, listen: false);
+    final restored = song.copyWith(deleted: false);
+    profile.updateSong(restored);
   }
 
   @override
@@ -138,7 +125,7 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
                   decoration: const InputDecoration(
                     labelText: 'Search songs...',
                   ),
-                  onChanged: (val) => setState(() => _searchQuery = val),
+                  onChanged: (val) => setState(() => _searchQuery = val.trim()),
                 ),
               ),
               const SizedBox(width: 8),
@@ -167,45 +154,44 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
             itemBuilder: (context, index) {
               final song = songs[index];
               return Card(
-                child: ExpansionTile(
-                  key: PageStorageKey(song.title),
-                  title: Text(song.title),
-                  subtitle: Text(
-                    '${song.songwriters} (${song.year}) • ${song.key} • ${song.type} • ${song.form} • ${song.bpm} BPM',
+                key: ValueKey(song.title), // This fixes the issue
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
                   ),
-                  initiallyExpanded: _expandedTitle == song.title,
-                  onExpansionChanged: (expanded) {
-                    setState(() {
-                      _expandedTitle = expanded ? song.title : null;
-                    });
-                  },
-                  children: [
-                    ScrollConfiguration(
-                      behavior: ScrollConfiguration.of(context).copyWith(
-                        scrollbars: false,
-                        overscroll: false,
-                        dragDevices: {
-                          PointerDeviceKind.touch,
-                          PointerDeviceKind.mouse,
-                        },
-                      ),
-                      child: SongWidget(
-                        song: song,
-                        onUpdated:
-                            (updated) => Provider.of<UserProfileProvider>(
-                              context,
-                              listen: false,
-                            ).updateSong(updated),
-                        onCopy: () => _copySong(song),
-                        onDelete: () => _deleteSong(song),
-                      ),
-                    ),
-                  ],
+                  child: SongWidget(
+                    song: song,
+                    highlightQuery: _searchQuery,
+                    onUpdated:
+                        (updated) => Provider.of<UserProfileProvider>(
+                          context,
+                          listen: false,
+                        ).updateSong(updated),
+                    onCopy: () => _copySong(song),
+                    onDelete: () => _deleteSong(song),
+                  ),
                 ),
               );
             },
           ),
         ),
+        if (widget.mode == SongBrowserMode.user)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: TextButton.icon(
+              icon: Icon(
+                widget.showDeleted ? Icons.visibility_off : Icons.visibility,
+              ),
+              label: Text(
+                widget.showDeleted
+                    ? 'Hide deleted songs'
+                    : 'Show deleted songs',
+              ),
+              onPressed: () => setState(() {}),
+            ),
+          ),
       ],
     );
   }

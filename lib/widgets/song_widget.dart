@@ -6,6 +6,7 @@ class SongWidget extends StatefulWidget {
   final ValueChanged<Song> onUpdated;
   final VoidCallback onCopy;
   final VoidCallback onDelete;
+  final String? highlightQuery;
 
   const SongWidget({
     super.key,
@@ -13,6 +14,7 @@ class SongWidget extends StatefulWidget {
     required this.onUpdated,
     required this.onCopy,
     required this.onDelete,
+    this.highlightQuery,
   });
 
   @override
@@ -22,16 +24,53 @@ class SongWidget extends StatefulWidget {
 class _SongWidgetState extends State<SongWidget> {
   late Song _editedSong;
   bool _editMode = false;
+  bool _useCustomKey = false;
+  final TextEditingController _customKeyController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _editedSong = widget.song;
+    if (!Song.musicalKeys.contains(_editedSong.key)) {
+      _useCustomKey = true;
+      _customKeyController.text = _editedSong.key;
+    }
   }
 
   @override
   void dispose() {
+    _customKeyController.dispose();
+    widget.onUpdated(_editedSong);
     super.dispose();
+  }
+
+  TextSpan _highlightedText(String text) {
+    final query = widget.highlightQuery?.toLowerCase() ?? '';
+    if (query.isEmpty || _editMode) return TextSpan(text: text);
+
+    final spans = <TextSpan>[];
+    int start = 0;
+    final lower = text.toLowerCase();
+
+    while (true) {
+      final index = lower.indexOf(query, start);
+      if (index < 0) {
+        spans.add(TextSpan(text: text.substring(start)));
+        break;
+      }
+      if (index > start) {
+        spans.add(TextSpan(text: text.substring(start, index)));
+      }
+      spans.add(
+        TextSpan(
+          text: text.substring(index, index + query.length),
+          style: const TextStyle(backgroundColor: Colors.yellow),
+        ),
+      );
+      start = index + query.length;
+    }
+
+    return TextSpan(children: spans);
   }
 
   Widget _editableText(
@@ -51,7 +90,7 @@ class _SongWidgetState extends State<SongWidget> {
   }
 
   Widget _editableBpm() {
-    final bpmList = List.generate(41, (i) => (i * 5) + 60); // 60–260 BPM
+    final bpmList = List.generate(41, (i) => (i * 5) + 60);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: DropdownButtonFormField<int>(
@@ -75,46 +114,60 @@ class _SongWidgetState extends State<SongWidget> {
   }
 
   Widget _editableKey() {
-    const keys = [
-      'C',
-      'Db',
-      'D',
-      'Eb',
-      'E',
-      'F',
-      'Gb',
-      'G',
-      'Ab',
-      'A',
-      'Bb',
-      'B',
-    ];
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: DropdownButtonFormField<String>(
-        decoration: const InputDecoration(labelText: 'Key', filled: true),
-        value: _editedSong.key,
-        items:
-            keys
-                .map((k) => DropdownMenuItem(value: k, child: Text(k)))
-                .toList(),
-        onChanged:
-            _editMode
-                ? (val) => setState(
-                  () => _editedSong = _editedSong.copyWith(key: val ?? 'C'),
-                )
-                : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Key', filled: true),
+            value: _useCustomKey ? 'Other' : _editedSong.key,
+            items: [
+              ...Song.musicalKeys.map(
+                (k) => DropdownMenuItem(value: k, child: Text(k)),
+              ),
+              const DropdownMenuItem(value: 'Other', child: Text('Other')),
+            ],
+            onChanged:
+                _editMode
+                    ? (val) => setState(() {
+                      if (val == 'Other') {
+                        _useCustomKey = true;
+                        _editedSong = _editedSong.copyWith(
+                          key: _customKeyController.text,
+                        );
+                      } else {
+                        _useCustomKey = false;
+                        _editedSong = _editedSong.copyWith(key: val ?? 'C');
+                      }
+                    })
+                    : null,
+          ),
+          if (_editMode && _useCustomKey)
+            TextFormField(
+              controller: _customKeyController,
+              decoration: const InputDecoration(
+                labelText: 'Custom Key',
+                filled: true,
+              ),
+              onChanged:
+                  (val) => setState(
+                    () => _editedSong = _editedSong.copyWith(key: val),
+                  ),
+            ),
+        ],
       ),
     );
   }
 
   Widget _summaryRow() {
+    final summary = _editedSong.summary;
     return Padding(
       padding: const EdgeInsets.only(top: 4),
-      child: Text(
-        '${_editedSong.songwriters} (${_editedSong.year}) • '
-        '${_editedSong.key} • ${_editedSong.type} • ${_editedSong.form} • ${_editedSong.bpm} BPM',
-        style: const TextStyle(color: Colors.grey),
+      child: RichText(
+        text: _highlightedText(summary),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
@@ -138,12 +191,16 @@ class _SongWidgetState extends State<SongWidget> {
                           () => _editedSong = _editedSong.copyWith(title: val),
                         ),
                   )
-                  : Text(
-                    _editedSong.title,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  : RichText(
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      children: [_highlightedText(_editedSong.title)],
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
         ),
         if (!_editMode) ...[
@@ -166,10 +223,7 @@ class _SongWidgetState extends State<SongWidget> {
           IconButton(
             icon: const Icon(Icons.check),
             tooltip: 'Save',
-            onPressed: () {
-              widget.onUpdated(_editedSong); // Save only when confirmed
-              setState(() => _editMode = false);
-            },
+            onPressed: () => setState(() => _editMode = false),
           ),
           IconButton(
             icon: const Icon(Icons.close),
@@ -178,6 +232,8 @@ class _SongWidgetState extends State<SongWidget> {
                 () => setState(() {
                   _editMode = false;
                   _editedSong = widget.song;
+                  _customKeyController.text = widget.song.key;
+                  _useCustomKey = !Song.musicalKeys.contains(widget.song.key);
                 }),
           ),
         ],
