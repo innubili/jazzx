@@ -17,37 +17,104 @@ class PracticeModeButtonsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final categories = PracticeCategory.values;
 
-    return GridView.builder(
-      itemCount: categories.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 1,
-      ),
-      itemBuilder: (context, index) {
-        final mode = categories[index];
-        final isSelected = mode.name == activeMode || mode.name == queuedMode;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth;
+        final maxHeight = constraints.maxHeight;
+        final showInSingleRow = maxHeight >= 100 && maxWidth / 8 >= 80;
 
-        return ElevatedButton(
-          onPressed: isSelected ? null : () => onModeSelected(mode.name),
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+        // Size for square buttons
+        final buttonSize =
+            showInSingleRow ? maxWidth / 8 - 12 : maxWidth / 4 - 16;
+
+        if (showInSingleRow) {
+          // Use horizontal Wrap layout
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              children:
+                  categories.map((mode) {
+                    final isSelected =
+                        mode.name == activeMode || mode.name == queuedMode;
+                    return SizedBox(
+                      width: buttonSize,
+                      height: buttonSize,
+                      child: ElevatedButton(
+                        onPressed:
+                            isSelected ? null : () => onModeSelected(mode.name),
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          backgroundColor:
+                              isSelected ? Colors.deepPurple : null,
+                          foregroundColor: isSelected ? Colors.white : null,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 4,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.access_alarm, size: 24),
+                            const SizedBox(height: 4),
+                            Text(
+                              mode.name.capitalize(),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
             ),
-            backgroundColor: isSelected ? Colors.deepPurple : null,
-            foregroundColor: isSelected ? Colors.white : null,
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.access_alarm, size: 36),
-              const SizedBox(height: 8),
-              Text(mode.name.capitalize(), textAlign: TextAlign.center),
-            ],
-          ),
-        );
+          );
+        } else {
+          // Fallback to scrollable 4x2 grid layout
+          return GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(8),
+            itemCount: categories.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 1,
+            ),
+            itemBuilder: (context, index) {
+              final mode = categories[index];
+              final isSelected =
+                  mode.name == activeMode || mode.name == queuedMode;
+
+              return ElevatedButton(
+                onPressed: isSelected ? null : () => onModeSelected(mode.name),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  backgroundColor: isSelected ? Colors.deepPurple : null,
+                  foregroundColor: isSelected ? Colors.white : null,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 8,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.access_alarm, size: 36),
+                    const SizedBox(height: 8),
+                    Text(mode.name.capitalize(), textAlign: TextAlign.center),
+                  ],
+                ),
+              );
+            },
+          );
+        }
       },
     );
   }

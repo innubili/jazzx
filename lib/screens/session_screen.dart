@@ -1,4 +1,3 @@
-// Refactored session_screen.dart using a clean Session object structure
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
