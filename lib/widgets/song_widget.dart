@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/song.dart';
+import 'link_widget.dart';
 
 class SongWidget extends StatefulWidget {
   final Song song;
@@ -10,6 +11,7 @@ class SongWidget extends StatefulWidget {
   final bool readOnly;
   final bool selectable;
   final VoidCallback? onSelected;
+  final bool initiallyExpanded;
 
   const SongWidget({
     super.key,
@@ -21,6 +23,7 @@ class SongWidget extends StatefulWidget {
     this.readOnly = false,
     this.selectable = false,
     this.onSelected,
+    this.initiallyExpanded = false,
   });
 
   @override
@@ -38,6 +41,7 @@ class _SongWidgetState extends State<SongWidget> {
   void initState() {
     super.initState();
     _editedSong = widget.song;
+    _expanded = widget.initiallyExpanded;
     if (!Song.musicalKeys.contains(_editedSong.key)) {
       _useCustomKey = true;
       _customKeyController.text = _editedSong.key;
@@ -245,9 +249,7 @@ class _SongWidgetState extends State<SongWidget> {
                       ],
                     ),
               );
-              if (confirm == true) {
-                widget.onDelete();
-              }
+              if (confirm == true) widget.onDelete();
             },
           ),
         ] else if (_editMode && !widget.readOnly) ...[
@@ -280,6 +282,60 @@ class _SongWidgetState extends State<SongWidget> {
             onPressed: () => setState(() => _expanded = false),
           ),
         ],
+      ],
+    );
+  }
+
+  Widget _editableLinks() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(),
+        const Text('Links', style: TextStyle(fontWeight: FontWeight.bold)),
+        ..._editedSong.links.map(
+          (link) => LinkWidget(
+            link: link,
+            readOnly: widget.readOnly,
+            initiallyExpanded: _expanded,
+            onUpdated: (updated) {
+              final updatedLinks =
+                  _editedSong.links
+                      .map((l) => l.key == link.key ? updated : l)
+                      .toList();
+              setState(() {
+                _editedSong = _editedSong.copyWith(links: updatedLinks);
+              });
+            },
+            onDelete: () {
+              final updatedLinks =
+                  _editedSong.links.where((l) => l.key != link.key).toList();
+              setState(() {
+                _editedSong = _editedSong.copyWith(links: updatedLinks);
+              });
+            },
+          ),
+        ),
+        if (_editMode)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              icon: const Icon(Icons.add),
+              label: const Text("Add Link"),
+              onPressed: () {
+                final newLink = SongLink(
+                  key: 'New Link',
+                  kind: '',
+                  link: '',
+                  isDefault: false,
+                );
+                setState(() {
+                  _editedSong = _editedSong.copyWith(
+                    links: [..._editedSong.links, newLink],
+                  );
+                });
+              },
+            ),
+          ),
       ],
     );
   }
@@ -338,6 +394,7 @@ class _SongWidgetState extends State<SongWidget> {
                     ),
               ),
             ),
+            _editableLinks(),
           ] else if (widget.readOnly && _expanded) ...[
             const SizedBox(height: 8),
             Text("Composer: ${_editedSong.songwriters}"),
@@ -350,6 +407,7 @@ class _SongWidgetState extends State<SongWidget> {
               Text("Notes: ${_editedSong.notes}"),
             if (_editedSong.recommendedVersions.isNotEmpty)
               Text("Recommended: ${_editedSong.recommendedVersions}"),
+            _editableLinks(),
             if (widget.selectable && widget.onSelected != null)
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),

@@ -19,6 +19,7 @@ dependencies:
   # google_sign_in: ^5.0.7
   # audioplayers: ^0.20.1
   logging: ^1.2.0
+  url_launcher: ^6.2.5
 
 dev_dependencies:
   flutter_test:

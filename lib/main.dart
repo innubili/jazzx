@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:provider/provider.dart';
 
+import 'providers/irealpro_provider.dart';
 import 'providers/user_profile_provider.dart';
 import 'providers/user_songs_provider.dart';
 import 'providers/statistics_provider.dart';
@@ -64,6 +65,12 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => StatisticsProvider()..loadStatistics(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => IRealProProvider()..checkInstallation(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserProfileProvider()..setUserFromObject(userProfile),
         ),
       ],
       child: const MyApp(),

@@ -1,9 +1,6 @@
-enum LinkType {
-  youtube,
-  irealPro,
-  spotify,
-  localFile,
-}
+import 'song.dart';
+
+enum LinkType { youtube, irealPro, spotify, localFile, other }
 
 extension LinkTypeExtension on LinkType {
   static LinkType fromString(String value) {
@@ -31,6 +28,8 @@ extension LinkTypeExtension on LinkType {
         return 'Spotify';
       case LinkType.localFile:
         return 'Local File';
+      default:
+        return 'Other';
     }
   }
 
@@ -44,7 +43,22 @@ extension LinkTypeExtension on LinkType {
         return 'assets/icons/spotify.png';
       case LinkType.localFile:
         return 'assets/icons/file.png';
+      default:
+        return 'assets/icons/other.png';
     }
   }
 }
 
+SongLinkCategory getCategoryForLinkType(LinkType type) {
+  switch (type) {
+    case LinkType.irealPro:
+    case LinkType.localFile:
+      return SongLinkCategory.backingTrack;
+    case LinkType.spotify:
+      return SongLinkCategory.playlist;
+    case LinkType.youtube:
+      return SongLinkCategory.lesson; // or adjust as needed
+    case LinkType.other:
+      return SongLinkCategory.other;
+  }
+}

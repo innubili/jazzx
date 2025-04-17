@@ -13,6 +13,10 @@ class SongBrowserWidget extends StatefulWidget {
   final SongSelectedCallback? onSelected;
   final bool showDeleted;
 
+  // ✅ New: optional scroll/expand
+  final String? initialScrollToTitle;
+  final bool expandInitially;
+
   const SongBrowserWidget({
     super.key,
     required this.songs,
@@ -20,6 +24,8 @@ class SongBrowserWidget extends StatefulWidget {
     this.selectable = false,
     this.onSelected,
     this.showDeleted = false,
+    this.initialScrollToTitle,
+    this.expandInitially = false,
   });
 
   @override
@@ -27,13 +33,32 @@ class SongBrowserWidget extends StatefulWidget {
 }
 
 class _SongBrowserWidgetState extends State<SongBrowserWidget> {
+  final _scrollController = ScrollController();
+  final _itemKeys = <String, GlobalKey>{};
+
   String _searchQuery = '';
   String _sortField = 'title';
   bool _ascending = true;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToInitialSong());
+  }
+
+  void _scrollToInitialSong() {
+    if (widget.initialScrollToTitle == null) return;
+    final key = _itemKeys[widget.initialScrollToTitle!];
+    if (key?.currentContext != null) {
+      Scrollable.ensureVisible(
+        key!.currentContext!,
+        duration: const Duration(milliseconds: 500),
+      );
+    }
+  }
+
   List<Song> _filteredAndSortedSongs(List<Song> songs) {
     final query = _searchQuery.toLowerCase();
-
     final filtered =
         songs.where((s) {
           final inTitle = s.title.toLowerCase().contains(query);
@@ -42,9 +67,9 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
         }).toList();
 
     filtered.sort((a, b) {
-      final aValue = _getFieldValue(a);
-      final bValue = _getFieldValue(b);
-      return _ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
+      final aVal = _getFieldValue(a);
+      final bVal = _getFieldValue(b);
+      return _ascending ? aVal.compareTo(bVal) : bVal.compareTo(aVal);
     });
 
     return filtered;
@@ -52,8 +77,6 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
 
   String _getFieldValue(Song song) {
     switch (_sortField) {
-      case 'title':
-        return song.title;
       case 'composer':
         return song.songwriters;
       case 'key':
@@ -68,7 +91,6 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
   @override
   Widget build(BuildContext context) {
     final profile = Provider.of<UserProfileProvider>(context, listen: false);
-
     final songs = _filteredAndSortedSongs(
       widget.showDeleted
           ? widget.songs
@@ -78,7 +100,7 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8),
           child: Row(
             children: [
               Expanded(
@@ -111,11 +133,18 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
         ),
         Expanded(
           child: ListView.builder(
+            controller: _scrollController,
             itemCount: songs.length,
             itemBuilder: (context, index) {
               final song = songs[index];
+              final initiallyExpanded =
+                  widget.expandInitially &&
+                  song.title == widget.initialScrollToTitle;
+
+              final key = _itemKeys.putIfAbsent(song.title, () => GlobalKey());
+
               return Card(
-                key: ValueKey(song.title),
+                key: key,
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -127,6 +156,7 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
                     highlightQuery: _searchQuery,
                     readOnly: widget.readOnly,
                     selectable: widget.selectable,
+                    initiallyExpanded: initiallyExpanded,
                     onSelected:
                         widget.onSelected != null
                             ? () => widget.onSelected!(song)

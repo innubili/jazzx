@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/practice_category.dart';
 import '../providers/user_profile_provider.dart';
 import '../providers/jazz_standards_provider.dart';
+import 'song_line_widget.dart';
 import 'song_picker_sheet.dart';
 import 'multi_song_picker_sheet.dart';
 
@@ -24,6 +25,19 @@ class PracticeDetailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<UserProfileProvider>(
+      context,
+      listen: false,
+    );
+    final standards =
+        Provider.of<JazzStandardsProvider>(context, listen: false).standards;
+
+    final selectedSong =
+        songs.isNotEmpty
+            ? (profileProvider.profile?.songs[songs.first] ??
+                standards.firstWhere((s) => s.title == songs.first))
+            : null;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -38,28 +52,25 @@ class PracticeDetailWidget extends StatelessWidget {
 
           // New Song Picker
           if (category == PracticeCategory.newsong)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    songs.isNotEmpty ? songs.first : "No song selected",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
+                if (selectedSong != null)
+                  SongLineWidget(
+                    song: selectedSong,
+                    onIconPressed: (type) {
+                      debugPrint(
+                        "Pressed icon for $type on ${selectedSong.title}",
+                      );
+                      // TODO: Handle actual action (e.g. launch link)
+                    },
+                  )
+                else
+                  const Text("No song selected"),
+                const SizedBox(height: 8),
                 TextButton(
                   onPressed: () async {
-                    final profileProvider = Provider.of<UserProfileProvider>(
-                      context,
-                      listen: false,
-                    );
                     final profile = profileProvider.profile;
-                    final standards =
-                        Provider.of<JazzStandardsProvider>(
-                          context,
-                          listen: false,
-                        ).standards;
-
                     final excludeTitles = profile?.songs.keys.toList() ?? [];
 
                     final selectedSongTitle =
@@ -71,28 +82,24 @@ class PracticeDetailWidget extends StatelessWidget {
                                   SongPickerSheet(excludeTitles: excludeTitles),
                         );
 
-                    if (selectedSongTitle != null) {
-                      if (profile != null &&
-                          !profile.songs.containsKey(selectedSongTitle)) {
-                        final selected = standards.firstWhere(
-                          (s) => s.title == selectedSongTitle,
-                          orElse:
-                              () =>
-                                  throw Exception(
-                                    'Song not found in standards',
-                                  ),
-                        );
-                        profileProvider.addSong(selected.copyWith());
-                      }
+                    if (selectedSongTitle == null) return;
 
-                      onSongsChanged([selectedSongTitle]);
+                    final isNotInUserSongs =
+                        profile?.songs.containsKey(selectedSongTitle) == false;
+
+                    if (isNotInUserSongs) {
+                      final selected = standards.firstWhere(
+                        (s) => s.title == selectedSongTitle,
+                      );
+                      profileProvider.addSong(selected.copyWith());
                     }
+
+                    onSongsChanged([selectedSongTitle]);
                   },
                   child: const Text("Choose Song"),
                 ),
               ],
             ),
-
           // Repertoire Multi Song Picker
           if (category == PracticeCategory.repertoire)
             Column(
