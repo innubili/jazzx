@@ -7,6 +7,9 @@ class SongWidget extends StatefulWidget {
   final VoidCallback onCopy;
   final VoidCallback onDelete;
   final String? highlightQuery;
+  final bool readOnly;
+  final bool selectable;
+  final VoidCallback? onSelected;
 
   const SongWidget({
     super.key,
@@ -15,6 +18,9 @@ class SongWidget extends StatefulWidget {
     required this.onCopy,
     required this.onDelete,
     this.highlightQuery,
+    this.readOnly = false,
+    this.selectable = false,
+    this.onSelected,
   });
 
   @override
@@ -24,6 +30,7 @@ class SongWidget extends StatefulWidget {
 class _SongWidgetState extends State<SongWidget> {
   late Song _editedSong;
   bool _editMode = false;
+  bool _expanded = false;
   bool _useCustomKey = false;
   final TextEditingController _customKeyController = TextEditingController();
 
@@ -203,7 +210,7 @@ class _SongWidgetState extends State<SongWidget> {
                     overflow: TextOverflow.ellipsis,
                   ),
         ),
-        if (!_editMode) ...[
+        if (!_editMode && !widget.readOnly) ...[
           IconButton(
             icon: const Icon(Icons.edit),
             tooltip: 'Edit',
@@ -217,9 +224,33 @@ class _SongWidgetState extends State<SongWidget> {
           IconButton(
             icon: const Icon(Icons.delete),
             tooltip: 'Delete',
-            onPressed: widget.onDelete,
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder:
+                    (context) => AlertDialog(
+                      title: const Text('Confirm Deletion'),
+                      content: Text(
+                        'Are you sure you want to delete "${_editedSong.title}"?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    ),
+              );
+              if (confirm == true) {
+                widget.onDelete();
+              }
+            },
           ),
-        ] else ...[
+        ] else if (_editMode && !widget.readOnly) ...[
           IconButton(
             icon: const Icon(Icons.check),
             tooltip: 'Save',
@@ -236,6 +267,18 @@ class _SongWidgetState extends State<SongWidget> {
                   _useCustomKey = !Song.musicalKeys.contains(widget.song.key);
                 }),
           ),
+        ] else if (widget.readOnly && !_expanded) ...[
+          IconButton(
+            icon: const Icon(Icons.expand_more),
+            tooltip: 'Expand',
+            onPressed: () => setState(() => _expanded = true),
+          ),
+        ] else if (widget.readOnly && _expanded) ...[
+          IconButton(
+            icon: const Icon(Icons.expand_less),
+            tooltip: 'Collapse',
+            onPressed: () => setState(() => _expanded = false),
+          ),
         ],
       ],
     );
@@ -250,7 +293,7 @@ class _SongWidgetState extends State<SongWidget> {
         children: [
           _topBar(),
           if (!_editMode) _summaryRow(),
-          if (_editMode) ...[
+          if (_editMode && !widget.readOnly) ...[
             _editableText(
               "Composer",
               _editedSong.songwriters,
@@ -295,6 +338,30 @@ class _SongWidgetState extends State<SongWidget> {
                     ),
               ),
             ),
+          ] else if (widget.readOnly && _expanded) ...[
+            const SizedBox(height: 8),
+            Text("Composer: ${_editedSong.songwriters}"),
+            Text("Key: ${_editedSong.key}"),
+            Text("Style: ${_editedSong.type}"),
+            Text("Form: ${_editedSong.form}"),
+            Text("BPM: ${_editedSong.bpm}"),
+            Text("Year: ${_editedSong.year}"),
+            if (_editedSong.notes.isNotEmpty)
+              Text("Notes: ${_editedSong.notes}"),
+            if (_editedSong.recommendedVersions.isNotEmpty)
+              Text("Recommended: ${_editedSong.recommendedVersions}"),
+            if (widget.selectable && widget.onSelected != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.check_circle_outline),
+                    label: const Text('Select This Song'),
+                    onPressed: widget.onSelected,
+                  ),
+                ),
+              ),
           ],
         ],
       ),

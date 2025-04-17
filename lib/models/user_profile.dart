@@ -38,7 +38,7 @@ class UserProfile {
     final sessionsData = json['sessions'] ?? {};
     final songsData = json['songs'] ?? {};
     final statisticsData = json['statistics'] ?? {};
-    final videosData = json['videos'] ?? {};
+    //    final videosData = json['videos'] ?? {};
 
     return UserProfile(
       id: id,

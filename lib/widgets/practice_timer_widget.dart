@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../utils/log.dart';
 
 class PracticeTimerController {
   void Function({required int startFrom, bool countDown})? startCount;
@@ -94,8 +93,7 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
     if (!mounted) return;
 
     final seconds = _elapsed.inSeconds;
-    final display =
-        _isCounting ? (_startFrom - seconds).clamp(0, _startFrom) : seconds;
+    //final display = _isCounting ? (_startFrom - seconds).clamp(0, _startFrom) : seconds;
 
     widget.controller.updateElapsed(seconds);
 

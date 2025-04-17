@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/song.dart';
-import '../providers/jazz_standards_provider.dart';
 import '../providers/user_profile_provider.dart';
 import 'song_widget.dart';
-import '../utils/log.dart';
-
-enum SongBrowserMode { standards, user }
 
 typedef SongSelectedCallback = void Function(Song song);
 
 class SongBrowserWidget extends StatefulWidget {
-  final SongBrowserMode mode;
+  final List<Song> songs;
+  final bool readOnly;
   final bool selectable;
   final SongSelectedCallback? onSelected;
   final bool showDeleted;
 
   const SongBrowserWidget({
     super.key,
-    required this.mode,
+    required this.songs,
+    this.readOnly = false,
     this.selectable = false,
     this.onSelected,
     this.showDeleted = false,
@@ -33,21 +31,6 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
   String _sortField = 'title';
   bool _ascending = true;
 
-  List<Song> _getSongs(BuildContext context) {
-    if (widget.mode == SongBrowserMode.standards) {
-      return Provider.of<JazzStandardsProvider>(context).standards;
-    } else {
-      final songs =
-          Provider.of<UserProfileProvider>(
-            context,
-          ).profile?.songs.values.toList() ??
-          [];
-      return widget.showDeleted
-          ? songs
-          : songs.where((s) => !s.deleted).toList();
-    }
-  }
-
   List<Song> _filteredAndSortedSongs(List<Song> songs) {
     final query = _searchQuery.toLowerCase();
 
@@ -55,17 +38,7 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
         songs.where((s) {
           final inTitle = s.title.toLowerCase().contains(query);
           final inSummary = s.summary.toLowerCase().contains(query);
-          final matched = inTitle || inSummary;
-
-          if (matched) {
-            log.info('[MATCH] "${s.title}"');
-            if (inTitle) log.info(' - matched in title');
-            if (inSummary) log.info(' - matched in summary: ${s.summary}');
-          } else {
-            log.info('[NO MATCH] "${s.title}"');
-          }
-
-          return matched;
+          return inTitle || inSummary;
         }).toList();
 
     filtered.sort((a, b) {
@@ -92,27 +65,15 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
     }
   }
 
-  void _copySong(Song song) {
-    final profile = Provider.of<UserProfileProvider>(context, listen: false);
-    final copied = song.copyWith(title: "${song.title} (copy)");
-    profile.addSong(copied);
-  }
-
-  void _deleteSong(Song song) {
-    final profile = Provider.of<UserProfileProvider>(context, listen: false);
-    final updated = song.copyWith(deleted: true);
-    profile.updateSong(updated);
-  }
-
-  void _restoreSong(Song song) {
-    final profile = Provider.of<UserProfileProvider>(context, listen: false);
-    final restored = song.copyWith(deleted: false);
-    profile.updateSong(restored);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final songs = _filteredAndSortedSongs(_getSongs(context));
+    final profile = Provider.of<UserProfileProvider>(context, listen: false);
+
+    final songs = _filteredAndSortedSongs(
+      widget.showDeleted
+          ? widget.songs
+          : widget.songs.where((s) => !s.deleted).toList(),
+    );
 
     return Column(
       children: [
@@ -154,7 +115,7 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
             itemBuilder: (context, index) {
               final song = songs[index];
               return Card(
-                key: ValueKey(song.title), // This fixes the issue
+                key: ValueKey(song.title),
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -164,20 +125,39 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
                   child: SongWidget(
                     song: song,
                     highlightQuery: _searchQuery,
+                    readOnly: widget.readOnly,
+                    selectable: widget.selectable,
+                    onSelected:
+                        widget.onSelected != null
+                            ? () => widget.onSelected!(song)
+                            : null,
                     onUpdated:
-                        (updated) => Provider.of<UserProfileProvider>(
-                          context,
-                          listen: false,
-                        ).updateSong(updated),
-                    onCopy: () => _copySong(song),
-                    onDelete: () => _deleteSong(song),
+                        widget.readOnly
+                            ? (_) {}
+                            : (updated) => profile.updateSong(updated),
+                    onCopy:
+                        widget.readOnly
+                            ? () {}
+                            : () {
+                              final copied = song.copyWith(
+                                title: "${song.title} (copy)",
+                              );
+                              profile.addSong(copied);
+                            },
+                    onDelete:
+                        widget.readOnly
+                            ? () {}
+                            : () {
+                              final updated = song.copyWith(deleted: true);
+                              profile.updateSong(updated);
+                            },
                   ),
                 ),
               );
             },
           ),
         ),
-        if (widget.mode == SongBrowserMode.user)
+        if (!widget.readOnly)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: TextButton.icon(

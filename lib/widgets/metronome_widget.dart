@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'metronome_controller.dart';
+import '../utils/log.dart';
 
 class MetronomeWidget extends StatefulWidget {
   final MetronomeController controller;
@@ -38,8 +39,9 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
 
   @override
   void dispose() {
-    stopMetronome();
-    widget.controller.detach(); // Detach the widget's state from the controller
+    _timer?.cancel(); // just cancel the timer here
+    isTick = false; // don't call setState!
+    widget.controller.detach();
     super.dispose();
   }
 
@@ -64,7 +66,12 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
   // Public Method to stop the metronome
   void stopMetronome() {
     _timer?.cancel();
-    setState(() => isTick = false);
+    if (mounted) {
+      setState(() => isTick = false);
+    } else {
+      isTick = false;
+      log.warning('⚠️ stopMetronome() called after dispose');
+    }
   }
 
   // Method to set the running state
