@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/jazz_standards_provider.dart';
 import '../widgets/song_browser_widget.dart';
 import '../providers/user_profile_provider.dart';
+import '../widgets/song_picker_sheet.dart';
+
+// import '../models/song.dart';
 
 class UserSongsScreen extends StatelessWidget {
   const UserSongsScreen({super.key});
 
+  _onSongsChanged(List<String> songs) {
+    // Handle the song changes here
+    debugPrint('songlist: $songs');
+  }
+
   @override
   Widget build(BuildContext context) {
-    final songs =
-        Provider.of<UserProfileProvider>(
-          context,
-        ).profile?.songs.values.where((s) => !s.deleted).toList() ??
-        [];
+    final profileProvider = Provider.of<UserProfileProvider>(context);
+    final profile = profileProvider.profile;
+    final songs = profile?.songs.values.where((s) => !s.deleted).toList() ?? [];
+    final standards =
+        Provider.of<JazzStandardsProvider>(context, listen: false).standards;
 
     return Scaffold(
       appBar: AppBar(title: const Text('My Songs')),
@@ -20,6 +29,35 @@ class UserSongsScreen extends StatelessWidget {
         songs: songs,
         readOnly: false,
         showDeleted: false,
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Add New Song',
+        shape: const CircleBorder(),
+        onPressed: () async {
+          final profile = profileProvider.profile;
+          final excludeTitles = profile?.songs.keys.toList() ?? [];
+
+          final selectedSongTitle = await showModalBottomSheet<String>(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => SongPickerSheet(excludeTitles: excludeTitles),
+          );
+
+          if (selectedSongTitle == null) return;
+
+          final isNotInUserSongs =
+              profile?.songs.containsKey(selectedSongTitle) == false;
+
+          if (isNotInUserSongs) {
+            final selected = standards.firstWhere(
+              (s) => s.title == selectedSongTitle,
+            );
+            profileProvider.addSong(selected.copyWith());
+          }
+
+          _onSongsChanged([selectedSongTitle]);
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

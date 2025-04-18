@@ -4,14 +4,14 @@ import '../utils/log.dart';
 import '../models/song.dart';
 
 class SongLinkWidget extends StatefulWidget {
-  final String? initialLink;
-  final LinkType? initialType;
+  final String? link;
+  final LinkType? type;
   final void Function(String link, LinkType type) onSaved;
 
   const SongLinkWidget({
     super.key,
-    this.initialLink,
-    this.initialType,
+    this.link,
+    this.type,
     required this.onSaved,
   });
 
@@ -27,12 +27,10 @@ class _SongLinkWidgetState extends State<SongLinkWidget> {
   @override
   void initState() {
     super.initState();
-    _linkController = TextEditingController(text: widget.initialLink ?? '');
-    _determinedType = widget.initialType;
+    _linkController = TextEditingController(text: widget.link ?? '');
+    _determinedType = widget.type;
     _selectedCategory =
-        widget.initialType != null
-            ? getCategoryForLinkType(widget.initialType!)
-            : null;
+        widget.type != null ? getCategoryForLinkType(widget.type!) : null;
   }
 
   @override

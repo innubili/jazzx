@@ -28,6 +28,9 @@ class SongDetailsScreen extends StatelessWidget {
               (link) => SongLinkWidget(
                 link: link.link,
                 type: LinkTypeExtension.fromString(link.kind),
+                onSaved:
+                    (link, type) =>
+                        debugPrint('onSaved(link:$link, {$type.name}'),
               ),
             ),
           ],
