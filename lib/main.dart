@@ -10,7 +10,7 @@ import 'providers/statistics_provider.dart';
 import 'providers/jazz_standards_provider.dart';
 import 'screens/session_screen.dart';
 import 'screens/jazz_standards_screen.dart';
-import 'utils/log.dart';
+import 'utils/utils.dart';
 
 // ADDITIONAL SCREENS (placeholders or real ones)
 import 'screens/metronome_screen.dart';

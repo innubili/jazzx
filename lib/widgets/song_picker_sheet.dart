@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/jazz_standards_provider.dart';
 import '../widgets/song_browser_widget.dart';
-import '../utils/log.dart';
+import '../utils/utils.dart';
 
 class SongPickerSheet extends StatelessWidget {
   final List<String> excludeTitles;

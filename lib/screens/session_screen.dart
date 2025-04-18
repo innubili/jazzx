@@ -13,7 +13,7 @@ import '../providers/user_profile_provider.dart';
 import '../models/practice_category.dart';
 import '../models/session.dart';
 import '../screens/session_summary_screen.dart';
-import '../utils/log.dart';
+import '../utils/utils.dart';
 
 class SessionScreen extends StatefulWidget {
   const SessionScreen({super.key});

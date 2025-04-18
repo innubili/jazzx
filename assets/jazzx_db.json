@@ -8458,193 +8458,321 @@
           "bpm": 150,
           "form": "ABAC 32 bars",
           "key": "C",
-          "links": {},
           "notes": "liked te Ella version",
           "recommendedversions": "E.Fitzgerlad",
           "songwriters": "Gerald Marks / Seymour Simons",
           "time": 8217,
           "type": "Swing",
-          "year": "1931"
+          "year": "1931",
+          "links": {
+            "https://www.youtube.com/watch?v=vG76JGRIzAg": {
+              "key": "C",
+              "kind": "youtube",
+              "name": "All Of Me backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "All The Things You Are": {
           "bpm": 120,
           "form": "/ Swing AABC 36 bars",
-          "key": "A\u266d",
-          "links": {},
+          "key": "A♭",
           "notes": "aligning Andy's lessons with Patreon stuff",
           "recommendedversions": "",
           "songwriters": "Jerome Kern",
           "time": 7411,
           "type": "Ballad",
-          "year": "1939"
+          "year": "1939",
+          "links": {
+            "https://www.youtube.com/watch?v=6mDqEpQLUWQ": {
+              "key": "A♭",
+              "kind": "youtube",
+              "name": "All The Things You Are backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Autumn Leaves": {
           "bpm": 130,
           "form": "AAB 32 bars",
           "key": "Em / Gm",
-          "links": {},
           "notes": "1st jazz tune",
           "recommendedversions": "scales",
           "songwriters": "Joseph Kosma",
           "time": 8359,
           "type": "Swing",
-          "year": "1945"
+          "year": "1945",
+          "links": {
+            "https://www.youtube.com/watch?v=b7K5X1bRGoY": {
+              "key": "Em / Gm",
+              "kind": "youtube",
+              "name": "Autumn Leaves backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Beautiful Love": {
           "bpm": 90,
           "form": "Unknown",
           "key": "Dm",
-          "links": {},
           "notes": "Roland + always played on Jam Sessions",
           "recommendedversions": "",
           "songwriters": "",
           "time": 7411,
           "type": "Unknown",
-          "year": ""
+          "year": "",
+          "links": {
+            "https://www.youtube.com/watch?v=pKl9nM7Y8SI": {
+              "key": "Dm",
+              "kind": "youtube",
+              "name": "Beautiful Love backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Bistro Fada": {
           "bpm": 170,
           "form": "Unknown",
           "key": "Em",
-          "links": {},
           "notes": "self choice to improve alternate picking",
           "recommendedversions": "cannot",
           "songwriters": "",
           "time": 8359,
           "type": "Unknown",
-          "year": ""
+          "year": "",
+          "links": {
+            "https://www.youtube.com/watch?v=7WSgiGLK4e8": {
+              "key": "Em",
+              "kind": "youtube",
+              "name": "Bistro Fada backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Black Orpheus": {
           "bpm": 120,
           "form": "Unknown",
           "key": "Am",
-          "links": {},
           "notes": "from Brendan + Roland",
           "recommendedversions": "scales",
           "songwriters": "",
           "time": 15338,
           "type": "Unknown",
-          "year": ""
+          "year": "",
+          "links": {
+            "https://www.youtube.com/watch?v=DO16bhtQ7Bo": {
+              "key": "Am",
+              "kind": "youtube",
+              "name": "Black Orpheus backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Blue Bossa": {
           "bpm": 150,
           "form": "Unknown",
           "key": "Cm",
-          "links": {},
           "notes": "from Brendan",
           "recommendedversions": "C1 (D.Gordon)",
           "songwriters": "",
           "time": 7722,
           "type": "Unknown",
-          "year": ""
+          "year": "",
+          "links": {
+            "https://www.youtube.com/watch?v=Dop0Q3XQy90": {
+              "key": "Cm",
+              "kind": "youtube",
+              "name": "Blue Bossa backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Blue Monk": {
           "bpm": 90,
           "form": "NA",
-          "key": "B\u266d",
-          "links": {},
+          "key": "B♭",
           "notes": "aligning Andy's lessons with Patreon stuff",
           "recommendedversions": "",
           "songwriters": "Thelonious Monk",
           "time": 7553,
           "type": "Blues",
-          "year": "1954"
+          "year": "1954",
+          "links": {
+            "https://www.youtube.com/watch?v=DDfok9c0z8I": {
+              "key": "B♭",
+              "kind": "youtube",
+              "name": "Blue Monk backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Cool Blues": {
           "bpm": 120,
           "form": "NA",
           "key": "C",
-          "links": {},
           "notes": "1st blues (exercise from Andy) ",
           "recommendedversions": "C.Parker",
           "songwriters": "Charlie Parker",
           "time": 18489,
           "type": "Blues",
-          "year": "1947"
+          "year": "1947",
+          "links": {
+            "https://www.youtube.com/watch?v=pBA2szaTXso": {
+              "key": "C",
+              "kind": "youtube",
+              "name": "Cool Blues backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Fly Me To The Moon": {
           "bpm": 100,
           "form": "AB form 32 bars",
           "key": "C",
-          "links": {},
           "notes": "from Roland (instead of My Way)",
           "recommendedversions": "scales",
           "songwriters": "Bart Howard",
           "time": 7722,
           "type": "Swing",
-          "year": "1954"
+          "year": "1954",
+          "links": {
+            "TODO_2": {
+              "key": "C",
+              "kind": "youtube",
+              "name": "Fly Me To The Moon backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Georgia On My Mind": {
           "bpm": 70,
           "form": "AABA 32 bars",
           "key": "F",
-          "links": {},
           "notes": "Liked version of Ray Charles",
           "recommendedversions": "pentatonic",
           "songwriters": "Hoagy Carmichael / Stuart Gorrell",
           "time": 90294,
           "type": "Ballad",
-          "year": "1930"
+          "year": "1930",
+          "links": {
+            "https://www.youtube.com/watch?v=fFTiJmhNBjw": {
+              "key": "F",
+              "kind": "youtube",
+              "name": "Georgia On My Mind backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Honeysuckle Rose": {
           "bpm": 90,
           "form": "AABA 32 bars",
           "key": "F",
-          "links": {},
           "notes": "aligning Andy's lessons with Patreon stuff",
           "recommendedversions": "",
           "songwriters": "Fats Waller",
           "time": 7411,
           "type": "Swing",
-          "year": "1929"
+          "year": "1929",
+          "links": {
+            "https://www.youtube.com/watch?v=ktupwIOnczQ": {
+              "key": "F",
+              "kind": "youtube",
+              "name": "Honeysuckle Rose backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Misty": {
           "bpm": 60,
           "form": "AABA 32 bars",
-          "key": "E\u266dm",
-          "links": {},
+          "key": "E♭m",
           "notes": "Liked the Wes Montgomery version",
           "recommendedversions": "scales",
           "songwriters": "Erroll Garner",
           "time": 7553,
           "type": "Ballad",
-          "year": "1954"
+          "year": "1954",
+          "links": {
+            "TODO_3": {
+              "key": "E♭m",
+              "kind": "youtube",
+              "name": "Misty backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Over The Rainbow": {
           "bpm": 60,
           "form": "Unknown",
           "key": "C",
-          "links": {},
           "notes": "Jam Session Weinfelden 2024",
           "recommendedversions": "",
           "songwriters": "",
           "time": 41595,
           "type": "Unknown",
-          "year": ""
+          "year": "",
+          "links": {
+            "TODO_4": {
+              "key": "C",
+              "kind": "iReal",
+              "name": "Over The Rainbow backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Petite Fleur": {
           "bpm": 70,
           "form": "Unknown",
           "key": "Dm",
-          "links": {},
           "notes": "i liked it since I was a child (as a tango)",
           "recommendedversions": "cannot",
           "songwriters": "",
           "time": 7411,
           "type": "Unknown",
-          "year": ""
+          "year": "",
+          "links": {
+            "TODO_5": {
+              "key": "Dm",
+              "kind": "youtube",
+              "name": "Petite Fleur backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         },
         "Watermelom Man": {
           "bpm": 120,
           "form": "Unknown",
           "key": "F",
-          "links": {},
           "notes": "always played on Jam Sessions",
           "recommendedversions": "",
           "songwriters": "",
           "time": 32103,
           "type": "Unknown",
-          "year": ""
+          "year": "",
+          "links": {
+            "https://www.youtube.com/watch?v=2hMU0FQ3Je4": {
+              "key": "F",
+              "kind": "youtube",
+              "name": "Watermelom Man backing track",
+              "category": "backingTrack",
+              "default": false
+            }
+          }
         }
       },
       "statistics": {

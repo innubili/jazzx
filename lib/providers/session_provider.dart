@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import '../utils/log.dart';
+import '../utils/utils.dart';
 
 class SessionProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _sessions = [];

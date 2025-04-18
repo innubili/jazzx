@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../models/song.dart';
+import '../models/link.dart';
 import '../widgets/link_widget.dart';
 
-typedef LinkSelectedCallback = void Function(SongLink link);
+typedef LinkSelectedCallback = void Function(Link link);
 
 class LinkBrowserWidget extends StatefulWidget {
-  final List<SongLink> links;
+  final List<Link> links;
   final bool readOnly;
   final bool selectable;
   final LinkSelectedCallback? onSelected;
@@ -55,7 +55,7 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
     }
   }
 
-  List<SongLink> _filteredAndSortedLinks(List<SongLink> links) {
+  List<Link> _filteredAndSortedLinks(List<Link> links) {
     final query = _searchQuery.toLowerCase();
     final filtered =
         links.where((l) {
@@ -76,7 +76,7 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
     return filtered;
   }
 
-  String _getFieldValue(SongLink link) {
+  String _getFieldValue(Link link) {
     switch (_sortField) {
       case 'kind':
         return link.kind;

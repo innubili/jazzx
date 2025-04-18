@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/song.dart';
 import '../providers/user_profile_provider.dart';
+import '../models/song.dart';
+import '../models/link.dart';
+
 import 'song_widget.dart';
 
 typedef SongSelectedCallback = void Function(Song song);
@@ -12,6 +14,7 @@ class SongBrowserWidget extends StatefulWidget {
   final bool selectable;
   final SongSelectedCallback? onSelected;
   final bool showDeleted;
+  final LinkKind? addLinkForKind; // ✅ new param
 
   // ✅ New: optional scroll/expand
   final String? initialScrollToTitle;
@@ -26,6 +29,7 @@ class SongBrowserWidget extends StatefulWidget {
     this.showDeleted = false,
     this.initialScrollToTitle,
     this.expandInitially = false,
+    this.addLinkForKind, // ✅ new param
   });
 
   @override
@@ -157,6 +161,10 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
                     readOnly: widget.readOnly,
                     selectable: widget.selectable,
                     initiallyExpanded: initiallyExpanded,
+                    addLinkForKind:
+                        initiallyExpanded
+                            ? widget.addLinkForKind
+                            : null, // ✅ ADD THIS
                     onSelected:
                         widget.onSelected != null
                             ? () => widget.onSelected!(song)

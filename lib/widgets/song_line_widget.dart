@@ -2,23 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/song.dart';
-import '../providers/irealpro_provider.dart'; // Assuming this is the name
+import '../models/link.dart';
+import '../providers/irealpro_provider.dart';
 
 class SongLineWidget extends StatelessWidget {
   final Song song;
-  final void Function(SongLinkType type)? onIconPressed;
+  final void Function(LinkKind kind) onIconPressed;
 
-  const SongLineWidget({super.key, required this.song, this.onIconPressed});
+  const SongLineWidget({
+    super.key,
+    required this.song,
+    required this.onIconPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = 20.0;
-    //  final spacing = 8.0;
+    // final iconSize = 20.0;
     final iRealAvailable = context.watch<IRealProProvider>().isInstalled;
 
     return Row(
       children: [
-        // Song Title
         Expanded(
           child: Text(
             song.title,
@@ -27,54 +30,79 @@ class SongLineWidget extends StatelessWidget {
           ),
         ),
 
-        // iReal Pro (only if available and song has link)
-        if (song.hasLink(SongLinkType.iRealBackingTrack))
-          IconButton(
-            icon: const Icon(Icons.music_note),
-            iconSize: iconSize,
+        // iReal Pro
+        if (iRealAvailable)
+          _linkIcon(
+            icon: Icons.music_note,
             tooltip: 'iReal Pro',
-            onPressed:
-                iRealAvailable
-                    ? () => onIconPressed?.call(SongLinkType.iRealBackingTrack)
-                    : null, // disabled if not available
+            kind: LinkKind.iReal,
+            context: context,
           ),
 
         // YouTube
-        if (song.hasLink(SongLinkType.youtubeBackingTrack))
-          IconButton(
-            icon: const Icon(Icons.play_circle_fill),
-            iconSize: iconSize,
-            tooltip: 'YouTube',
-            onPressed:
-                () => onIconPressed?.call(SongLinkType.youtubeBackingTrack),
-          ),
+        _linkIcon(
+          icon: Icons.play_circle_fill,
+          tooltip: 'YouTube',
+          kind: LinkKind.youtube,
+          context: context,
+        ),
 
         // Spotify
-        if (song.hasLink(SongLinkType.spotifyBackingTrack))
-          IconButton(
-            icon: const Icon(Icons.music_video),
-            iconSize: iconSize,
-            tooltip: 'Spotify',
-            onPressed:
-                () => onIconPressed?.call(SongLinkType.spotifyBackingTrack),
-          ),
+        _linkIcon(
+          icon: Icons.music_video,
+          tooltip: 'Spotify',
+          kind: LinkKind.spotify,
+          context: context,
+        ),
 
-        // Score / PDF
-        if (song.hasLink(SongLinkType.pdf) || song.hasLink(SongLinkType.scores))
-          IconButton(
-            icon: const Icon(Icons.picture_as_pdf),
-            iconSize: iconSize,
-            tooltip: 'Score / PDF',
-            onPressed:
-                () => onIconPressed?.call(
-                  song.hasLink(SongLinkType.pdf)
-                      ? SongLinkType.pdf
-                      : SongLinkType.scores,
-                ),
-          ),
+        // Score / PDF (default kind: media, category: scores)
+        _linkIcon(
+          icon: Icons.picture_as_pdf,
+          tooltip: 'Score / PDF',
+          kind: LinkKind.media,
+          context: context,
+          category: LinkCategory.scores,
+        ),
 
-        const SizedBox(width: 4), // Padding at end
+        const SizedBox(width: 4),
       ],
+    );
+  }
+
+  Widget _linkIcon({
+    required IconData icon,
+    required String tooltip,
+    required LinkKind kind,
+    required BuildContext context,
+    LinkCategory? category,
+  }) {
+    final has = song.links.any((l) => l.kind == kind.name);
+
+    return IconButton(
+      icon: Icon(icon),
+      iconSize: 20,
+      tooltip: tooltip,
+      onPressed:
+          has
+              ? () => onIconPressed(kind)
+              : () => _navigateToAddLink(context, kind, category),
+    );
+  }
+
+  void _navigateToAddLink(
+    BuildContext context,
+    LinkKind kind, [
+    LinkCategory? category,
+  ]) {
+    Navigator.pushNamed(
+      context,
+      '/user-songs',
+      arguments: {
+        'initialScrollToTitle': song.title,
+        'expandInitially': true,
+        'addLinkForKind': kind.name,
+        if (category != null) 'addLinkForCategory': category.name,
+      },
     );
   }
 }

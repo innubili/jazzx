@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/session.dart';
 import '../models/statistics.dart';
 import '../models/practice_category.dart';
-import 'log.dart';
+import 'utils.dart';
 
 Future<void> recalculateAndUpdateStatistics(BuildContext context) async {
   final rawJson = await services.rootBundle.loadString('assets/jazzx_db.json');

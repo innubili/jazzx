@@ -38,7 +38,7 @@ class Link {
 
   bool get isLocal => link.startsWith('file://');
 
-  bool get isBlank => link.isEmpty && name.isEmpty;
+  bool get isBlank => link.isEmpty && kind.isEmpty;
 
   Map<String, dynamic> toJson() => {
     'key': key,

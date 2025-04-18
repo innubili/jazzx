@@ -1,4 +1,4 @@
-import '../utils/log.dart';
+import '../utils/utils.dart';
 import 'session.dart';
 import 'song.dart';
 import 'statistics.dart';

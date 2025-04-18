@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'metronome_controller.dart';
-import '../utils/log.dart';
+import '../utils/utils.dart';
 
 class MetronomeWidget extends StatefulWidget {
   final MetronomeController controller;

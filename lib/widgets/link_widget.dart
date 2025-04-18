@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../models/link.dart';
 import '../models/song.dart';
+import 'link_editor_widgets.dart';
 
 class LinkWidget extends StatefulWidget {
-  final SongLink link;
-  final ValueChanged<SongLink> onUpdated;
+  final Link link;
+  final ValueChanged<Link> onUpdated;
   final VoidCallback onDelete;
   final String? highlightQuery;
   final bool readOnly;
@@ -28,7 +33,7 @@ class LinkWidget extends StatefulWidget {
 }
 
 class _LinkWidgetState extends State<LinkWidget> {
-  late SongLink _editedLink;
+  late Link _editedLink;
   bool _editMode = false;
   bool _expanded = false;
 
@@ -37,80 +42,98 @@ class _LinkWidgetState extends State<LinkWidget> {
     super.initState();
     _editedLink = widget.link;
     _expanded = widget.initiallyExpanded;
-  }
 
-  TextSpan _highlightedText(String text) {
-    final query = widget.highlightQuery?.toLowerCase() ?? '';
-    if (query.isEmpty || _editMode) return TextSpan(text: text);
-
-    final spans = <TextSpan>[];
-    int start = 0;
-    final lower = text.toLowerCase();
-
-    while (true) {
-      final index = lower.indexOf(query, start);
-      if (index < 0) {
-        spans.add(TextSpan(text: text.substring(start)));
-        break;
-      }
-      if (index > start) {
-        spans.add(TextSpan(text: text.substring(start, index)));
-      }
-      spans.add(
-        TextSpan(
-          text: text.substring(index, index + query.length),
-          style: const TextStyle(backgroundColor: Colors.yellow),
-        ),
-      );
-      start = index + query.length;
+    if (_editedLink.link.isEmpty) {
+      _editMode = true;
     }
-
-    return TextSpan(children: spans);
   }
 
-  Widget _editableText(
-    String label,
-    String value,
-    ValueChanged<String> onChanged,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: TextFormField(
-        initialValue: value,
-        enabled: _editMode,
-        decoration: InputDecoration(labelText: label, filled: true),
-        onChanged: onChanged,
-      ),
-    );
+  void _openLink() async {
+    final uri = Uri.tryParse(_editedLink.link);
+    if (uri != null && await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Widget _iconForKind(String kind) {
+    switch (kind.toLowerCase()) {
+      case 'youtube':
+        return const Icon(FontAwesomeIcons.youtube);
+      case 'spotify':
+        return const Icon(FontAwesomeIcons.spotify);
+      case 'media':
+        return const Icon(Icons.audiotrack);
+      case 'skool':
+        return const Icon(Icons.school);
+      case 'soundslice':
+        return const Icon(Icons.slideshow);
+      case 'ireal':
+        return SvgPicture.asset(
+          'assets/icons/iRP_icon.svg',
+          height: 24,
+          width: 24,
+        );
+      default:
+        return const Icon(Icons.link);
+    }
   }
 
   Widget _topBar() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        if (!_editMode)
+          IconButton(
+            icon: _iconForKind(_editedLink.kind),
+            tooltip: 'Open Link',
+            onPressed: _openLink,
+          ),
         Expanded(
           child:
               _editMode
-                  ? TextFormField(
-                    initialValue: _editedLink.key,
+                  ? Row(
+                    children: [
+                      SizedBox(
+                        width: 70,
+                        child: DropdownButtonFormField<String>(
+                          value: _editedLink.key,
+                          decoration: const InputDecoration(labelText: 'Key'),
+                          items:
+                              Song.musicalKeys
+                                  .map(
+                                    (k) => DropdownMenuItem(
+                                      value: k,
+                                      child: Text(k),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              setState(() {
+                                _editedLink = _editedLink.copyWith(key: val);
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextFormField(
+                          initialValue: _editedLink.name,
+                          decoration: const InputDecoration(labelText: 'Label'),
+                          onChanged:
+                              (val) => setState(() {
+                                _editedLink = _editedLink.copyWith(name: val);
+                              }),
+                        ),
+                      ),
+                    ],
+                  )
+                  : Text(
+                    '${_editedLink.key} • ${_editedLink.name}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                    ),
-                    decoration: const InputDecoration(border: InputBorder.none),
-                    onChanged:
-                        (val) => setState(() {
-                          _editedLink = _editedLink.copyWith(key: val);
-                        }),
-                  )
-                  : RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      children: [_highlightedText(_editedLink.key)],
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -130,8 +153,8 @@ class _LinkWidgetState extends State<LinkWidget> {
                 builder:
                     (_) => AlertDialog(
                       title: const Text('Confirm Deletion'),
-                      content: Text(
-                        'Are you sure you want to delete link "${_editedLink.key}"?',
+                      content: const Text(
+                        'Are you sure you want to delete this link?',
                       ),
                       actions: [
                         TextButton(
@@ -160,11 +183,17 @@ class _LinkWidgetState extends State<LinkWidget> {
           IconButton(
             icon: const Icon(Icons.close),
             tooltip: 'Cancel',
-            onPressed:
-                () => setState(() {
+            onPressed: () {
+              final isNewEmptyLink = _editedLink.isBlank && widget.link.isBlank;
+              if (isNewEmptyLink) {
+                widget.onDelete();
+              } else {
+                setState(() {
                   _editMode = false;
                   _editedLink = widget.link;
-                }),
+                });
+              }
+            },
           ),
         ] else if (widget.readOnly && !_expanded) ...[
           IconButton(
@@ -183,6 +212,16 @@ class _LinkWidgetState extends State<LinkWidget> {
     );
   }
 
+  void _openSearchScreen() async {
+    // TODO: Implement real search logic
+    debugPrint('🔍 Web search not implemented');
+  }
+
+  void _pickLocalFile() async {
+    // TODO: Implement local file picker
+    debugPrint('📁 Local file picker not implemented');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -190,22 +229,29 @@ class _LinkWidgetState extends State<LinkWidget> {
       children: [
         _topBar(),
         if (_editMode && !widget.readOnly) ...[
-          _editableText(
-            'Type',
-            _editedLink.kind,
-            (val) =>
-                setState(() => _editedLink = _editedLink.copyWith(kind: val)),
+          const SizedBox(height: 8),
+          LinkCategoryPicker(
+            selected: _editedLink.category,
+            onChanged:
+                (val) => setState(
+                  () => _editedLink = _editedLink.copyWith(category: val),
+                ),
           ),
-          _editableText(
-            'Link',
-            _editedLink.link,
-            (val) =>
-                setState(() => _editedLink = _editedLink.copyWith(link: val)),
+          const SizedBox(height: 12),
+          LinkUrlFieldWithButtons(
+            value: _editedLink.link,
+            onChanged:
+                (val) => setState(
+                  () => _editedLink = _editedLink.copyWith(link: val),
+                ),
+            onWebSearch: _openSearchScreen,
+            onFilePick: _pickLocalFile,
           ),
         ] else if (widget.readOnly && _expanded) ...[
           const SizedBox(height: 8),
           Text('Kind: ${_editedLink.kind}'),
-          Text('URL: ${_editedLink.link}'),
+          Text('Category: ${_editedLink.category}'),
+          Text('Link: ${_editedLink.link}'),
           if (widget.selectable && widget.onSelected != null)
             Align(
               alignment: Alignment.centerRight,

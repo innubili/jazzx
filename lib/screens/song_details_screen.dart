@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:jazzx_app/models/link_type.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/song.dart';
-import '../widgets/song_link_widget.dart';
 
 class SongDetailsScreen extends StatelessWidget {
   final Song song;
 
   const SongDetailsScreen({super.key, required this.song});
+
+  void _openLink(BuildContext context, String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri != null && await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not open link')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +35,13 @@ class SongDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             const Text('Links:', style: TextStyle(fontWeight: FontWeight.bold)),
             ...song.links.map(
-              (link) => SongLinkWidget(
-                link: link.link,
-                type: LinkTypeExtension.fromString(link.kind),
-                onSaved:
-                    (link, type) =>
-                        debugPrint('onSaved(link:$link, {$type.name}'),
+              (link) => ListTile(
+                title: Text(link.name),
+                subtitle: Text(link.category),
+                trailing: IconButton(
+                  icon: const Icon(Icons.open_in_new),
+                  onPressed: () => _openLink(context, link.link),
+                ),
               ),
             ),
           ],

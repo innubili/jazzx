@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:jazzx_app/models/link_type.dart';
-import '../utils/log.dart';
-import '../models/song.dart';
+import '../utils/utils.dart';
+import '../models/link.dart';
 
 class SongLinkWidget extends StatefulWidget {
   final String? link;
-  final LinkType? type;
-  final void Function(String link, LinkType type) onSaved;
+  final LinkKind? kind;
+  final LinkCategory? category;
+  final void Function(String link, LinkKind kind, LinkCategory category)
+  onSaved;
 
   const SongLinkWidget({
     super.key,
     this.link,
-    this.type,
+    this.kind,
+    this.category,
     required this.onSaved,
   });
 
@@ -21,16 +23,15 @@ class SongLinkWidget extends StatefulWidget {
 
 class _SongLinkWidgetState extends State<SongLinkWidget> {
   late TextEditingController _linkController;
-  SongLinkCategory? _selectedCategory;
-  LinkType? _determinedType;
+  LinkCategory? _selectedCategory;
+  LinkKind? _selectedKind;
 
   @override
   void initState() {
     super.initState();
     _linkController = TextEditingController(text: widget.link ?? '');
-    _determinedType = widget.type;
-    _selectedCategory =
-        widget.type != null ? getCategoryForLinkType(widget.type!) : null;
+    _selectedKind = widget.kind;
+    _selectedCategory = widget.category;
   }
 
   @override
@@ -44,34 +45,56 @@ class _SongLinkWidgetState extends State<SongLinkWidget> {
     log.warning('📁 Pick local file (not implemented yet)');
   }
 
-  void _onSavePressed() {
-    final link = _linkController.text.trim();
-    if (link.isEmpty || _determinedType == null) return;
-    widget.onSaved(link, _determinedType!);
-  }
+  void _openSearchScreen() async {
+    if (_selectedCategory == null) return;
 
-  void _onCategoryChanged(SongLinkCategory? category) {
-    setState(() {
-      _selectedCategory = category;
-      _determinedType = _defaultTypeForCategory(category);
-    });
-  }
+    final mockLink = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => Scaffold(
+              appBar: AppBar(title: Text('Search ${_selectedCategory!.name}')),
+              body: ListView(
+                children: [
+                  ListTile(
+                    title: const Text('https://example.com/mock1'),
+                    onTap:
+                        () =>
+                            Navigator.pop(context, 'https://example.com/mock1'),
+                  ),
+                  ListTile(
+                    title: const Text('https://example.com/mock2'),
+                    onTap:
+                        () =>
+                            Navigator.pop(context, 'https://example.com/mock2'),
+                  ),
+                ],
+              ),
+            ),
+      ),
+    );
 
-  LinkType? _defaultTypeForCategory(SongLinkCategory? category) {
-    if (category == null) return null;
-
-    switch (category) {
-      case SongLinkCategory.backingTrack:
-        return LinkType.irealPro;
-      case SongLinkCategory.playlist:
-        return LinkType.spotify;
-      case SongLinkCategory.lesson:
-        return LinkType.youtube;
-      case SongLinkCategory.scores:
-        return LinkType.localFile;
-      case SongLinkCategory.other:
-        return LinkType.other;
+    if (mockLink != null) {
+      setState(() {
+        _linkController.text = mockLink;
+      });
     }
+  }
+
+  void _save() {
+    final trimmedLink = _linkController.text.trim();
+    if (trimmedLink.isEmpty ||
+        _selectedKind == null ||
+        _selectedCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please provide a link, kind, and category.'),
+        ),
+      );
+      return;
+    }
+
+    widget.onSaved(trimmedLink, _selectedKind!, _selectedCategory!);
   }
 
   @override
@@ -79,10 +102,6 @@ class _SongLinkWidgetState extends State<SongLinkWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Add or edit song link",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
         const SizedBox(height: 8),
 
         TextField(
@@ -97,39 +116,62 @@ class _SongLinkWidgetState extends State<SongLinkWidget> {
         Row(
           children: [
             Expanded(
-              child: DropdownButtonFormField<SongLinkCategory>(
+              child: DropdownButtonFormField<LinkCategory>(
                 value: _selectedCategory,
                 decoration: const InputDecoration(
-                  labelText: 'Link Category',
+                  labelText: 'Category',
                   border: OutlineInputBorder(),
                 ),
                 items:
-                    SongLinkCategory.values
+                    LinkCategory.values
                         .map(
                           (c) =>
                               DropdownMenuItem(value: c, child: Text(c.name)),
                         )
                         .toList(),
-                onChanged: _onCategoryChanged,
+                onChanged: (val) => setState(() => _selectedCategory = val),
               ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: DropdownButtonFormField<LinkKind>(
+                value: _selectedKind,
+                decoration: const InputDecoration(
+                  labelText: 'Kind',
+                  border: OutlineInputBorder(),
+                ),
+                items:
+                    LinkKind.values
+                        .map(
+                          (k) =>
+                              DropdownMenuItem(value: k, child: Text(k.name)),
+                        )
+                        .toList(),
+                onChanged: (val) => setState(() => _selectedKind = val),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+
+        Row(
+          children: [
+            ElevatedButton.icon(
+              icon: const Icon(Icons.search),
+              label: const Text("Search Web"),
+              onPressed: _openSearchScreen,
             ),
             const SizedBox(width: 8),
             ElevatedButton.icon(
               icon: const Icon(Icons.folder_open),
-              label: const Text("Pick file"),
+              label: const Text("Pick File"),
               onPressed: _pickLocalFile,
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
+            const SizedBox(width: 8),
             ElevatedButton.icon(
               icon: const Icon(Icons.check),
-              label: const Text("Save Link"),
-              onPressed: _onSavePressed,
+              label: const Text("Done"),
+              onPressed: _save,
             ),
           ],
         ),

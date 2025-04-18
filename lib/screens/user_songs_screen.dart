@@ -4,8 +4,8 @@ import '../providers/jazz_standards_provider.dart';
 import '../widgets/song_browser_widget.dart';
 import '../providers/user_profile_provider.dart';
 import '../widgets/song_picker_sheet.dart';
-
-// import '../models/song.dart';
+import '../utils/utils.dart';
+import '../models/link.dart';
 
 class UserSongsScreen extends StatelessWidget {
   const UserSongsScreen({super.key});
@@ -17,6 +17,14 @@ class UserSongsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    final initialScrollToTitle = args?['initialScrollToTitle'] as String?;
+    final expandInitially = args?['expandInitially'] as bool? ?? false;
+    final addLinkForKindStr = args?['addLinkForKind'] as String?;
+    final addLinkForKind = enumFromString(addLinkForKindStr, LinkKind.values);
+
     final profileProvider = Provider.of<UserProfileProvider>(context);
     final profile = profileProvider.profile;
     final songs = profile?.songs.values.where((s) => !s.deleted).toList() ?? [];
@@ -29,6 +37,9 @@ class UserSongsScreen extends StatelessWidget {
         songs: songs,
         readOnly: false,
         showDeleted: false,
+        initialScrollToTitle: initialScrollToTitle,
+        expandInitially: expandInitially,
+        addLinkForKind: addLinkForKind, // ✅ pass to SongBrowserWidget
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add New Song',

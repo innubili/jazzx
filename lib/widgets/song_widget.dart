@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/song.dart';
+import '../models/link.dart';
 import 'link_widget.dart';
 
 class SongWidget extends StatefulWidget {
@@ -12,6 +13,7 @@ class SongWidget extends StatefulWidget {
   final bool selectable;
   final VoidCallback? onSelected;
   final bool initiallyExpanded;
+  final LinkKind? addLinkForKind;
 
   const SongWidget({
     super.key,
@@ -24,6 +26,7 @@ class SongWidget extends StatefulWidget {
     this.selectable = false,
     this.onSelected,
     this.initiallyExpanded = false,
+    this.addLinkForKind,
   });
 
   @override
@@ -35,6 +38,7 @@ class _SongWidgetState extends State<SongWidget> {
   bool _editMode = false;
   bool _expanded = false;
   bool _useCustomKey = false;
+
   final TextEditingController _customKeyController = TextEditingController();
 
   @override
@@ -42,9 +46,14 @@ class _SongWidgetState extends State<SongWidget> {
     super.initState();
     _editedSong = widget.song;
     _expanded = widget.initiallyExpanded;
+
     if (!Song.musicalKeys.contains(_editedSong.key)) {
       _useCustomKey = true;
       _customKeyController.text = _editedSong.key;
+    }
+    if (_expanded && widget.addLinkForKind != null) {
+      _editMode = true;
+      _addLinkOfKindIfMissing(widget.addLinkForKind!);
     }
   }
 
@@ -53,6 +62,20 @@ class _SongWidgetState extends State<SongWidget> {
     _customKeyController.dispose();
     widget.onUpdated(_editedSong);
     super.dispose();
+  }
+
+  void _addLinkOfKindIfMissing(LinkKind kind) {
+    final alreadyExists = _editedSong.links.any(
+      (link) => link.kind == kind.name,
+    );
+    if (!alreadyExists) {
+      final newLink = Link.defaultLink(_editedSong.title);
+      setState(() {
+        _editedSong = _editedSong.copyWith(
+          links: [..._editedSong.links, newLink],
+        );
+      });
+    }
   }
 
   TextSpan _highlightedText(String text) {
@@ -287,6 +310,8 @@ class _SongWidgetState extends State<SongWidget> {
   }
 
   Widget _editableLinks() {
+    if (!_editMode && _editedSong.links.isEmpty) return const SizedBox();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -298,36 +323,39 @@ class _SongWidgetState extends State<SongWidget> {
             readOnly: widget.readOnly,
             initiallyExpanded: _expanded,
             onUpdated: (updated) {
-              final updatedLinks =
-                  _editedSong.links
-                      .map((l) => l.key == link.key ? updated : l)
-                      .toList();
+              final existingIndex = _editedSong.links.indexWhere(
+                (l) => l.key == link.key,
+              );
+
+              List<Link> newLinks = [..._editedSong.links];
+              if (existingIndex >= 0) {
+                newLinks[existingIndex] = updated;
+              } else {
+                newLinks.add(updated);
+              }
+
               setState(() {
-                _editedSong = _editedSong.copyWith(links: updatedLinks);
+                _editedSong = _editedSong.copyWith(links: newLinks);
               });
             },
             onDelete: () {
               final updatedLinks =
-                  _editedSong.links.where((l) => l.key != link.key).toList();
+                  _editedSong.links.where((l) => l != link).toList();
               setState(() {
                 _editedSong = _editedSong.copyWith(links: updatedLinks);
               });
             },
           ),
         ),
-        if (_editMode)
+        if (_editMode && !_editedSong.links.any((link) => link.link.isEmpty))
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
               icon: const Icon(Icons.add),
               label: const Text("Add Link"),
               onPressed: () {
-                final newLink = SongLink(
-                  key: 'New Link',
-                  kind: '',
-                  link: '',
-                  isDefault: false,
-                );
+                final newLink = Link.defaultLink(_editedSong.title);
+
                 setState(() {
                   _editedSong = _editedSong.copyWith(
                     links: [..._editedSong.links, newLink],
