@@ -1,15 +1,10 @@
-// This is the updated LinkWidget implementation with:
-// 1. Narrow Key field
-// 2. Segmented category buttons
-// 3. Two search buttons on right of the link input
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/link.dart';
 
 class LinkCategoryPicker extends StatelessWidget {
-  final String selected;
-  final ValueChanged<String> onChanged;
+  final LinkCategory selected;
+  final ValueChanged<LinkCategory> onChanged;
 
   const LinkCategoryPicker({
     super.key,
@@ -28,7 +23,6 @@ class LinkCategoryPicker extends StatelessWidget {
       case LinkCategory.scores:
         return const Icon(Icons.picture_as_pdf, size: 20);
       case LinkCategory.other:
-      default:
         return const Icon(Icons.link, size: 20);
     }
   }
@@ -44,7 +38,6 @@ class LinkCategoryPicker extends StatelessWidget {
       case LinkCategory.scores:
         return 'PDF';
       case LinkCategory.other:
-      default:
         return 'Other';
     }
   }
@@ -52,13 +45,13 @@ class LinkCategoryPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categories = LinkCategory.values;
-    final selectedIndex = categories.indexWhere((cat) => cat.name == selected);
+    final selectedIndex = categories.indexOf(selected);
 
     return Center(
       child: ToggleButtons(
         borderRadius: BorderRadius.circular(8),
         isSelected: List.generate(categories.length, (i) => i == selectedIndex),
-        onPressed: (index) => onChanged(categories[index].name),
+        onPressed: (index) => onChanged(categories[index]),
         constraints: const BoxConstraints(minWidth: 72, minHeight: 64),
         selectedColor: Colors.deepPurple,
         fillColor: Colors.deepPurple.shade50,
@@ -79,18 +72,16 @@ class LinkCategoryPicker extends StatelessWidget {
   }
 }
 
-class LinkUrlFieldWithButtons extends StatelessWidget {
+class LinkUrlFieldWithSearchButton extends StatelessWidget {
   final String value;
   final ValueChanged<String> onChanged;
-  final VoidCallback onWebSearch;
-  final VoidCallback onFilePick;
+  final VoidCallback onSearchPressed;
 
-  const LinkUrlFieldWithButtons({
+  const LinkUrlFieldWithSearchButton({
     super.key,
     required this.value,
     required this.onChanged,
-    required this.onWebSearch,
-    required this.onFilePick,
+    required this.onSearchPressed,
   });
 
   @override
@@ -106,13 +97,8 @@ class LinkUrlFieldWithButtons extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.search),
-          tooltip: 'Search Web',
-          onPressed: onWebSearch,
-        ),
-        IconButton(
-          icon: const Icon(Icons.folder_open),
-          tooltip: 'Pick Local File',
-          onPressed: onFilePick,
+          tooltip: 'Search for Link',
+          onPressed: onSearchPressed,
         ),
       ],
     );

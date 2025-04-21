@@ -1,20 +1,12 @@
-enum LinkKind {
-  iReal,
-  youtube,
-  spotify,
-  apple,
-  media, // for local audio/video
-  skool,
-  soundslice,
-}
+enum LinkKind { iReal, youtube, spotify, apple, media, skool, soundslice }
 
 enum LinkCategory { backingTrack, playlist, lesson, scores, other }
 
 class Link {
   final String key;
-  final String kind;
+  final LinkKind kind;
   final String name;
-  final String category;
+  final LinkCategory category;
   final String link;
   final bool isDefault;
 
@@ -27,45 +19,53 @@ class Link {
     required this.isDefault,
   });
 
-  factory Link.fromJson(Map<String, dynamic> json) => Link(
-    key: json['key'] ?? '',
-    kind: json['kind'] ?? '',
-    link: json['link'] ?? '',
-    name: json['name'] ?? '',
-    category: json['category'] ?? '',
-    isDefault: json['default'] ?? false,
-  );
-
-  bool get isLocal => link.startsWith('file://');
-
-  bool get isBlank => link.isEmpty && kind.isEmpty;
+  factory Link.fromJson(Map<String, dynamic> json) {
+    return Link(
+      key: json['key'] ?? '',
+      name: json['name'] ?? '',
+      link: json['link'] ?? '',
+      kind: LinkKind.values.firstWhere(
+        (e) => e.name == json['kind'],
+        orElse: () => LinkKind.media,
+      ),
+      category: LinkCategory.values.firstWhere(
+        (e) => e.name == json['category'],
+        orElse: () => LinkCategory.other,
+      ),
+      isDefault: json['default'] ?? false,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     'key': key,
-    'kind': kind,
-    'link': link,
     'name': name,
-    'category': category,
+    'link': link,
+    'kind': kind.name,
+    'category': category.name,
     'default': isDefault,
   };
+
+  bool get isLocal => link.startsWith('file://');
+
+  bool get isBlank => link.isEmpty && name.isEmpty;
 
   factory Link.defaultLink(String songTitle) {
     return Link(
       key: 'C',
-      kind: '',
+      kind: LinkKind.iReal,
       link: '',
       name: '$songTitle backing track',
-      category: LinkCategory.backingTrack.name,
+      category: LinkCategory.backingTrack,
       isDefault: false,
     );
   }
 
   Link copyWith({
     String? key,
-    String? kind,
+    LinkKind? kind,
     String? link,
     String? name,
-    String? category,
+    LinkCategory? category,
     bool? isDefault,
   }) {
     return Link(

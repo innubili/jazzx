@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import '../utils/utils.dart';
 import '../models/link.dart';
 
@@ -42,7 +42,7 @@ class _SongLinkWidgetState extends State<SongLinkWidget> {
 
   void _pickLocalFile() async {
     // TODO: Implement local file picker
-    log.warning('📁 Pick local file (not implemented yet)');
+    log.warning('\u{1F4C1} Pick local file (not implemented yet)');
   }
 
   void _openSearchScreen() async {
@@ -103,7 +103,6 @@ class _SongLinkWidgetState extends State<SongLinkWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-
         TextField(
           controller: _linkController,
           decoration: const InputDecoration(
@@ -112,7 +111,6 @@ class _SongLinkWidgetState extends State<SongLinkWidget> {
           ),
         ),
         const SizedBox(height: 8),
-
         Row(
           children: [
             Expanded(
@@ -153,7 +151,6 @@ class _SongLinkWidgetState extends State<SongLinkWidget> {
           ],
         ),
         const SizedBox(height: 8),
-
         Row(
           children: [
             ElevatedButton.icon(
@@ -179,3 +176,5 @@ class _SongLinkWidgetState extends State<SongLinkWidget> {
     );
   }
 }
+
+*/

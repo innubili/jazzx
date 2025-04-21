@@ -12,7 +12,7 @@ class LinkBrowserWidget extends StatefulWidget {
   final String? initialScrollToKey;
   final bool expandInitially;
   final void Function()? onAddNew;
-  final String? filterKind;
+  final LinkKind? filterKind;
 
   const LinkBrowserWidget({
     super.key,
@@ -57,15 +57,13 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
 
   List<Link> _filteredAndSortedLinks(List<Link> links) {
     final query = _searchQuery.toLowerCase();
-    final filtered =
-        links.where((l) {
-          final matchesQuery =
-              l.key.toLowerCase().contains(query) ||
-              l.kind.toLowerCase().contains(query);
-          final matchesKind =
-              widget.filterKind == null || l.kind == widget.filterKind;
-          return matchesQuery && matchesKind;
-        }).toList();
+    final filtered = links.where((l) {
+      final matchesQuery =
+          l.key.toLowerCase().contains(query) ||
+          l.kind.name.toLowerCase().contains(query);
+      final matchesKind = widget.filterKind == null || l.kind == widget.filterKind;
+      return matchesQuery && matchesKind;
+    }).toList();
 
     filtered.sort((a, b) {
       final aValue = _getFieldValue(a);
@@ -79,7 +77,7 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
   String _getFieldValue(Link link) {
     switch (_sortField) {
       case 'kind':
-        return link.kind;
+        return link.kind.name;
       default:
         return link.key;
     }
@@ -128,8 +126,7 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
             itemBuilder: (context, index) {
               final link = links[index];
               final initiallyExpanded =
-                  widget.expandInitially &&
-                  link.key == widget.initialScrollToKey;
+                  widget.expandInitially && link.key == widget.initialScrollToKey;
 
               final key = _itemKeys.putIfAbsent(link.key, () => GlobalKey());
 
@@ -146,10 +143,9 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
                     readOnly: widget.readOnly,
                     selectable: widget.selectable,
                     initiallyExpanded: initiallyExpanded,
-                    onSelected:
-                        widget.onSelected != null
-                            ? () => widget.onSelected!(link)
-                            : null,
+                    onSelected: widget.onSelected != null
+                        ? () => widget.onSelected!(link)
+                        : null,
                     onUpdated: (updated) {
                       setState(() {
                         final i = widget.links.indexWhere(

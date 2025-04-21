@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/link.dart';
 import '../models/song.dart';
 import 'link_editor_widgets.dart';
+import '../screens/link_search_screen.dart';
 
 class LinkWidget extends StatefulWidget {
   final Link link;
@@ -55,19 +56,48 @@ class _LinkWidgetState extends State<LinkWidget> {
     }
   }
 
-  Widget _iconForKind(String kind) {
-    switch (kind.toLowerCase()) {
-      case 'youtube':
+  void _openSearchScreen() async {
+    final cleanedTitle =
+        _editedLink.name
+            .replaceAll(
+              RegExp(
+                r'(backing track|playlist|lesson|sheet music)',
+                caseSensitive: false,
+              ),
+              '',
+            )
+            .trim();
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => LinkSearchScreen(
+              songTitle: cleanedTitle,
+              category: _editedLink.category,
+              onSelected: (link, kind) {
+                setState(() {
+                  _editedLink = _editedLink.copyWith(link: link, kind: kind);
+                });
+              },
+            ),
+      ),
+    );
+  }
+
+  Widget _iconForKind(LinkKind kind) {
+    switch (kind) {
+      case LinkKind.youtube:
         return const Icon(FontAwesomeIcons.youtube);
-      case 'spotify':
+      case LinkKind.spotify:
         return const Icon(FontAwesomeIcons.spotify);
-      case 'media':
+      case LinkKind.media:
         return const Icon(Icons.audiotrack);
-      case 'skool':
+      case LinkKind.skool:
         return const Icon(Icons.school);
-      case 'soundslice':
+      case LinkKind.soundslice:
         return const Icon(Icons.slideshow);
-      case 'ireal':
+      case LinkKind.iReal:
         return SvgPicture.asset(
           'assets/icons/iRP_icon.svg',
           height: 24,
@@ -212,16 +242,6 @@ class _LinkWidgetState extends State<LinkWidget> {
     );
   }
 
-  void _openSearchScreen() async {
-    // TODO: Implement real search logic
-    debugPrint('🔍 Web search not implemented');
-  }
-
-  void _pickLocalFile() async {
-    // TODO: Implement local file picker
-    debugPrint('📁 Local file picker not implemented');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -238,19 +258,18 @@ class _LinkWidgetState extends State<LinkWidget> {
                 ),
           ),
           const SizedBox(height: 12),
-          LinkUrlFieldWithButtons(
+          LinkUrlFieldWithSearchButton(
             value: _editedLink.link,
             onChanged:
                 (val) => setState(
                   () => _editedLink = _editedLink.copyWith(link: val),
                 ),
-            onWebSearch: _openSearchScreen,
-            onFilePick: _pickLocalFile,
+            onSearchPressed: _openSearchScreen,
           ),
         ] else if (widget.readOnly && _expanded) ...[
           const SizedBox(height: 8),
-          Text('Kind: ${_editedLink.kind}'),
-          Text('Category: ${_editedLink.category}'),
+          Text('Kind: ${_editedLink.kind.name}'),
+          Text('Category: ${_editedLink.category.name}'),
           Text('Link: ${_editedLink.link}'),
           if (widget.selectable && widget.onSelected != null)
             Align(

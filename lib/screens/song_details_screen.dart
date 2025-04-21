@@ -37,7 +37,7 @@ class SongDetailsScreen extends StatelessWidget {
             ...song.links.map(
               (link) => ListTile(
                 title: Text(link.name),
-                subtitle: Text(link.category),
+                subtitle: Text(link.category.name),
                 trailing: IconButton(
                   icon: const Icon(Icons.open_in_new),
                   onPressed: () => _openLink(context, link.link),
