@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/song.dart';
 
-class SongDetailsScreen extends StatelessWidget {
+class SongDetailsScreen extends StatefulWidget {
   final Song song;
 
   const SongDetailsScreen({super.key, required this.song});
 
-  void _openLink(BuildContext context, String url) async {
+  @override
+  State<SongDetailsScreen> createState() => _SongDetailsScreenState();
+}
+
+class _SongDetailsScreenState extends State<SongDetailsScreen> {
+  Future<void> _openLink(String url) async {
     final uri = Uri.tryParse(url);
     if (uri != null && await canLaunchUrl(uri)) {
       await launchUrl(uri);
-    } else {
+    } else if (mounted) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Could not open link')));
@@ -20,6 +25,8 @@ class SongDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final song = widget.song;
+
     return Scaffold(
       appBar: AppBar(title: Text(song.title)),
       body: Padding(
@@ -40,7 +47,7 @@ class SongDetailsScreen extends StatelessWidget {
                 subtitle: Text(link.category.name),
                 trailing: IconButton(
                   icon: const Icon(Icons.open_in_new),
-                  onPressed: () => _openLink(context, link.link),
+                  onPressed: () => _openLink(link.link),
                 ),
               ),
             ),

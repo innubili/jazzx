@@ -76,7 +76,7 @@ class SongLineWidget extends StatelessWidget {
     required BuildContext context,
     LinkCategory? category,
   }) {
-    final has = song.links.any((l) => l.kind == kind.name);
+    final has = song.links.any((l) => l.kind.name == kind.name);
 
     return IconButton(
       icon: Icon(icon),

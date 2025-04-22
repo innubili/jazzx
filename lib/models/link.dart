@@ -2,6 +2,67 @@ enum LinkKind { iReal, youtube, spotify, apple, media, skool, soundslice }
 
 enum LinkCategory { backingTrack, playlist, lesson, scores, other }
 
+extension LinkKindExtension on LinkKind {
+  int get priority {
+    switch (this) {
+      case LinkKind.iReal:
+      case LinkKind.youtube:
+        return 1;
+      case LinkKind.spotify:
+      case LinkKind.apple:
+        return 2;
+      case LinkKind.media:
+        return 3;
+      case LinkKind.skool:
+        return 4;
+      case LinkKind.soundslice:
+        return 5;
+    }
+  }
+}
+
+extension LinkCategoryExtension on LinkCategory {
+  int get priority {
+    switch (this) {
+      case LinkCategory.backingTrack:
+        return 1;
+      case LinkCategory.playlist:
+        return 2;
+      case LinkCategory.lesson:
+        return 3;
+      case LinkCategory.scores:
+        return 4;
+      case LinkCategory.other:
+        return 5;
+    }
+  }
+}
+
+LinkCategory suggestNextCategory(List<Link> existingLinks) {
+  final existingPriorities =
+      existingLinks.map((l) => l.category.priority).toSet();
+  for (int i = 1; i <= 5; i++) {
+    final candidate = LinkCategory.values.firstWhere(
+      (cat) => cat.priority == i,
+      orElse: () => LinkCategory.other,
+    );
+    if (!existingPriorities.contains(candidate.priority)) return candidate;
+  }
+  return LinkCategory.other;
+}
+
+LinkKind suggestNextKind(List<Link> existingLinks) {
+  final existingPriorities = existingLinks.map((l) => l.kind.priority).toSet();
+  for (int i = 1; i <= 5; i++) {
+    final candidate = LinkKind.values.firstWhere(
+      (kind) => kind.priority == i,
+      orElse: () => LinkKind.youtube,
+    );
+    if (!existingPriorities.contains(candidate.priority)) return candidate;
+  }
+  return LinkKind.youtube;
+}
+
 class Link {
   final String key;
   final LinkKind kind;

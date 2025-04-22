@@ -3,15 +3,22 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
-class FilePickerLauncher extends StatelessWidget {
+class FilePickerLauncher extends StatefulWidget {
   final void Function(String path) onFilePicked;
 
   const FilePickerLauncher({super.key, required this.onFilePicked});
 
-  Future<void> _pickFile(BuildContext context) async {
+  @override
+  State<FilePickerLauncher> createState() => _FilePickerLauncherState();
+}
+
+class _FilePickerLauncherState extends State<FilePickerLauncher> {
+  Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles();
+    if (!mounted) return;
+
     if (result != null && result.files.single.path != null) {
-      onFilePicked(result.files.single.path!);
+      widget.onFilePicked(result.files.single.path!);
     } else {
       ScaffoldMessenger.of(
         context,
@@ -24,7 +31,7 @@ class FilePickerLauncher extends StatelessWidget {
     return ElevatedButton.icon(
       icon: const Icon(Icons.folder_open),
       label: const Text('Select Local File'),
-      onPressed: () => _pickFile(context),
+      onPressed: _pickFile,
     );
   }
 }

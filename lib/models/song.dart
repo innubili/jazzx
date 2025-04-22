@@ -1,33 +1,34 @@
 import 'link.dart';
 
-class Song {
-  static const List<String> musicalKeys = [
-    'C',
-    'Cm',
-    'Db',
-    'Dbm',
-    'D',
-    'Dm',
-    'Eb',
-    'Ebm',
-    'E',
-    'Em',
-    'F',
-    'Fm',
-    'Gb',
-    'Gbm',
-    'G',
-    'Gm',
-    'Ab',
-    'Abm',
-    'A',
-    'Am',
-    'Bb',
-    'Bbm',
-    'B',
-    'Bm',
-  ];
+// ignore: constant_identifier_names
+const List<String> MusicalKeys = [
+  'C',
+  'Cm',
+  'Db',
+  'Dbm',
+  'D',
+  'Dm',
+  'Eb',
+  'Ebm',
+  'E',
+  'Em',
+  'F',
+  'Fm',
+  'Gb',
+  'Gbm',
+  'G',
+  'Gm',
+  'Ab',
+  'Abm',
+  'A',
+  'Am',
+  'Bb',
+  'Bbm',
+  'B',
+  'Bm',
+];
 
+class Song {
   final String title;
   final String key;
   final String type;
@@ -86,7 +87,7 @@ class Song {
       '$songwriters ($year) • $key • $type • $form • $bpm BPM';
 
   bool hasLink(LinkKind type) {
-    return links.any((link) => link.kind == type.name);
+    return links.any((link) => link.kind.name == type.name);
   }
 
   Map<String, dynamic> toJson() {
@@ -149,6 +150,6 @@ class Song {
   }
 
   hasLinkCategory(LinkCategory scores) {
-    return links.any((link) => link.category == scores.name);
+    return links.any((link) => link.category.name == scores.name);
   }
 }

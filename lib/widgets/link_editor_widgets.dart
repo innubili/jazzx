@@ -1,6 +1,118 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/link.dart';
+import '../models/song.dart';
+
+class LinkConfirmationDialog extends StatefulWidget {
+  final Link initialLink;
+
+  const LinkConfirmationDialog({super.key, required this.initialLink});
+
+  @override
+  State<LinkConfirmationDialog> createState() => _LinkConfirmationDialogState();
+}
+
+class _LinkConfirmationDialogState extends State<LinkConfirmationDialog> {
+  late TextEditingController _nameController;
+  late String _key;
+  late TextEditingController _customKeyController;
+  late LinkCategory _category;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.initialLink.name);
+    _customKeyController = TextEditingController();
+    _key =
+        MusicalKeys.contains(widget.initialLink.key)
+            ? widget.initialLink.key
+            : 'Other';
+    _category = widget.initialLink.category;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _customKeyController.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    final updated = widget.initialLink.copyWith(
+      name: _nameController.text.trim(),
+      key: _key,
+      category: _category,
+    );
+    Navigator.pop(context, updated);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: const EdgeInsets.all(24),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Link Details",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            LinkCategoryPicker(
+              selected: _category,
+              onChanged: (cat) => setState(() => _category = cat),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Name'),
+            ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              value: _key,
+              decoration: const InputDecoration(labelText: 'Key'),
+              items: [
+                ...MusicalKeys.map(
+                  (k) => DropdownMenuItem(value: k, child: Text(k)),
+                ),
+                const DropdownMenuItem(value: 'Other', child: Text('Other')),
+              ],
+              onChanged: (val) {
+                setState(() {
+                  _key = val!;
+                });
+              },
+            ),
+
+            const SizedBox(height: 12),
+            IgnorePointer(
+              child: Opacity(
+                opacity: 0.5,
+                child: LinkKindPicker(
+                  selected: {widget.initialLink.kind},
+                  onChanged: (_) {},
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancel"),
+                ),
+                ElevatedButton(onPressed: _save, child: const Text("Save")),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class LinkCategoryPicker extends StatelessWidget {
   final LinkCategory selected;
@@ -72,35 +184,88 @@ class LinkCategoryPicker extends StatelessWidget {
   }
 }
 
-class LinkUrlFieldWithSearchButton extends StatelessWidget {
-  final String value;
-  final ValueChanged<String> onChanged;
-  final VoidCallback onSearchPressed;
+class LinkKindPicker extends StatelessWidget {
+  final Set<LinkKind> selected;
+  final ValueChanged<Set<LinkKind>> onChanged;
 
-  const LinkUrlFieldWithSearchButton({
+  const LinkKindPicker({
     super.key,
-    required this.value,
+    required this.selected,
     required this.onChanged,
-    required this.onSearchPressed,
   });
+
+  Widget _iconFor(LinkKind kind) {
+    switch (kind) {
+      case LinkKind.youtube:
+        return SvgPicture.asset('assets/icons/youtube_icon.svg', height: 20);
+      case LinkKind.spotify:
+        return SvgPicture.asset('assets/icons/spotify_icon.svg', height: 20);
+      case LinkKind.iReal:
+        return SvgPicture.asset('assets/icons/iRP_icon.svg', height: 20);
+      case LinkKind.media:
+        return const Icon(Icons.insert_drive_file);
+      default:
+        return const Icon(Icons.link);
+    }
+  }
+
+  String _labelFor(LinkKind kind) {
+    switch (kind) {
+      case LinkKind.youtube:
+        return 'YouTube';
+      case LinkKind.spotify:
+        return 'Spotify';
+      case LinkKind.iReal:
+        return 'iRealPro';
+      case LinkKind.media:
+        return 'Files';
+      default:
+        return kind.name;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextFormField(
-            initialValue: value,
-            decoration: const InputDecoration(labelText: 'URL or File'),
-            onChanged: onChanged,
-          ),
+    final kinds = [
+      LinkKind.youtube,
+      LinkKind.spotify,
+      LinkKind.iReal,
+      LinkKind.media,
+    ];
+
+    return Center(
+      child: ToggleButtons(
+        borderRadius: BorderRadius.circular(8),
+        isSelected: List.generate(
+          kinds.length,
+          (i) => selected.contains(kinds[i]),
         ),
-        IconButton(
-          icon: const Icon(Icons.search),
-          tooltip: 'Search for Link',
-          onPressed: onSearchPressed,
-        ),
-      ],
+        onPressed: (index) {
+          final kind = kinds[index];
+          final newSet = Set<LinkKind>.from(selected);
+          if (selected.contains(kind)) {
+            newSet.remove(kind);
+          } else {
+            newSet.add(kind);
+          }
+          onChanged(newSet);
+        },
+        constraints: const BoxConstraints(minWidth: 72, minHeight: 64),
+        selectedColor: Colors.deepPurple,
+        fillColor: Colors.deepPurple.shade50,
+        color: Colors.grey.shade700,
+        children:
+            kinds.map((kind) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _iconFor(kind),
+                  const SizedBox(height: 4),
+                  Text(_labelFor(kind), style: const TextStyle(fontSize: 11)),
+                ],
+              );
+            }).toList(),
+      ),
     );
   }
 }

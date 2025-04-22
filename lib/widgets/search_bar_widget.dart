@@ -1,64 +1,99 @@
 import 'package:flutter/material.dart';
+import '../models/link.dart';
+import 'link_editor_widgets.dart';
 
 class SearchBarWidget extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String> onQueryChanged;
   final VoidCallback onClear;
-  final bool searchLocal;
-  final bool searchIRealPro;
-  final ValueChanged<bool> onToggleLocal;
-  final ValueChanged<bool> onToggleIRealPro;
+  final LinkCategory selectedCategory;
+  final ValueChanged<LinkCategory> onCategoryChanged;
+  final Set<LinkKind> selectedKinds;
+  final ValueChanged<Set<LinkKind>> onKindsChanged;
 
   const SearchBarWidget({
     super.key,
     required this.controller,
     required this.onQueryChanged,
     required this.onClear,
-    required this.searchLocal,
-    required this.searchIRealPro,
-    required this.onToggleLocal,
-    required this.onToggleIRealPro,
+    required this.selectedCategory,
+    required this.onCategoryChanged,
+    required this.selectedKinds,
+    required this.onKindsChanged,
   });
+
+  String _categorySuffix(LinkCategory category) {
+    switch (category) {
+      case LinkCategory.backingTrack:
+        return 'backing track';
+      case LinkCategory.playlist:
+        return 'playlist';
+      case LinkCategory.lesson:
+        return 'lesson';
+      case LinkCategory.scores:
+        return 'sheet music';
+      default:
+        return '';
+    }
+  }
+
+  void _handleCategoryChange(BuildContext context, LinkCategory category) {
+    onCategoryChanged(category);
+    final base =
+        controller.text
+            .split(
+              RegExp(
+                r'(backing track|playlist|lesson|sheet music)',
+                caseSensitive: false,
+              ),
+            )[0]
+            .trim();
+    final updated = '$base ${_categorySuffix(category)}'.trim();
+    controller.text = updated;
+    onQueryChanged(updated);
+  }
+
+  void _handleKindChange(Set<LinkKind> kinds) {
+    onKindsChanged(kinds);
+    // Optionally could also adjust query here if needed.
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: TextField(
-              controller: controller,
-              onChanged: onQueryChanged,
-              decoration: InputDecoration(
-                labelText: 'Search...',
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: onClear,
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  onChanged: onQueryChanged,
+                  decoration: InputDecoration(
+                    labelText: 'Search...',
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: onClear,
+                    ),
+                    border: const OutlineInputBorder(),
+                  ),
                 ),
-                border: const OutlineInputBorder(),
               ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Column(
-            children: [
-              Checkbox(
-                value: searchLocal,
-                onChanged: (val) => onToggleLocal(val ?? false),
-              ),
-              const Text('Local'),
             ],
           ),
-          Column(
-            children: [
-              Checkbox(
-                value: searchIRealPro,
-                onChanged: (val) => onToggleIRealPro(val ?? false),
-              ),
-              const Text('iRealPro'),
-            ],
+          const SizedBox(height: 12),
+          Text('Category:', style: Theme.of(context).textTheme.labelLarge),
+          const SizedBox(height: 4),
+          LinkCategoryPicker(
+            selected: selectedCategory,
+            onChanged: (val) => _handleCategoryChange(context, val),
           ),
+          const SizedBox(height: 12),
+          Text('Sources:', style: Theme.of(context).textTheme.labelLarge),
+          const SizedBox(height: 4),
+          LinkKindPicker(selected: selectedKinds, onChanged: _handleKindChange),
         ],
       ),
     );

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/song.dart';
 import '../models/link.dart';
+import '../screens/link_search_screen.dart' show LinkSearchScreen;
+import 'link_editor_widgets.dart';
 import 'link_widget.dart';
+import 'link_view_panel.dart';
 
 class SongWidget extends StatefulWidget {
   final Song song;
@@ -38,6 +41,7 @@ class _SongWidgetState extends State<SongWidget> {
   bool _editMode = false;
   bool _expanded = false;
   bool _useCustomKey = false;
+  Link? _previewLink;
 
   final TextEditingController _customKeyController = TextEditingController();
 
@@ -47,7 +51,7 @@ class _SongWidgetState extends State<SongWidget> {
     _editedSong = widget.song;
     _expanded = widget.initiallyExpanded;
 
-    if (!Song.musicalKeys.contains(_editedSong.key)) {
+    if (!MusicalKeys.contains(_editedSong.key)) {
       _useCustomKey = true;
       _customKeyController.text = _editedSong.key;
     }
@@ -66,7 +70,7 @@ class _SongWidgetState extends State<SongWidget> {
 
   void _addLinkOfKindIfMissing(LinkKind kind) {
     final alreadyExists = _editedSong.links.any(
-      (link) => link.kind == kind.name,
+      (link) => link.kind.name == kind.name,
     );
     if (!alreadyExists) {
       final newLink = Link.defaultLink(_editedSong.title);
@@ -76,6 +80,12 @@ class _SongWidgetState extends State<SongWidget> {
         );
       });
     }
+  }
+
+  void _toggleLinkPreview(Link link) {
+    setState(() {
+      _previewLink = (_previewLink == link) ? null : link;
+    });
   }
 
   TextSpan _highlightedText(String text) {
@@ -157,7 +167,7 @@ class _SongWidgetState extends State<SongWidget> {
             decoration: const InputDecoration(labelText: 'Key', filled: true),
             value: _useCustomKey ? 'Other' : _editedSong.key,
             items: [
-              ...Song.musicalKeys.map(
+              ...MusicalKeys.map(
                 (k) => DropdownMenuItem(value: k, child: Text(k)),
               ),
               const DropdownMenuItem(value: 'Other', child: Text('Other')),
@@ -289,7 +299,7 @@ class _SongWidgetState extends State<SongWidget> {
                   _editMode = false;
                   _editedSong = widget.song;
                   _customKeyController.text = widget.song.key;
-                  _useCustomKey = !Song.musicalKeys.contains(widget.song.key);
+                  _useCustomKey = !MusicalKeys.contains(widget.song.key);
                 }),
           ),
         ] else if (widget.readOnly && !_expanded) ...[
@@ -321,7 +331,7 @@ class _SongWidgetState extends State<SongWidget> {
           (link) => LinkWidget(
             link: link,
             readOnly: widget.readOnly,
-            initiallyExpanded: _expanded,
+            onViewPressed: () => _toggleLinkPreview(link),
             onUpdated: (updated) {
               final existingIndex = _editedSong.links.indexWhere(
                 (l) => l.key == link.key,
@@ -343,24 +353,62 @@ class _SongWidgetState extends State<SongWidget> {
                   _editedSong.links.where((l) => l != link).toList();
               setState(() {
                 _editedSong = _editedSong.copyWith(links: updatedLinks);
+                if (_previewLink == link) _previewLink = null;
               });
             },
           ),
         ),
+        if (_previewLink != null)
+          LinkViewPanel(
+            link: _previewLink!,
+            onPrev: () {
+              final i = _editedSong.links.indexOf(_previewLink!);
+              if (i > 0) {
+                setState(() => _previewLink = _editedSong.links[i - 1]);
+              }
+            },
+            onNext: () {
+              final i = _editedSong.links.indexOf(_previewLink!);
+              if (i < _editedSong.links.length - 1) {
+                setState(() => _previewLink = _editedSong.links[i + 1]);
+              }
+            },
+            buttonText: 'Close',
+            onButtonPressed: () => setState(() => _previewLink = null),
+          ),
         if (_editMode && !_editedSong.links.any((link) => link.link.isEmpty))
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
               icon: const Icon(Icons.add),
               label: const Text("Add Link"),
-              onPressed: () {
+              onPressed: () async {
                 final newLink = Link.defaultLink(_editedSong.title);
+                final selected = await Navigator.push<Link>(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (_) => LinkSearchScreen(
+                          songTitle: newLink.name,
+                          onSelected: (link) => Navigator.pop(context, link),
+                        ),
+                  ),
+                );
 
-                setState(() {
-                  _editedSong = _editedSong.copyWith(
-                    links: [..._editedSong.links, newLink],
-                  );
-                });
+                if (!mounted || selected == null) return;
+
+                final confirmed = await showDialog<Link>(
+                  context: context,
+                  builder: (_) => LinkConfirmationDialog(initialLink: selected),
+                );
+
+                if (confirmed != null) {
+                  setState(() {
+                    _editedSong = _editedSong.copyWith(
+                      links: [..._editedSong.links, confirmed],
+                    );
+                  });
+                }
               },
             ),
           ),

@@ -1,89 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../models/link.dart';
-import '../models/song.dart';
-import 'link_editor_widgets.dart';
-import '../screens/link_search_screen.dart';
 
-class LinkWidget extends StatefulWidget {
+class LinkWidget extends StatelessWidget {
   final Link link;
+  final VoidCallback onViewPressed;
   final ValueChanged<Link> onUpdated;
   final VoidCallback onDelete;
   final String? highlightQuery;
   final bool readOnly;
-  final bool selectable;
-  final VoidCallback? onSelected;
-  final bool initiallyExpanded;
 
   const LinkWidget({
     super.key,
     required this.link,
+    required this.onViewPressed,
     required this.onUpdated,
     required this.onDelete,
     this.highlightQuery,
     this.readOnly = false,
-    this.selectable = false,
-    this.onSelected,
-    this.initiallyExpanded = false,
   });
-
-  @override
-  State<LinkWidget> createState() => _LinkWidgetState();
-}
-
-class _LinkWidgetState extends State<LinkWidget> {
-  late Link _editedLink;
-  bool _editMode = false;
-  bool _expanded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _editedLink = widget.link;
-    _expanded = widget.initiallyExpanded;
-
-    if (_editedLink.link.isEmpty) {
-      _editMode = true;
-    }
-  }
-
-  void _openLink() async {
-    final uri = Uri.tryParse(_editedLink.link);
-    if (uri != null && await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
-  void _openSearchScreen() async {
-    final cleanedTitle =
-        _editedLink.name
-            .replaceAll(
-              RegExp(
-                r'(backing track|playlist|lesson|sheet music)',
-                caseSensitive: false,
-              ),
-              '',
-            )
-            .trim();
-
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (_) => LinkSearchScreen(
-              songTitle: cleanedTitle,
-              category: _editedLink.category,
-              onSelected: (link, kind) {
-                setState(() {
-                  _editedLink = _editedLink.copyWith(link: link, kind: kind);
-                });
-              },
-            ),
-      ),
-    );
-  }
 
   Widget _iconForKind(LinkKind kind) {
     switch (kind) {
@@ -108,180 +44,50 @@ class _LinkWidgetState extends State<LinkWidget> {
     }
   }
 
-  Widget _topBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        if (!_editMode)
-          IconButton(
-            icon: _iconForKind(_editedLink.kind),
-            tooltip: 'Open Link',
-            onPressed: _openLink,
-          ),
-        Expanded(
-          child:
-              _editMode
-                  ? Row(
-                    children: [
-                      SizedBox(
-                        width: 70,
-                        child: DropdownButtonFormField<String>(
-                          value: _editedLink.key,
-                          decoration: const InputDecoration(labelText: 'Key'),
-                          items:
-                              Song.musicalKeys
-                                  .map(
-                                    (k) => DropdownMenuItem(
-                                      value: k,
-                                      child: Text(k),
-                                    ),
-                                  )
-                                  .toList(),
-                          onChanged: (val) {
-                            if (val != null) {
-                              setState(() {
-                                _editedLink = _editedLink.copyWith(key: val);
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextFormField(
-                          initialValue: _editedLink.name,
-                          decoration: const InputDecoration(labelText: 'Label'),
-                          onChanged:
-                              (val) => setState(() {
-                                _editedLink = _editedLink.copyWith(name: val);
-                              }),
-                        ),
-                      ),
-                    ],
-                  )
-                  : Text(
-                    '${_editedLink.key} • ${_editedLink.name}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-        ),
-        if (!_editMode && !widget.readOnly) ...[
-          IconButton(
-            icon: const Icon(Icons.edit),
-            tooltip: 'Edit',
-            onPressed: () => setState(() => _editMode = true),
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            tooltip: 'Delete',
-            onPressed: () async {
-              final confirm = await showDialog<bool>(
-                context: context,
-                builder:
-                    (_) => AlertDialog(
-                      title: const Text('Confirm Deletion'),
-                      content: const Text(
-                        'Are you sure you want to delete this link?',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Delete'),
-                        ),
-                      ],
-                    ),
-              );
-              if (confirm == true) widget.onDelete();
-            },
-          ),
-        ] else if (_editMode && !widget.readOnly) ...[
-          IconButton(
-            icon: const Icon(Icons.check),
-            tooltip: 'Save',
-            onPressed: () {
-              widget.onUpdated(_editedLink);
-              setState(() => _editMode = false);
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.close),
-            tooltip: 'Cancel',
-            onPressed: () {
-              final isNewEmptyLink = _editedLink.isBlank && widget.link.isBlank;
-              if (isNewEmptyLink) {
-                widget.onDelete();
-              } else {
-                setState(() {
-                  _editMode = false;
-                  _editedLink = widget.link;
-                });
-              }
-            },
-          ),
-        ] else if (widget.readOnly && !_expanded) ...[
-          IconButton(
-            icon: const Icon(Icons.expand_more),
-            tooltip: 'Expand',
-            onPressed: () => setState(() => _expanded = true),
-          ),
-        ] else if (widget.readOnly && _expanded) ...[
-          IconButton(
-            icon: const Icon(Icons.expand_less),
-            tooltip: 'Collapse',
-            onPressed: () => setState(() => _expanded = false),
-          ),
-        ],
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _topBar(),
-        if (_editMode && !widget.readOnly) ...[
-          const SizedBox(height: 8),
-          LinkCategoryPicker(
-            selected: _editedLink.category,
-            onChanged:
-                (val) => setState(
-                  () => _editedLink = _editedLink.copyWith(category: val),
-                ),
-          ),
-          const SizedBox(height: 12),
-          LinkUrlFieldWithSearchButton(
-            value: _editedLink.link,
-            onChanged:
-                (val) => setState(
-                  () => _editedLink = _editedLink.copyWith(link: val),
-                ),
-            onSearchPressed: _openSearchScreen,
-          ),
-        ] else if (widget.readOnly && _expanded) ...[
-          const SizedBox(height: 8),
-          Text('Kind: ${_editedLink.kind.name}'),
-          Text('Category: ${_editedLink.category.name}'),
-          Text('Link: ${_editedLink.link}'),
-          if (widget.selectable && widget.onSelected != null)
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                icon: const Icon(Icons.check_circle_outline),
-                label: const Text('Select This Link'),
-                onPressed: widget.onSelected,
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+      leading: IconButton(
+        icon: _iconForKind(link.kind),
+        tooltip: 'Open Link',
+        onPressed: onViewPressed,
+      ),
+      title: Text(
+        '${link.key} • ${link.name}',
+        style: const TextStyle(fontWeight: FontWeight.w500),
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing:
+          readOnly
+              ? null
+              : IconButton(
+                icon: const Icon(Icons.delete),
+                tooltip: 'Delete',
+                onPressed: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder:
+                        (_) => AlertDialog(
+                          title: const Text('Confirm Deletion'),
+                          content: const Text(
+                            'Are you sure you want to delete this link?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        ),
+                  );
+                  if (confirm == true) onDelete();
+                },
               ),
-            ),
-        ],
-      ],
     );
   }
 }

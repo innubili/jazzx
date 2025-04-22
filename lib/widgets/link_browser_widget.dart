@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import '../models/link.dart';
 import '../widgets/link_widget.dart';
 
@@ -38,6 +38,8 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
   String _sortField = 'key';
   bool _ascending = true;
 
+  String? _previewKey;
+
   @override
   void initState() {
     super.initState();
@@ -57,13 +59,15 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
 
   List<Link> _filteredAndSortedLinks(List<Link> links) {
     final query = _searchQuery.toLowerCase();
-    final filtered = links.where((l) {
-      final matchesQuery =
-          l.key.toLowerCase().contains(query) ||
-          l.kind.name.toLowerCase().contains(query);
-      final matchesKind = widget.filterKind == null || l.kind == widget.filterKind;
-      return matchesQuery && matchesKind;
-    }).toList();
+    final filtered =
+        links.where((l) {
+          final matchesQuery =
+              l.key.toLowerCase().contains(query) ||
+              l.kind.name.toLowerCase().contains(query);
+          final matchesKind =
+              widget.filterKind == null || l.kind == widget.filterKind;
+          return matchesQuery && matchesKind;
+        }).toList();
 
     filtered.sort((a, b) {
       final aValue = _getFieldValue(a);
@@ -81,6 +85,12 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
       default:
         return link.key;
     }
+  }
+
+  void _onPreviewLink(Link link) {
+    setState(() {
+      _previewKey = (_previewKey == link.key) ? null : link.key;
+    });
   }
 
   @override
@@ -126,7 +136,8 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
             itemBuilder: (context, index) {
               final link = links[index];
               final initiallyExpanded =
-                  widget.expandInitially && link.key == widget.initialScrollToKey;
+                  widget.expandInitially &&
+                  link.key == widget.initialScrollToKey;
 
               final key = _itemKeys.putIfAbsent(link.key, () => GlobalKey());
 
@@ -143,9 +154,10 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
                     readOnly: widget.readOnly,
                     selectable: widget.selectable,
                     initiallyExpanded: initiallyExpanded,
-                    onSelected: widget.onSelected != null
-                        ? () => widget.onSelected!(link)
-                        : null,
+                    onSelected:
+                        widget.onSelected != null
+                            ? () => widget.onSelected!(link)
+                            : null,
                     onUpdated: (updated) {
                       setState(() {
                         final i = widget.links.indexWhere(
@@ -161,6 +173,8 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
                         widget.links.removeWhere((l) => l.key == link.key);
                       });
                     },
+                    onViewPressed: () => _onPreviewLink(link),
+                    isPreviewing: _previewKey == link.key,
                   ),
                 ),
               );
@@ -180,3 +194,4 @@ class _LinkBrowserWidgetState extends State<LinkBrowserWidget> {
     );
   }
 }
+*/
