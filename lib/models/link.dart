@@ -115,7 +115,7 @@ class Link {
       key: 'C',
       kind: LinkKind.iReal,
       link: '',
-      name: '$songTitle backing track',
+      name: songTitle,
       category: LinkCategory.backingTrack,
       isDefault: false,
     );

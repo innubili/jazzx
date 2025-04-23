@@ -37,8 +37,26 @@ class SearchBarWidget extends StatelessWidget {
     }
   }
 
+  Set<LinkKind> _allowedKindsFor(LinkCategory category) {
+    switch (category) {
+      case LinkCategory.backingTrack:
+        return LinkKind.values.toSet();
+      case LinkCategory.playlist:
+        return {LinkKind.youtube, LinkKind.spotify};
+      case LinkCategory.lesson:
+        return {LinkKind.youtube, LinkKind.media};
+      case LinkCategory.scores:
+        return {LinkKind.media};
+      case LinkCategory.other:
+        return {LinkKind.media};
+    }
+  }
+
   void _handleCategoryChange(BuildContext context, LinkCategory category) {
     onCategoryChanged(category);
+    final allowed = _allowedKindsFor(category);
+    onKindsChanged(allowed);
+
     final base =
         controller.text
             .split(
@@ -55,7 +73,6 @@ class SearchBarWidget extends StatelessWidget {
 
   void _handleKindChange(Set<LinkKind> kinds) {
     onKindsChanged(kinds);
-    // Optionally could also adjust query here if needed.
   }
 
   @override

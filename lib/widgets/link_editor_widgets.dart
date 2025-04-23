@@ -79,13 +79,8 @@ class _LinkConfirmationDialogState extends State<LinkConfirmationDialog> {
                 ),
                 const DropdownMenuItem(value: 'Other', child: Text('Other')),
               ],
-              onChanged: (val) {
-                setState(() {
-                  _key = val!;
-                });
-              },
+              onChanged: (val) => setState(() => _key = val!),
             ),
-
             const SizedBox(height: 12),
             IgnorePointer(
               child: Opacity(
@@ -124,18 +119,23 @@ class LinkCategoryPicker extends StatelessWidget {
     required this.onChanged,
   });
 
-  Widget _iconFor(LinkCategory category) {
+  Widget _iconFor(LinkCategory category, bool isSelected) {
+    final color = isSelected ? Colors.white : Colors.grey.shade700;
     switch (category) {
       case LinkCategory.backingTrack:
-        return SvgPicture.asset('assets/icons/iRP_icon.svg', height: 20);
+        return SvgPicture.asset(
+          'assets/icons/iRP_icon.svg',
+          height: 20,
+          colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+        );
       case LinkCategory.playlist:
-        return const Icon(Icons.queue_music, size: 20);
+        return Icon(Icons.queue_music, size: 20, color: color);
       case LinkCategory.lesson:
-        return const Icon(Icons.school, size: 20);
+        return Icon(Icons.school, size: 20, color: color);
       case LinkCategory.scores:
-        return const Icon(Icons.picture_as_pdf, size: 20);
+        return Icon(Icons.picture_as_pdf, size: 20, color: color);
       case LinkCategory.other:
-        return const Icon(Icons.link, size: 20);
+        return Icon(Icons.link, size: 20, color: color);
     }
   }
 
@@ -157,25 +157,34 @@ class LinkCategoryPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categories = LinkCategory.values;
-    final selectedIndex = categories.indexOf(selected);
 
     return Center(
       child: ToggleButtons(
         borderRadius: BorderRadius.circular(8),
-        isSelected: List.generate(categories.length, (i) => i == selectedIndex),
+        isSelected: List.generate(
+          categories.length,
+          (i) => categories[i] == selected,
+        ),
         onPressed: (index) => onChanged(categories[index]),
         constraints: const BoxConstraints(minWidth: 72, minHeight: 64),
-        selectedColor: Colors.deepPurple,
-        fillColor: Colors.deepPurple.shade50,
+        selectedColor: Colors.white,
+        fillColor: Colors.deepPurple,
         color: Colors.grey.shade700,
         children:
             categories.map((cat) {
+              final isSelected = cat == selected;
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _iconFor(cat),
+                  _iconFor(cat, isSelected),
                   const SizedBox(height: 4),
-                  Text(_labelFor(cat), style: const TextStyle(fontSize: 11)),
+                  Text(
+                    _labelFor(cat),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: isSelected ? Colors.white : Colors.grey.shade700,
+                    ),
+                  ),
                 ],
               );
             }).toList(),
@@ -194,18 +203,31 @@ class LinkKindPicker extends StatelessWidget {
     required this.onChanged,
   });
 
-  Widget _iconFor(LinkKind kind) {
+  Widget _iconFor(LinkKind kind, bool isSelected) {
+    final color = isSelected ? Colors.white : Colors.grey.shade700;
     switch (kind) {
       case LinkKind.youtube:
-        return SvgPicture.asset('assets/icons/youtube_icon.svg', height: 20);
+        return SvgPicture.asset(
+          'assets/icons/youtube_icon.svg',
+          height: 20,
+          colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+        );
       case LinkKind.spotify:
-        return SvgPicture.asset('assets/icons/spotify_icon.svg', height: 20);
+        return SvgPicture.asset(
+          'assets/icons/spotify_icon.svg',
+          height: 20,
+          colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+        );
       case LinkKind.iReal:
-        return SvgPicture.asset('assets/icons/iRP_icon.svg', height: 20);
+        return SvgPicture.asset(
+          'assets/icons/iRP_icon.svg',
+          height: 20,
+          colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+        );
       case LinkKind.media:
-        return const Icon(Icons.insert_drive_file);
+        return Icon(Icons.insert_drive_file, color: color);
       default:
-        return const Icon(Icons.link);
+        return Icon(Icons.link, color: color);
     }
   }
 
@@ -236,14 +258,11 @@ class LinkKindPicker extends StatelessWidget {
     return Center(
       child: ToggleButtons(
         borderRadius: BorderRadius.circular(8),
-        isSelected: List.generate(
-          kinds.length,
-          (i) => selected.contains(kinds[i]),
-        ),
+        isSelected: kinds.map((k) => selected.contains(k)).toList(),
         onPressed: (index) {
           final kind = kinds[index];
           final newSet = Set<LinkKind>.from(selected);
-          if (selected.contains(kind)) {
+          if (newSet.contains(kind)) {
             newSet.remove(kind);
           } else {
             newSet.add(kind);
@@ -251,17 +270,24 @@ class LinkKindPicker extends StatelessWidget {
           onChanged(newSet);
         },
         constraints: const BoxConstraints(minWidth: 72, minHeight: 64),
-        selectedColor: Colors.deepPurple,
-        fillColor: Colors.deepPurple.shade50,
+        selectedColor: Colors.white,
+        fillColor: Colors.deepPurple,
         color: Colors.grey.shade700,
         children:
             kinds.map((kind) {
+              final isSelected = selected.contains(kind);
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _iconFor(kind),
+                  _iconFor(kind, isSelected),
                   const SizedBox(height: 4),
-                  Text(_labelFor(kind), style: const TextStyle(fontSize: 11)),
+                  Text(
+                    _labelFor(kind),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: isSelected ? Colors.white : Colors.grey.shade700,
+                    ),
+                  ),
                 ],
               );
             }).toList(),

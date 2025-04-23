@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../models/link.dart';
 import '../services/youtube_service.dart';
+import '../services/spotify_service.dart';
 import '../widgets/search_bar_widget.dart';
 import '../widgets/link_view_panel.dart';
 
@@ -25,10 +27,12 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
   final ScrollController _scrollController = ScrollController();
   SearchResult? _selectedResult;
   final _ytService = YouTubeSearchService();
+  final _spotifyService = SpotifySearchService();
   bool _isLoading = false;
   String _currentQuery = '';
   LinkCategory _selectedCategory = LinkCategory.backingTrack;
   Set<LinkKind> _selectedKinds = {LinkKind.youtube};
+  final Map<ValueKey, GlobalKey> _itemKeys = {};
 
   @override
   void initState() {
@@ -37,7 +41,7 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
     final initialQuery =
         '${widget.songTitle} ${suffix.isNotEmpty ? suffix : ''}'.trim();
     _controller = TextEditingController(text: initialQuery);
-    _searchYouTube(initialQuery);
+    _searchAllSources(initialQuery);
     _scrollController.addListener(_onScrollEndTrigger);
   }
 
@@ -48,31 +52,53 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
     super.dispose();
   }
 
-  void _searchYouTube(String query, {bool loadMore = false}) async {
+  void _searchAllSources(String query, {bool loadMore = false}) async {
     if (_isLoading) return;
     setState(() => _isLoading = true);
 
     try {
       if (!loadMore) {
         _ytService.resetPagination();
+        _spotifyService.resetPagination();
         _results.clear();
         _selectedResult = null;
         _currentQuery = query;
+      } else {
+        _results.removeWhere((r) => !_selectedKinds.contains(r.kind));
       }
 
-      final newResults = await _ytService.search(query, loadMore: loadMore);
-      setState(() {
-        _results.addAll(newResults);
-      });
+      final futures = <Future<List<SearchResult>>>[];
+
+      if (_selectedKinds.contains(LinkKind.youtube)) {
+        futures.add(
+          _ytService.search(
+            query,
+            category: _selectedCategory,
+            loadMore: loadMore,
+          ),
+        );
+      }
+      if (_selectedKinds.contains(LinkKind.spotify)) {
+        futures.add(
+          _spotifyService.search(
+            query,
+            category: _selectedCategory,
+            loadMore: loadMore,
+          ),
+        );
+      }
+
+      final newResults = (await Future.wait(futures)).expand((r) => r).toList();
+      setState(() => _results.addAll(newResults));
     } catch (e) {
-      debugPrint('YouTube search error: $e');
+      debugPrint('Search error: $e');
     }
 
     setState(() => _isLoading = false);
   }
 
   void _onSearch(String query) {
-    _searchYouTube(query);
+    _searchAllSources(query);
   }
 
   Future<void> _pickLocalFile() async {
@@ -120,19 +146,26 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
   }
 
   void _onScrollEnd() {
-    if (_ytService.hasMore) {
-      _searchYouTube(_currentQuery, loadMore: true);
+    if (_selectedKinds.contains(LinkKind.youtube) && _ytService.hasMore) {
+      _searchAllSources(_currentQuery, loadMore: true);
+    } else if (_selectedKinds.contains(LinkKind.spotify) &&
+        _spotifyService.hasMore) {
+      _searchAllSources(_currentQuery, loadMore: true);
     }
   }
 
   void _scrollToSelected() {
     if (_selectedResult == null) return;
-    final index = _results.indexOf(_selectedResult!);
-    if (index >= 0) {
-      _scrollController.animateTo(
-        index * 80.0, // Approximate item height
+    final key = ValueKey(_selectedResult!.url);
+
+    // Find the corresponding widget and ensure it's visible
+    final context = _itemKeys[key]?.currentContext;
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
+        alignment: 0.5, // Center the item if possible
       );
     }
   }
@@ -144,7 +177,7 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
 
   void _handleKindChange(Set<LinkKind> kinds) {
     setState(() => _selectedKinds = kinds);
-    // Optional: Could filter results here too
+    _searchAllSources(_controller.text);
   }
 
   void _updateSearchQuery() {
@@ -185,9 +218,26 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
     if (i < _results.length - 1) {
       setState(() => _selectedResult = _results[i + 1]);
       _scrollToSelected();
-    } else if (_ytService.hasMore) {
-      _searchYouTube(_currentQuery, loadMore: true);
+    } else {
+      _onScrollEnd();
     }
+  }
+
+  Widget _kindBadge(LinkKind kind) {
+    final asset =
+        kind == LinkKind.spotify
+            ? 'assets/icons/spotify_icon.svg'
+            : kind == LinkKind.youtube
+            ? 'assets/icons/youtube_icon.svg'
+            : null;
+
+    return asset == null
+        ? const SizedBox.shrink()
+        : Positioned(
+          top: 2,
+          right: 2,
+          child: SvgPicture.asset(asset, width: 16, height: 16),
+        );
   }
 
   @override
@@ -233,32 +283,56 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
                   itemBuilder: (context, index) {
                     final result = _results[index];
                     final isActive = _selectedResult?.url == result.url;
+                    final itemKey = ValueKey(result.url);
+                    final globalKey = GlobalKey();
+                    _itemKeys[itemKey] = globalKey;
 
-                    return ListTile(
-                      key: ValueKey(result.url),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      leading:
-                          result.thumbnailUrl != null
-                              ? ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
-                                child: Image.network(
-                                  result.thumbnailUrl!,
-                                  width: 80,
+                    return KeyedSubtree(
+                      key: globalKey,
+                      child: ListTile(
+                        key: itemKey,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        leading: Stack(
+                          children: [
+                            result.thumbnailUrl != null
+                                ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: Image.network(
+                                    result.thumbnailUrl!,
+                                    width: 60,
+                                    height: 60,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                                : Container(
+                                  width: 60,
                                   height: 60,
-                                  fit: BoxFit.cover,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: Colors.grey.shade200,
+                                  ),
+                                  child: Icon(
+                                    result.kind == LinkKind.spotify
+                                        ? Icons.music_note
+                                        : Icons.play_circle_fill,
+                                    size: 32,
+                                  ),
                                 ),
-                              )
-                              : const Icon(Icons.music_video, size: 40),
-                      title: Text(
-                        result.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                            _kindBadge(result.kind),
+                          ],
+                        ),
+                        title: Text(
+                          result.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        tileColor: isActive ? Colors.deepPurple.shade50 : null,
+                        onTap: () => _onSelect(result),
                       ),
-                      tileColor: isActive ? Colors.deepPurple.shade50 : null,
-                      onTap: () => _onSelect(result),
                     );
                   },
                 ),
@@ -277,8 +351,6 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
     );
   }
 }
-
-// ─────────────────────────────────────────────
 
 class SearchResult {
   final String url;

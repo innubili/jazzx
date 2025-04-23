@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
-import 'package:url_launcher/url_launcher.dart';
+//import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import '../models/link.dart';
+//import '../services/youtube_service.dart';
+//import '../screens/link_search_screen.dart';
+import '../widgets/youtube_player_widget.dart';
+import 'spotify_player_widget.dart';
 
 class LinkViewPanel extends StatefulWidget {
   final Link link;
@@ -24,49 +28,59 @@ class LinkViewPanel extends StatefulWidget {
 }
 
 class _LinkViewPanelState extends State<LinkViewPanel> {
-  YoutubePlayerController? _ytController;
-
-  String extractYouTubeVideoId(String url) {
-    final uri = Uri.tryParse(url);
-    if (uri == null) return '';
-    if (uri.queryParameters.containsKey('v')) {
-      return uri.queryParameters['v']!;
-    } else if (uri.pathSegments.isNotEmpty) {
-      return uri.pathSegments.last;
-    }
-    return '';
-  }
+  WebViewController? _webViewController;
 
   @override
   void initState() {
     super.initState();
-    if (widget.link.kind == LinkKind.youtube) {
-      final videoId = extractYouTubeVideoId(widget.link.link);
-      _ytController = YoutubePlayerController.fromVideoId(
-        videoId: videoId,
-        autoPlay: false,
-        params: const YoutubePlayerParams(
-          showFullscreenButton: true,
-          showControls: true,
-          strictRelatedVideos: true,
-        ),
-      );
-    }
+    _initControllers();
   }
 
   @override
   void didUpdateWidget(covariant LinkViewPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.link.link != oldWidget.link.link &&
-        widget.link.kind == LinkKind.youtube) {
-      final newVideoId = extractYouTubeVideoId(widget.link.link);
-      _ytController?.loadVideoById(videoId: newVideoId);
+    if (widget.link.link != oldWidget.link.link ||
+        widget.link.kind != oldWidget.link.kind) {
+      _initControllers();
     }
+  }
+
+  void _initControllers() {
+    if (widget.link.kind == LinkKind.spotify) {
+      final isPlaylist = widget.link.category == LinkCategory.playlist;
+      final uriId =
+          isPlaylist
+              ? _extractSpotifyPlaylistId(widget.link.link)
+              : _extractSpotifyTrackId(widget.link.link);
+
+      if (uriId.isNotEmpty) {
+        final embedUrl =
+            'https://open.spotify.com/embed/${isPlaylist ? 'playlist' : 'track'}/$uriId';
+        final controller =
+            WebViewController()
+              ..setJavaScriptMode(JavaScriptMode.unrestricted)
+              ..loadRequest(Uri.parse(embedUrl));
+        setState(() => _webViewController = controller);
+      }
+    }
+  }
+
+  String _extractSpotifyTrackId(String url) {
+    final uri = Uri.tryParse(url);
+    return uri?.pathSegments.contains('track') == true
+        ? uri!.pathSegments.last
+        : '';
+  }
+
+  String _extractSpotifyPlaylistId(String url) {
+    final uri = Uri.tryParse(url);
+    return uri?.pathSegments.contains('playlist') == true
+        ? uri!.pathSegments.last
+        : '';
   }
 
   @override
   void dispose() {
-    _ytController?.close();
     super.dispose();
   }
 
@@ -74,21 +88,12 @@ class _LinkViewPanelState extends State<LinkViewPanel> {
   Widget build(BuildContext context) {
     Widget player;
 
-    if (widget.link.kind == LinkKind.youtube && _ytController != null) {
-      player = YoutubePlayerScaffold(
-        controller: _ytController!,
-        aspectRatio: 16 / 9,
-        builder: (context, player) => player,
-      );
+    if (widget.link.kind == LinkKind.youtube) {
+      player = YouTubePlayerWidget(youtubeUrl: widget.link.link);
     } else if (widget.link.kind == LinkKind.spotify) {
-      player = ListTile(
-        leading: const Icon(Icons.music_note),
-        title: Text(widget.link.name),
-        subtitle: Text(widget.link.link),
-        trailing: IconButton(
-          icon: const Icon(Icons.open_in_new),
-          onPressed: () => launchUrl(Uri.parse(widget.link.link)),
-        ),
+      player = SpotifyPlayerWidget(
+        url: widget.link.link,
+        isPlaylist: widget.link.category == LinkCategory.playlist,
       );
     } else {
       player = ListTile(

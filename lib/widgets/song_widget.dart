@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import '../models/song.dart';
 import '../models/link.dart';
 import '../screens/link_search_screen.dart' show LinkSearchScreen;
-import 'link_editor_widgets.dart';
 import 'link_widget.dart';
 import 'link_view_panel.dart';
+import 'link_editor_widgets.dart';
 
 class SongWidget extends StatefulWidget {
   final Song song;
@@ -82,12 +82,13 @@ class _SongWidgetState extends State<SongWidget> {
     }
   }
 
+  /*
   void _toggleLinkPreview(Link link) {
     setState(() {
       _previewLink = (_previewLink == link) ? null : link;
     });
   }
-
+*/
   TextSpan _highlightedText(String text) {
     final query = widget.highlightQuery?.toLowerCase() ?? '';
     if (query.isEmpty || _editMode) return TextSpan(text: text);
@@ -331,22 +332,22 @@ class _SongWidgetState extends State<SongWidget> {
           (link) => LinkWidget(
             link: link,
             readOnly: widget.readOnly,
-            onViewPressed: () => _toggleLinkPreview(link),
+            isViewerOpen: _previewLink == link,
+            onOpenViewer: () => setState(() => _previewLink = link),
+            onCloseViewer: () => setState(() => _previewLink = null),
             onUpdated: (updated) {
               final existingIndex = _editedSong.links.indexWhere(
                 (l) => l.key == link.key,
               );
-
               List<Link> newLinks = [..._editedSong.links];
               if (existingIndex >= 0) {
                 newLinks[existingIndex] = updated;
               } else {
                 newLinks.add(updated);
               }
-
-              setState(() {
-                _editedSong = _editedSong.copyWith(links: newLinks);
-              });
+              setState(
+                () => _editedSong = _editedSong.copyWith(links: newLinks),
+              );
             },
             onDelete: () {
               final updatedLinks =
