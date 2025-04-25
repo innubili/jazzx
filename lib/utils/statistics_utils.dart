@@ -47,52 +47,58 @@ Statistics recalculateStatisticsFromSessions(List<Session> sessions) {
     for (var entry in session.categories.entries) {
       final category = entry.key;
       final duration = entry.value.time;
+
       totalByCategory[category] = (totalByCategory[category] ?? 0) + duration;
       dayMap[category] = (dayMap[category] ?? 0) + duration;
     }
   }
 
-  Map<int, YearlyStats> years = {};
+  final Map<int, YearlyStats> years = {};
+  final categoryTotalsPerYear = <int, Map<PracticeCategory, int>>{};
 
-  for (var y in yearlyData.keys) {
+  for (final y in yearlyData.keys) {
     final months = yearlyData[y]!;
-    final Map<int, MonthlyStats> monthlyStats = {};
+    final monthlyStats = <int, MonthlyStats>{};
     final yearlyTotals = <PracticeCategory, int>{};
     final monthlyAverages = <PracticeCategory, int>{};
     final dailyAverages = <PracticeCategory, int>{};
 
-    for (var m in months.keys) {
+    for (final m in months.keys) {
       final days = months[m]!;
       final dailyTotals = <PracticeCategory, int>{};
-      final Map<int, CategoryStats> dayStats = {};
+      final dayStats = <int, CategoryStats>{};
 
-      for (var d in days.keys) {
+      for (final d in days.keys) {
         final stats = days[d]!;
         dayStats[d] = CategoryStats(values: Map.from(stats));
-        for (var cat in stats.keys) {
+
+        for (final cat in stats.keys) {
           dailyTotals[cat] = (dailyTotals[cat] ?? 0) + stats[cat]!;
         }
       }
 
       final totalDays = days.length;
       final avgDaily = <PracticeCategory, int>{};
-      for (var cat in dailyTotals.keys) {
+
+      for (final cat in dailyTotals.keys) {
         avgDaily[cat] = (dailyTotals[cat]! / totalDays).round();
         yearlyTotals[cat] = (yearlyTotals[cat] ?? 0) + dailyTotals[cat]!;
       }
 
       monthlyStats[m] = MonthlyStats(
         avgDaily: CategoryStats(values: avgDaily),
-        days: dayStats,
         total: CategoryStats(values: dailyTotals),
+        days: dayStats,
       );
     }
 
     final totalMonths = monthlyStats.length;
-    for (var cat in yearlyTotals.keys) {
+    for (final cat in yearlyTotals.keys) {
       monthlyAverages[cat] = (yearlyTotals[cat]! / totalMonths).round();
-      dailyAverages[cat] = (yearlyTotals[cat]! / 30 / totalMonths).round();
+      dailyAverages[cat] = (yearlyTotals[cat]! / (totalMonths * 30)).round();
     }
+
+    categoryTotalsPerYear[y] = yearlyTotals;
 
     years[y] = YearlyStats(
       avgDaily: CategoryStats(values: dailyAverages),
@@ -102,12 +108,21 @@ Statistics recalculateStatisticsFromSessions(List<Session> sessions) {
     );
   }
 
+  final totalYears = years.length;
+  final avgYearlyByCategory = <PracticeCategory, int>{};
+
+  for (final cat in PracticeCategory.values) {
+    int total = 0;
+    for (final y in categoryTotalsPerYear.keys) {
+      total += categoryTotalsPerYear[y]?[cat] ?? 0;
+    }
+    avgYearlyByCategory[cat] = totalYears > 0 ? (total ~/ totalYears) : 0;
+  }
+
   final totalAvgDaily = <PracticeCategory, int>{};
   final totalAvgMonthly = <PracticeCategory, int>{};
-  final totalYears = years.length;
-  final totalAvgYearly = sessions.length ~/ totalYears;
 
-  for (var cat in totalByCategory.keys) {
+  for (final cat in totalByCategory.keys) {
     totalAvgMonthly[cat] = (totalByCategory[cat]! / (totalYears * 12)).round();
     totalAvgDaily[cat] = (totalByCategory[cat]! / (totalYears * 365)).round();
   }
@@ -115,7 +130,7 @@ Statistics recalculateStatisticsFromSessions(List<Session> sessions) {
   return Statistics(
     avgDaily: CategoryStats(values: totalAvgDaily),
     avgMonthly: CategoryStats(values: totalAvgMonthly),
-    avgYearly: totalAvgYearly,
+    avgYearly: CategoryStats(values: avgYearlyByCategory),
     total: CategoryStats(values: totalByCategory),
     years: years,
   );

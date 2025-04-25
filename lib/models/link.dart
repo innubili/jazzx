@@ -1,3 +1,5 @@
+import '../utils/utils.dart';
+
 enum LinkKind { iReal, youtube, spotify, apple, media, skool, soundslice }
 
 enum LinkCategory { backingTrack, playlist, lesson, scores, other }
@@ -65,10 +67,10 @@ LinkKind suggestNextKind(List<Link> existingLinks) {
 
 class Link {
   final String key;
-  final LinkKind kind;
   final String name;
-  final LinkCategory category;
+  final LinkKind kind;
   final String link;
+  final LinkCategory category;
   final bool isDefault;
 
   Link({
@@ -81,19 +83,20 @@ class Link {
   });
 
   factory Link.fromJson(Map<String, dynamic> json) {
+    final map = asStringKeyedMap(json);
     return Link(
-      key: json['key'] ?? '',
-      name: json['name'] ?? '',
-      link: json['link'] ?? '',
+      key: map['key'] ?? '',
+      name: map['name'] ?? '',
+      link: map['link'] ?? '',
       kind: LinkKind.values.firstWhere(
-        (e) => e.name == json['kind'],
+        (e) => e.name == map['kind'],
         orElse: () => LinkKind.media,
       ),
       category: LinkCategory.values.firstWhere(
-        (e) => e.name == json['category'],
+        (e) => e.name == map['category'],
         orElse: () => LinkCategory.other,
       ),
-      isDefault: json['default'] ?? false,
+      isDefault: map['default'] ?? false,
     );
   }
 
@@ -107,15 +110,14 @@ class Link {
   };
 
   bool get isLocal => link.startsWith('file://');
-
   bool get isBlank => link.isEmpty && name.isEmpty;
 
   factory Link.defaultLink(String songTitle) {
     return Link(
       key: 'C',
+      name: songTitle,
       kind: LinkKind.iReal,
       link: '',
-      name: songTitle,
       category: LinkCategory.backingTrack,
       isDefault: false,
     );
@@ -123,17 +125,17 @@ class Link {
 
   Link copyWith({
     String? key,
+    String? name,
     LinkKind? kind,
     String? link,
-    String? name,
     LinkCategory? category,
     bool? isDefault,
   }) {
     return Link(
       key: key ?? this.key,
+      name: name ?? this.name,
       kind: kind ?? this.kind,
       link: link ?? this.link,
-      name: name ?? this.name,
       category: category ?? this.category,
       isDefault: isDefault ?? this.isDefault,
     );

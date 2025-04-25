@@ -1,3 +1,4 @@
+import '../utils/utils.dart';
 import 'link.dart';
 
 // ignore: constant_identifier_names
@@ -52,7 +53,7 @@ class Song {
     required this.recommendedVersions,
     required this.songwriters,
     required this.year,
-    this.deleted = false, // ← Add this line
+    this.deleted = false,
   });
 
   Song copyWith({
@@ -66,7 +67,7 @@ class Song {
     String? recommendedVersions,
     String? songwriters,
     String? year,
-    bool? deleted, // ← Add this line
+    bool? deleted,
   }) {
     return Song(
       title: title ?? this.title,
@@ -86,8 +87,44 @@ class Song {
   String get summary =>
       '$songwriters ($year) • $key • $type • $form • $bpm BPM';
 
-  bool hasLink(LinkKind type) {
-    return links.any((link) => link.kind.name == type.name);
+  bool hasLink(LinkKind type) =>
+      links.any((link) => link.kind.name == type.name);
+
+  bool hasLinkCategory(LinkCategory category) =>
+      links.any((link) => link.category == category);
+
+  factory Song.fromJson(String title, Map<String, dynamic> json) {
+    final linksJson = asStringKeyedMap(json['links']);
+    final parsedLinks = <Link>[];
+
+    for (final entry in linksJson.entries) {
+      if (entry.key == 'NA') continue;
+      final linkMap = asStringKeyedMap(entry.value);
+      parsedLinks.add(
+        Link.fromJson({
+          'link': entry.key,
+          'key': linkMap['key'] ?? '',
+          'kind': linkMap['kind'] ?? '',
+          'name': linkMap['name'] ?? '',
+          'category': linkMap['category'] ?? 'other',
+          'default': linkMap['default'] ?? false,
+        }),
+      );
+    }
+
+    return Song(
+      title: title,
+      key: json['key'] ?? '',
+      type: json['type'] ?? '',
+      form: json['form'] ?? '',
+      bpm: json['bpm'] ?? 100,
+      links: parsedLinks,
+      notes: json['notes'] ?? '',
+      recommendedVersions: json['recommendedversions'] ?? '',
+      songwriters: json['songwriters'] ?? '',
+      year: json['year'] ?? '',
+      deleted: json['deleted'] ?? false,
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -106,37 +143,13 @@ class Song {
           link.link: {
             'key': link.key,
             'kind': link.kind,
+            'name': link.name,
+            'category': link.category.name,
             'default': link.isDefault,
           },
       },
     };
   }
-
-  factory Song.fromJson(String title, Map<String, dynamic> json) => Song(
-    title: title,
-    key: json['key'] ?? '',
-    type: json['type'] ?? '',
-    form: json['form'] ?? '',
-    bpm: json['bpm'] ?? 100,
-    notes: json['notes'] ?? '',
-    recommendedVersions: json['recommendedversions'] ?? '',
-    songwriters: json['songwriters'] ?? '',
-    year: json['year'] ?? '',
-    deleted: json['deleted'] ?? false,
-    links:
-        (json['links'] as Map?)?.entries.where((e) => e.key != 'NA').map((e) {
-          final data = e.value as Map<String, dynamic>;
-          return Link.fromJson({
-            'link': e.key,
-            'key': data['key'] ?? '',
-            'kind': data['kind'] ?? '',
-            'name': data['name'] ?? '',
-            'category': data['category'] ?? 'other',
-            'default': data['default'] ?? false,
-          });
-        }).toList() ??
-        [],
-  );
 
   static void removeSong(List<Song> list, Song song) {
     list.removeWhere((s) => s.title == song.title);
@@ -144,12 +157,6 @@ class Song {
 
   static void updateSong(List<Song> list, Song song) {
     final index = list.indexWhere((s) => s.title == song.title);
-    if (index != -1) {
-      list[index] = song;
-    }
-  }
-
-  hasLinkCategory(LinkCategory scores) {
-    return links.any((link) => link.category.name == scores.name);
+    if (index != -1) list[index] = song;
   }
 }

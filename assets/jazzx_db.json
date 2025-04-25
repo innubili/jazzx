@@ -5,7 +5,7 @@
       "form": "16 bar form",
       "key": "Fm",
       "links": {},
-      "notes": "Minor blues feel with Cuban rhythms; can be played in 3/4 or 6/8.",
+      "notes": "Minor blues feel with Cuban rhythms; can be played in 3-4 or 6-8",
       "recommendedversions": "John Coltrane; Emily Remler; Mongo Santamaria",
       "songwriters": "Mongo Santamaria",
       "type": "Waltz",
@@ -16,9 +16,9 @@
       "form": "(often up tempo) ABAC 40 bars",
       "key": "G",
       "links": {},
-      "notes": "Opens with Major IV moving to minor iv; plenty of secondary dominants.",
+      "notes": "Opens with Major IV moving to minor iv; plenty of secondary dominants",
       "recommendedversions": "Django Reinhardt; Benny Goodman with Teddy Wilson; Louis Armstrong",
-      "songwriters": "Turner Layton / Henry Creamer",
+      "songwriters": "Turner Layton - Henry Creamer",
       "type": "Swing (often up tempo)",
       "year": "1918"
     },
@@ -27,7 +27,7 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Tricky melodic pickup; the A section descends in tones before returning to the original key.",
+      "notes": "Tricky melodic pickup; the A section descends in tones before returning to the original key",
       "recommendedversions": "John Lewis; Sonny Rollins; Kenny Burrell",
       "songwriters": "John Lewis",
       "type": "Bebop",
@@ -38,9 +38,9 @@
       "form": "AABA 32 bars",
       "key": "F",
       "links": {},
-      "notes": "The A section features a good example of ascending chords through inversions; the Ella version is a good example of acoustic swing rhythm guitar.",
+      "notes": "The A section features a good example of ascending chords through inversions; the Ella version is a good example of acoustic swing rhythm guitar",
       "recommendedversions": "Louis Armstrong; Fats Waller; Ella Fitzgerald",
-      "songwriters": "Fats Waller / Harry Brooks",
+      "songwriters": "Fats Waller - Harry Brooks",
       "type": "Swing",
       "year": "1929"
     },
@@ -49,7 +49,7 @@
       "form": "NA",
       "key": "G Mixolydian",
       "links": {},
-      "notes": "Blues in 6/8; 12 bar blues in 6/8 timing; great song to explore using the Mixolydian mode.",
+      "notes": "Blues in 6-8; 12 bar blues in 6-8 timing; great song to explore using the Mixolydian mode",
       "recommendedversions": "Miles Davis; Ron Carter; Kenny Burrell",
       "songwriters": "Miles Davis",
       "type": "Modal",
@@ -60,18 +60,18 @@
       "form": "ABAC 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Melody uses a lot of triads; secondary dominants aplenty; classic move for the last 8 to start on the IV chord; Ella\u2019s version features one of the greatest scat solos of all time.",
+      "notes": "Melody uses a lot of triads; secondary dominants aplenty; classic move for the last 8 to start on the IV chord; Ellas version features one of the greatest scat solos of all time",
       "recommendedversions": "Billie Holiday; Sidney Bechet; Ella Fitzgerald",
-      "songwriters": "Gerald Marks / Seymour Simons",
+      "songwriters": "Gerald Marks - Seymour Simons",
       "type": "Swing",
       "year": "1931"
     },
     "All the Things You Are": {
       "bpm": 100,
-      "form": "/ Swing AABC 36 bars",
+      "form": "Swing AABC 36 bars",
       "key": "Ab",
       "links": {},
-      "notes": "Chords and melody moving in 4ths, multiple key centres; flat 3 diminished in C section; note that the Oscar Peterson version is superhuman.",
+      "notes": "Chords and melody moving in 4ths, multiple key centres; flat 3 diminished in C section; note that the Oscar Peterson version is superhuman",
       "recommendedversions": "Oscar Peterson; Dizzy Gillespie and Charlie Parker; Hank Garland",
       "songwriters": "Jerome Kern",
       "type": "Ballad",
@@ -82,9 +82,9 @@
       "form": "AABA 44 bars",
       "key": "Dm",
       "links": {},
-      "notes": "Lyrical melody over interesting harmonic twists and turns; features lots of sustained notes making it ideal for tone work; A section resolves to the Major; bridge has minor ii-V-I to the iV chord.",
+      "notes": "Lyrical melody over interesting harmonic twists and turns; features lots of sustained notes making it ideal for tone work; A section resolves to the Major; bridge has minor ii-V-I to the iV chord",
       "recommendedversions": "Chet Baker; Pat Martino; Kenny Dorham",
-      "songwriters": "Arthur Schwartz / Howard Dietz",
+      "songwriters": "Arthur Schwartz - Howard Dietz",
       "type": "Ballad",
       "year": "1932"
     },
@@ -93,9 +93,9 @@
       "form": "AABA 32 bars",
       "key": "Bb",
       "links": {},
-      "notes": "Contrafact \u2013 uses the changes to \u201cI Got Rhythm\u201d.",
+      "notes": "Contrafact uses the changes to I Got Rhythm",
       "recommendedversions": "Charlie Parker; Barry Harris; Hank Jones",
-      "songwriters": "Charlie Parker / Dizzy Gillespie",
+      "songwriters": "Charlie Parker - Dizzy Gillespie",
       "type": "Bebop",
       "year": "1949"
     },
@@ -104,9 +104,9 @@
       "form": "ABCD form",
       "key": "G",
       "links": {},
-      "notes": "Lots of harmonic movement and inversions; Basie version features excellent swing rhythm guitar and a shout chorus.",
+      "notes": "Lots of harmonic movement and inversions; Basie version features excellent swing rhythm guitar and a shout chorus",
       "recommendedversions": "Count Basie; Ella Fitzgerald and Louis Armstrong; Julie London",
-      "songwriters": "Vernon Duke / Yip Harburg",
+      "songwriters": "Vernon Duke - Yip Harburg",
       "type": "Swing",
       "year": "1932"
     },
@@ -115,7 +115,7 @@
       "form": "AAB 32 bars",
       "key": "Em or Gm",
       "links": {},
-      "notes": "Features major and minor ii-V-I of the relative major/minor; good example of chords moving in 4ths.",
+      "notes": "Features major and minor ii-V-I of the relative major-minor; good example of chords moving in 4ths",
       "recommendedversions": "Ahmad Jamal; Jim Hall and Ron Carter; Chet Baker",
       "songwriters": "Joseph Kosma",
       "type": "Swing",
@@ -126,18 +126,18 @@
       "form": "ABAC form",
       "key": "F",
       "links": {},
-      "notes": "Ascending ii-iii-IV-V progression.",
+      "notes": "Ascending ii-iii-IV-V progression",
       "recommendedversions": "Ella Fitzgerald; Kenny Burrell; Tal Farlow",
       "songwriters": "Vernon Duke",
       "type": "Ballad",
       "year": "1934"
     },
-    "Bag\u2019s Groove": {
+    "Bag's Groove": {
       "bpm": 100,
       "form": "NA",
       "key": "F",
       "links": {},
-      "notes": "12 bar blues in F.",
+      "notes": "12 bar blues in F",
       "recommendedversions": "Kenny Burrell; Oscar Peterson; Milt Jackson",
       "songwriters": "Milt Jackson",
       "type": "Blues",
@@ -148,7 +148,7 @@
       "form": "(AABB form, 32 bars)",
       "key": "F",
       "links": {},
-      "notes": "Not strictly a blues; features call and response in the A section and opportunities to explore secondary dominants.",
+      "notes": "Not strictly a blues; features call and response in the A section and opportunities to explore secondary dominants",
       "recommendedversions": "Louis Armstrong; Benny Goodman; Ella Fitzgerald",
       "songwriters": "Spencer Williams",
       "type": "Blues",
@@ -159,29 +159,29 @@
       "form": "Blues",
       "key": "F",
       "links": {},
-      "notes": "12 bar blues with a bebop blues head incorporating additional chords.",
+      "notes": "12 bar blues with a bebop blues head incorporating additional chords",
       "recommendedversions": "Charlie Parker; George Benson; Albert Ayler",
       "songwriters": "Charlie Parker",
       "type": "Bebop",
       "year": "1945"
     },
-    "Birks\u2019 Works": {
+    "Birks' Works": {
       "bpm": 100,
       "form": "Blues",
       "key": "Fm",
       "links": {},
-      "notes": "12 bar minor blues; melody uses 16th note triplets.",
+      "notes": "12 bar minor blues; melody uses 16th note triplets",
       "recommendedversions": "Dizzy Gillespie; Art Pepper; Kenny Burrell",
       "songwriters": "Dizzy Gillespie",
       "type": "Minor",
       "year": "1951"
     },
-    "Black Orpheus (Manh\u00e3 de Carnaval)": {
+    "Black Orpheus (Manha de Carnaval)": {
       "bpm": 100,
       "form": "NA",
       "key": "Am",
       "links": {},
-      "notes": "AB form 32 bars with an optional coda; features minor ii-V-I and a move from A minor to its relative Major.",
+      "notes": "AB form 32 bars with an optional coda; features minor ii-V-I and a move from A minor to its relative Major",
       "recommendedversions": "John McLaughlin and Al Di Meola; Stan Getz; Paul Desmond",
       "songwriters": "Luiz Bonfa",
       "type": "Bossa",
@@ -192,7 +192,7 @@
       "form": "NA",
       "key": "Bb",
       "links": {},
-      "notes": "12 bar blues with strong chromaticism and the use of a #IV diminished.",
+      "notes": "12 bar blues with strong chromaticism and the use of a sharpIV diminished",
       "recommendedversions": "Thelonious Monk; Dexter Gordon; Ray Bryant",
       "songwriters": "Thelonious Monk",
       "type": "Blues",
@@ -203,7 +203,7 @@
       "form": "AABA 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Built on the I\u2013vi\u2013ii\u2013V progression; bridge moves from Eb to Gb then to Bb.",
+      "notes": "Built on the I-viii-V progression; bridge moves from Eb to Gb then to Bb",
       "recommendedversions": "Billie Holiday; Ella Fitzgerald; Oscar Peterson",
       "songwriters": "Rodgers and Hart",
       "type": "Swing",
@@ -214,7 +214,7 @@
       "form": "AABA 32 bars",
       "key": "Dm",
       "links": {},
-      "notes": "Features a descending minor run in the A section and a minor iv in the B section.",
+      "notes": "Features a descending minor run in the A section and a minor iv in the B section",
       "recommendedversions": "Les Paul; Ella Fitzgerald; Louis Armstrong",
       "songwriters": "Irving Berlin",
       "type": "Swing",
@@ -225,7 +225,7 @@
       "form": "Ballad",
       "key": "Dm",
       "links": {},
-      "notes": "10 bar form that gives a sense of returning too soon; melody emphasizes note colors and dissonance.",
+      "notes": "10 bar form that gives a sense of returning too soon; melody emphasizes note colors and dissonance",
       "recommendedversions": "Miles Davis; Bill Evans; John McLaughlin",
       "songwriters": "Miles Davis and Bill Evans",
       "type": "Modal",
@@ -236,7 +236,7 @@
       "form": "NA",
       "key": "Cm",
       "links": {},
-      "notes": "16 bar form; simple melody; major ii-V-I from a semitone above the key centre (Db Major).",
+      "notes": "16 bar form; simple melody; major ii-V-I from a semitone above the key centre (Db Major)",
       "recommendedversions": "Joe Henderson; Dexter Gordon; Pat Martino",
       "songwriters": "Kenny Dorham",
       "type": "Bossa",
@@ -247,7 +247,7 @@
       "form": "Blues",
       "key": "F",
       "links": {},
-      "notes": "12 bar blues with Parker\u2019s legendary, non-traditional blues changes.",
+      "notes": "12 bar blues with Parker's legendary, non-traditional blues changes",
       "recommendedversions": "Charlie Parker; Mark Whitfield; Archie Shepp",
       "songwriters": "Charlie Parker",
       "type": "Bebop",
@@ -258,7 +258,7 @@
       "form": "AABA 24 bars",
       "key": "Bb",
       "links": {},
-      "notes": "Excellent example of using ii-V-I to change key.",
+      "notes": "Excellent example of using ii-V-I to change key",
       "recommendedversions": "Toots Thielemans; Hank Jones; Jimmy Smith",
       "songwriters": "Toots Thielemans",
       "type": "Waltz",
@@ -269,18 +269,18 @@
       "form": "AABA 32 bars",
       "key": "Db",
       "links": {},
-      "notes": "Starts on the ii chord; B section shifts key by a semitone.",
+      "notes": "Starts on the ii chord; B section shifts key by a semitone",
       "recommendedversions": "Billie Holiday; Coleman Hawkins; Louis Stewart",
       "songwriters": "Johnny Green",
       "type": "Ballad",
       "year": "1930"
     },
-    "Breezin\u2019": {
+    "Breezin'": {
       "bpm": 100,
       "form": "Jazz",
       "key": "D",
       "links": {},
-      "notes": "Made up of 16 bar sections; diatonic with a soloing scale; head uses thirds.",
+      "notes": "Made up of 16 bar sections; diatonic with a soloing scale; head uses thirds",
       "recommendedversions": "George Benson; Bireli Lagrene and Joscho Stephan; Gabor Szabo",
       "songwriters": "Bobby Womack",
       "type": "Smooth",
@@ -291,9 +291,9 @@
       "form": "ABAB form 32 bars",
       "key": "G",
       "links": {},
-      "notes": "Melody features phrases ending on 9ths and 13ths.",
+      "notes": "Melody features phrases ending on 9ths and 13ths",
       "recommendedversions": "Stan Getz and Bill Evans; Billie Holiday; Freddie Hubbard",
-      "songwriters": "Jimmy Van Heusen / Johnny Burke",
+      "songwriters": "Jimmy Van Heusen - Johnny Burke",
       "type": "Ballad",
       "year": "1947"
     },
@@ -302,7 +302,7 @@
       "form": "ABAC 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Starts on II as a major chord and uses a bVI7 backdoor dominant.",
+      "notes": "Starts on II as a major chord and uses a bVI7 backdoor dominant",
       "recommendedversions": "Chet Baker; Benny Goodman; Red Garland",
       "songwriters": "George and Ira Gershwin",
       "type": "Swing",
@@ -313,9 +313,9 @@
       "form": "AB 32 bars",
       "key": "F",
       "links": {},
-      "notes": "Melody has a narrow range with frequent quarter notes.",
+      "notes": "Melody has a narrow range with frequent quarter notes",
       "recommendedversions": "Miles Davis; Julie London; Ben Webster",
-      "songwriters": "Ray Henderson / Mort Dixon",
+      "songwriters": "Ray Henderson - Mort Dixon",
       "type": "Swing",
       "year": "1926"
     },
@@ -324,7 +324,7 @@
       "form": "NA",
       "key": "C",
       "links": {},
-      "notes": "12 bar blues with a simple, transcribable melody and basic changes.",
+      "notes": "12 bar blues with a simple, transcribable melody and basic changes",
       "recommendedversions": "Duke Ellington; Oscar Peterson; Red Garland",
       "songwriters": "Duke Ellington",
       "type": "Blues",
@@ -335,7 +335,7 @@
       "form": "NA",
       "key": "Fm",
       "links": {},
-      "notes": "16 bar form with only three chords, great for soloing practice.",
+      "notes": "16 bar form with only three chords, great for soloing practice",
       "recommendedversions": "Herbie Hancock; Nat Adderley; Lionel Loueke",
       "songwriters": "Herbie Hancock",
       "type": "Modal",
@@ -343,10 +343,10 @@
     },
     "Caravan": {
       "bpm": 100,
-      "form": "/ Latin (AABA 64 bars)",
+      "form": "Latin (AABA 64 bars)",
       "key": "Fm",
       "links": {},
-      "notes": "Each section is 16 bars; B section uses dominants moving in 4ths; excellent for phrasing.",
+      "notes": "Each section is 16 bars; B section uses dominants moving in 4ths; excellent for phrasing",
       "recommendedversions": "Duke Ellington; Dizzy Gillespie; Wes Montgomery",
       "songwriters": "Juan Tizol (often misattributed to Duke Ellington)",
       "type": "Swing",
@@ -357,7 +357,7 @@
       "form": "bar form: AABCA",
       "key": "C",
       "links": {},
-      "notes": "C section modulates to the parallel minor.",
+      "notes": "C section modulates to the parallel minor",
       "recommendedversions": "Ella and Louis; Oscar Peterson; Ruby Braff and George Barnes",
       "songwriters": "Irving Berlin",
       "type": "72",
@@ -368,7 +368,7 @@
       "form": "AABA 32 bars",
       "key": "Db",
       "links": {},
-      "notes": "Impressionistic ballad; Ben Webster\u2019s version is a fine example of subtle comping.",
+      "notes": "Impressionistic ballad; Ben Webster's version is a fine example of subtle comping",
       "recommendedversions": "Ben Webster; Tommy Flanagan; Joe Henderson",
       "songwriters": "Billy Strayhorn",
       "type": "Ballad",
@@ -379,7 +379,7 @@
       "form": "Swing AABA 64 bars",
       "key": "Bb",
       "links": {},
-      "notes": "Features a descending ii-V-I in the B section; often played at fast tempos.",
+      "notes": "Features a descending ii-V-I in the B section; often played at fast tempos",
       "recommendedversions": "Clifford Brown; Bud Powell; Dizzy Gillespie and Charlie Parker",
       "songwriters": "Ray Noble",
       "type": "Uptempo",
@@ -390,7 +390,7 @@
       "form": "NA",
       "key": "C",
       "links": {},
-      "notes": "12 bar blues with a latin groove; features a call-response based head.",
+      "notes": "12 bar blues with a latin groove; features a call-response based head",
       "recommendedversions": "Kenny Burrell; Ed Cherry; Johnny Lewis",
       "songwriters": "Kenny Burrell",
       "type": "Blues",
@@ -401,7 +401,7 @@
       "form": "AABA 32 bars",
       "key": "F",
       "links": {},
-      "notes": "Complex head and changes showcasing some of Bird\u2019s best playing.",
+      "notes": "Complex head and changes showcasing some of Bird's best playing",
       "recommendedversions": "Charlie Parker; Clifford Brown; Dexter Gordon",
       "songwriters": "Charlie Parker",
       "type": "Bebop",
@@ -412,7 +412,7 @@
       "form": "NA",
       "key": "C",
       "links": {},
-      "notes": "12 bar blues with a simple head ideal for transcription.",
+      "notes": "12 bar blues with a simple head ideal for transcription",
       "recommendedversions": "Charlie Parker; Grant Green; Sonny Stitt",
       "songwriters": "Charlie Parker",
       "type": "Blues",
@@ -423,7 +423,7 @@
       "form": "NA",
       "key": "C",
       "links": {},
-      "notes": "ABAC form (34 or 36 bars); Jobim\u2019s descent in chord sequences is a highlight.",
+      "notes": "ABAC form (34 or 36 bars); Jobim's descent in chord sequences is a highlight",
       "recommendedversions": "Antonio Carlos Jobim; Stan Getz; Oscar Peterson",
       "songwriters": "Antonio Carlos Jobim",
       "type": "Bossa",
@@ -431,10 +431,10 @@
     },
     "Cotton Tail": {
       "bpm": 100,
-      "form": "/ Rhythm Changes (AABA 32 bars)",
+      "form": "Rhythm Changes (AABA 32 bars)",
       "key": "Ab",
       "links": {},
-      "notes": "Ellington\u2019s version is a prime example of acoustic swing rhythm guitar.",
+      "notes": "Ellington's version is a prime example of acoustic swing rhythm guitar",
       "recommendedversions": "Duke Ellington; Wes Montgomery; Benny Carter",
       "songwriters": "Duke Ellington",
       "type": "Swing",
@@ -445,7 +445,7 @@
       "form": "AABA 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Begins on the relative minor with an ascending minor #5,6 to b7; Barney Kessel\u2019s accompaniment is notably expressive.",
+      "notes": "Begins on the relative minor with an ascending minor sharp5,6 to b7; Barney Kessels accompaniment is notably expressive",
       "recommendedversions": "Julie London; Ella Fitzgerald; Bucky Pizzzarelli",
       "songwriters": "Arthur Hamilton",
       "type": "Ballad",
@@ -456,9 +456,9 @@
       "form": "AABA 32 bars",
       "key": "G",
       "links": {},
-      "notes": "Features rich chromatic harmony with a key change in the bridge.",
+      "notes": "Features rich chromatic harmony with a key change in the bridge",
       "recommendedversions": "Bill Evans with Jim Hall; Ahmad Jamal; Billie Holiday",
-      "songwriters": "Jimmy Van Heusen / Eddie DeLange",
+      "songwriters": "Jimmy Van Heusen - Eddie DeLange",
       "type": "Ballad",
       "year": "1939"
     },
@@ -467,9 +467,9 @@
       "form": "ABAC 32 bars",
       "key": "F",
       "links": {},
-      "notes": "One of Mancini\u2019s best works; abundant ii-V-I and a bVII7 (backdoor dominant) in the bridge.",
+      "notes": "One of Mancini's best works; abundant ii-V-I and a bVII7 (backdoor dominant) in the bridge",
       "recommendedversions": "Wes Montgomery; Lenny Breau; Bill Frisell; Oscar Peterson",
-      "songwriters": "Henry Mancini / Johnny Mercer",
+      "songwriters": "Henry Mancini - Johnny Mercer",
       "type": "Ballad",
       "year": "1962"
     },
@@ -478,8 +478,8 @@
       "form": "NA",
       "key": "F",
       "links": {},
-      "notes": "64 bar form with key changes; bridge modulates from Bb to D then F major (spelling out Bb-D-F).",
-      "recommendedversions": "Jo\u00e3o Gilberto; Coleman Hawkins; Stan Getz; Antonio Carlos Jobim",
+      "notes": "64 bar form with key changes; bridge modulates from Bb to D then F major (spelling out Bb-D-F)",
+      "recommendedversions": "Joho Gilberto; Coleman Hawkins; Stan Getz; Antonio Carlos Jobim",
       "songwriters": "Antonio Carlos Jobim",
       "type": "Bossa",
       "year": "1959"
@@ -489,9 +489,9 @@
       "form": "AABA 32 bars",
       "key": "Ab",
       "links": {},
-      "notes": "B section moves to the relative minor and then executes a minor run-down.",
+      "notes": "B section moves to the relative minor and then executes a minor run-down",
       "recommendedversions": "Django Reinhardt; Louis Armstrong; Benny Goodman",
-      "songwriters": "Akhst/Lewis/Young",
+      "songwriters": "Akhst-Lewis-Young",
       "type": "Swing",
       "year": "1925"
     },
@@ -500,7 +500,7 @@
       "form": "AABA with 20-bar introductory theme",
       "key": "Fm",
       "links": {},
-      "notes": "Written as a tribute to Django Reinhardt; features separate changes for melody and solo form; haunting melody.",
+      "notes": "Written as a tribute to Django Reinhardt; features separate changes for melody and solo form; haunting melody",
       "recommendedversions": "The Modern Jazz Quartet; Joe Pass; Grant Green; Peter Berstein",
       "songwriters": "John Lewis",
       "type": "Ballad",
@@ -508,12 +508,12 @@
     },
     "Do Nothing Till You Hear from Me": {
       "bpm": 100,
-      "form": "/ Swing AABA 32 bars",
+      "form": "Swing AABA 32 bars",
       "key": "G",
       "links": {},
-      "notes": "Uses a backdoor dominant in the A section; B section modulates to Eb Major.",
+      "notes": "Uses a backdoor dominant in the A section; B section modulates to Eb Major",
       "recommendedversions": "Duke Ellington & Ella Fitzgerald; Billie Holiday; Clark Terry",
-      "songwriters": "Duke Ellington / Bob Russell",
+      "songwriters": "Duke Ellington - Bob Russell",
       "type": "Ballad",
       "year": "1940"
     },
@@ -522,9 +522,9 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Features call and response between the melody and rhythm section; bridge shifts to minor iv.",
+      "notes": "Features call and response between the melody and rhythm section; bridge shifts to minor iv",
       "recommendedversions": "Tony Bennett; Ella Fitzgerald; Oscar Peterson",
-      "songwriters": "Duke Ellington / Bob Russell",
+      "songwriters": "Duke Ellington - Bob Russell",
       "type": "Swing",
       "year": "1940"
     },
@@ -533,7 +533,7 @@
       "form": "AB 32 bars",
       "key": "Ab",
       "links": {},
-      "notes": "A trove of bebop lines; contrafact based on \u201cIndiana\u201d.",
+      "notes": "A trove of bebop lines; contrafact based on Indiana",
       "recommendedversions": "Charlie Parker; Jimmy Rosenberg; Wynton Marsalis",
       "songwriters": "Charlie Parker",
       "type": "Bebop",
@@ -544,7 +544,7 @@
       "form": "NA",
       "key": "Bb",
       "links": {},
-      "notes": "16 bar blues form ideal for dominant chord soloing; a creative development of the blues form.",
+      "notes": "16 bar blues form ideal for dominant chord soloing; a creative development of the blues form",
       "recommendedversions": "Sonny Rollins; Miles Davis; Herb Ellis",
       "songwriters": "Sonny Rollins",
       "type": "Blues",
@@ -555,7 +555,7 @@
       "form": "ABAC 36 bars",
       "key": "G",
       "links": {},
-      "notes": "A fine example of ii-V-I movement with a descending chord sequence and a minor iv.",
+      "notes": "A fine example of ii-V-I movement with a descending chord sequence and a minor iv",
       "recommendedversions": "Sarah Vaughan; Stan Getz; George Shearing",
       "songwriters": "Brooks Bowman",
       "type": "Ballad",
@@ -566,7 +566,7 @@
       "form": "ABAC 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Features flat-three diminished; many phrases start on beat 2.",
+      "notes": "Features flat-three diminished; many phrases start on beat 2",
       "recommendedversions": "Nat King Cole; Chet Baker; Ella Fitzgerald; Chuck Wayne",
       "songwriters": "George Gershwin",
       "type": "Ballad",
@@ -577,9 +577,9 @@
       "form": "ABCB 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Angular melody that is a hallmark of Monk\u2019s style.",
+      "notes": "Angular melody that is a hallmark of Monk's style",
       "recommendedversions": "Thelonious Monk; Bill Frisell; Pasquale Grasso",
-      "songwriters": "Thelonious Monk / Kenny Clarke",
+      "songwriters": "Thelonious Monk - Kenny Clarke",
       "type": "Bebop",
       "year": "1941"
     },
@@ -588,9 +588,9 @@
       "form": "AABA 32 bars",
       "key": "-",
       "links": {},
-      "notes": "Abundant ii-V movements with several changes in the B section.",
+      "notes": "Abundant ii-V movements with several changes in the B section",
       "recommendedversions": "Chet Baker; Paul Desmond; Bill Evans",
-      "songwriters": "Matt Dennis / Tom Adair",
+      "songwriters": "Matt Dennis - Tom Adair",
       "type": "Ballad",
       "year": "1940"
     },
@@ -599,9 +599,9 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Features an II7 chord in the A section; B uses a backdoor dominant; Herb Ellis\u2019s comping illustrates passing chords well.",
+      "notes": "Features an II7 chord in the A section; B uses a backdoor dominant; Herb Ellis's comping illustrates passing chords well",
       "recommendedversions": "Oscar Peterson & Herb Ellis; Count Basie; Nat King Cole",
-      "songwriters": "Jimmy McHugh / Dorothy Fields",
+      "songwriters": "Jimmy McHugh - Dorothy Fields",
       "type": "Swing",
       "year": "1930"
     },
@@ -610,7 +610,7 @@
       "form": "AB form 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Classic vi\u2013ii\u2013V\u2013I progression; modulates to the relative minor.",
+      "notes": "Classic vi-ii-V-I progression; modulates to the relative minor",
       "recommendedversions": "Frank Sinatra; Anita O'Day; Diana Krall",
       "songwriters": "Bart Howard",
       "type": "Swing",
@@ -621,7 +621,7 @@
       "form": "Blues",
       "key": "Cm",
       "links": {},
-      "notes": "Minor blues form in 6/4 with an unusual turnaround.",
+      "notes": "Minor blues form in 6-4 with an unusual turnaround",
       "recommendedversions": "Wayne Shorter; Miles Davis; Pat Martino",
       "songwriters": "Wayne Shorter",
       "type": "Minor",
@@ -632,7 +632,7 @@
       "form": "ABAC 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Moves through several keys.",
+      "notes": "Moves through several keys",
       "recommendedversions": "Miles Davis; Stan Getz; Red Garland",
       "songwriters": "(Often attributed to Miles Davis)",
       "type": "Bebop",
@@ -640,10 +640,10 @@
     },
     "Four on Six": {
       "bpm": 100,
-      "form": "bop / Minor Blues",
+      "form": "bop - Minor Blues",
       "key": "Gm",
       "links": {},
-      "notes": "16 bar one-section form; contrasts static minor chords with quick descending ii-Vs.",
+      "notes": "16 bar one-section form; contrasts static minor chords with quick descending ii-Vs",
       "recommendedversions": "Wes Montgomery; Pat Martino; John Abercrombie",
       "songwriters": "Wes Montgomery",
       "type": "Hard",
@@ -654,20 +654,20 @@
       "form": "NA",
       "key": "Bb",
       "links": {},
-      "notes": "12 bar blues with a 1st and 2nd ending; the first ending goes to a backdoor dominant (bVII7).",
+      "notes": "12 bar blues with a 1st and 2nd ending; the first ending goes to a backdoor dominant (bVII7)",
       "recommendedversions": "Miles Davis; Wes Montgomery; Mark Whitfield",
       "songwriters": "Miles Davis",
       "type": "Blues",
       "year": "1959"
     },
-    "Gee Baby Ain\u2019t I Good to You": {
+    "Gee Baby Ain't I Good to You": {
       "bpm": 100,
-      "form": "/ Swing",
+      "form": "Swing",
       "key": "(No key specified)",
       "links": {},
-      "notes": "AB form: 8-bar A, 4-bar B, 4-bar B; listen for Oscar Moore\u2019s solo on the Nat King Cole version.",
+      "notes": "AB form: 8-bar A, 4-bar B, 4-bar B; listen for Oscar Moore's solo on the Nat King Cole version",
       "recommendedversions": "Kenny Burrell; Ella Fitzgerald; Nat King Cole",
-      "songwriters": "Andy Razaf / Don Redman",
+      "songwriters": "Andy Razaf - Don Redman",
       "type": "Blues",
       "year": "1929"
     },
@@ -676,9 +676,9 @@
       "form": "AABA 32 bars",
       "key": "F",
       "links": {},
-      "notes": "Often played with many inversions; B section shifts to the relative minor.",
+      "notes": "Often played with many inversions; B section shifts to the relative minor",
       "recommendedversions": "Louis Armstrong; Dave Brubeck; Ella Fitzgerald with Joe Pass",
-      "songwriters": "Hoagy Carmichael / Stuart Gorrell",
+      "songwriters": "Hoagy Carmichael - Stuart Gorrell",
       "type": "Ballad",
       "year": "1930"
     },
@@ -687,7 +687,7 @@
       "form": "bop",
       "key": "B",
       "links": {},
-      "notes": "16 bar form; an uptempo tune that rapidly shifts through B, G, and Eb Major.",
+      "notes": "16 bar form; an uptempo tune that rapidly shifts through B, G, and Eb Major",
       "recommendedversions": "John Coltrane; Pat Metheny; Joe Pass",
       "songwriters": "John Coltrane",
       "type": "Hard",
@@ -698,7 +698,7 @@
       "form": "NA",
       "key": "Db or F",
       "links": {},
-      "notes": "AABA form with 40 bars; B section has striking harmonic changes.",
+      "notes": "AABA form with 40 bars; B section has striking harmonic changes",
       "recommendedversions": "Stan Getz; Oscar Peterson; Antonio Carlos Jobim with Frank Sinatra",
       "songwriters": "Antonio Carlos Jobim",
       "type": "Bossa",
@@ -709,9 +709,9 @@
       "form": "AABA 38 bars",
       "key": "F",
       "links": {},
-      "notes": "The A sections are 10 bars long.",
+      "notes": "The A sections are 10 bars long",
       "recommendedversions": "Billie Holiday; Grant Green; Sonny Rollins",
-      "songwriters": "Billie Holiday / Arthur Herzog",
+      "songwriters": "Billie Holiday - Arthur Herzog",
       "type": "Ballad",
       "year": "1939"
     },
@@ -720,18 +720,18 @@
       "form": "NA",
       "key": "Ebm",
       "links": {},
-      "notes": "A bluesy ballad with a 12-bar form; a tribute to Lester Young.",
+      "notes": "A bluesy ballad with a 12-bar form; a tribute to Lester Young",
       "recommendedversions": "Charles Mingus; Jeff Beck; John McLaughlin",
       "songwriters": "Charles Mingus",
       "type": "Ballad",
       "year": "1959"
     },
-    "Groovin\u2019 High": {
+    "Groovin' High": {
       "bpm": 100,
       "form": "NA",
       "key": "Eb",
       "links": {},
-      "notes": "AB 32 bar form based on the changes to \u201cWhispering\u201d.",
+      "notes": "AB 32 bar form based on the changes to Whispering",
       "recommendedversions": "Dizzy Gillespie; Jim Hall; Art Pepper",
       "songwriters": "Dizzy Gillespie",
       "type": "Bebop",
@@ -742,7 +742,7 @@
       "form": "AABA 32 bars",
       "key": "F",
       "links": {},
-      "notes": "B section includes several key changes using ii-V-I progressions.",
+      "notes": "B section includes several key changes using ii-V-I progressions",
       "recommendedversions": "Oscar Peterson; Tony Bennett; Joe Pass",
       "songwriters": "Rodgers and Hart",
       "type": "Swing",
@@ -753,9 +753,9 @@
       "form": "ABAC 32 bars",
       "key": "G",
       "links": {},
-      "notes": "Features wonderful chord changes moving in 4ths.",
+      "notes": "Features wonderful chord changes moving in 4ths",
       "recommendedversions": "Julie London; Wes Montgomery; Bill Evans",
-      "songwriters": "Jimmy Van Heusen / Johnny Burke",
+      "songwriters": "Jimmy Van Heusen - Johnny Burke",
       "type": "Ballad",
       "year": "1953"
     },
@@ -764,7 +764,7 @@
       "form": "AABA 32 bars",
       "key": "F",
       "links": {},
-      "notes": "A section with rapid ii-Vs leading into a classic B section.",
+      "notes": "A section with rapid ii-Vs leading into a classic B section",
       "recommendedversions": "Django Reinhardt; Anita O'Day; Benny Goodman with Charlie Christian",
       "songwriters": "Fats Waller",
       "type": "Swing",
@@ -775,7 +775,7 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Based on the changes of \u201cWhat is this thing called love?\u201d.",
+      "notes": "Based on the changes of What is this thing called love?",
       "recommendedversions": "Charlie Parker; Dizzy Gillespie; Bud Powell; Emily Remler",
       "songwriters": "Tadd Dameron",
       "type": "Bebop",
@@ -786,7 +786,7 @@
       "form": "ABAC 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Opens with a minor run-down.",
+      "notes": "Opens with a minor run-down",
       "recommendedversions": "Nat King Cole Trio; Benny Goodman with Peggy Lee; Charlie Parker",
       "songwriters": "Irving Berlin",
       "type": "Ballad",
@@ -797,9 +797,9 @@
       "form": "ABAC 32 bars",
       "key": "G",
       "links": {},
-      "notes": "Inspired the bebop tune \u201cOrnithology\u201d; features descending chords.",
+      "notes": "Inspired the bebop tune Ornithology; features descending chords",
       "recommendedversions": "Chet Baker; Ella Fitzgerald; Django Reinhardt",
-      "songwriters": "Morgan Lewis / Nancy Hamilton",
+      "songwriters": "Morgan Lewis - Nancy Hamilton",
       "type": "Swing",
       "year": "1940"
     },
@@ -808,9 +808,9 @@
       "form": "AB 32 bars",
       "key": "Dm",
       "links": {},
-      "notes": "Originally titled \u201cInsensatez\u201d; haunting tune with beautiful inversions supporting the melody.",
+      "notes": "Originally titled Insensatez; haunting tune with beautiful inversions supporting the melody",
       "recommendedversions": "Pat Martino; Antonio Carlos Jobim with Frank Sinatra; Oscar Peterson; Larry Coryell; Emily Remler",
-      "songwriters": "Antonio Carlos Jobim / Vin\u00edcius de Moraes",
+      "songwriters": "Antonio Carlos Jobim - Vinicius de Moraes",
       "type": "Latin",
       "year": "1963"
     },
@@ -819,31 +819,31 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "B section moves up a tone and back down.",
+      "notes": "B section moves up a tone and back down",
       "recommendedversions": "Lester Young; John Lewis; Helen Forrest",
-      "songwriters": "Vernon Duke / Ira Gershwin",
+      "songwriters": "Vernon Duke - Ira Gershwin",
       "type": "Ballad",
       "year": "1939"
     },
-    "I Can\u2019t Give You Anything but Love": {
+    "I Can't Give You Anything but Love": {
       "bpm": 100,
       "form": "ABAC 32 bars",
       "key": "Bb (guitarists play in G)",
       "links": {},
-      "notes": "Simple, largely diatonic melody with some secondary dominants and a #IV diminished.",
+      "notes": "Simple, largely diatonic melody with some secondary dominants and a sharpIV diminished",
       "recommendedversions": "Louis Armstrong; Billie Holiday; George Barnes and his Octet",
-      "songwriters": "Jimmy McHugh / Dorothy Fields",
+      "songwriters": "Jimmy McHugh - Dorothy Fields",
       "type": "Swing",
       "year": "1928"
     },
     "I Got Rhythm": {
       "bpm": 100,
-      "form": "/ Rhythm Changes (AABA 32 bars)",
+      "form": "Rhythm Changes (AABA 32 bars)",
       "key": "Bb",
       "links": {},
-      "notes": "Often played with a 2-bar tag; features a classic bridge of dominants starting on III7.",
+      "notes": "Often played with a 2-bar tag; features a classic bridge of dominants starting on III7",
       "recommendedversions": "Teddy Wilson; Barney Kessel; Oscar Peterson",
-      "songwriters": "George Gershwin / Ira Gershwin",
+      "songwriters": "George Gershwin - Ira Gershwin",
       "type": "Swing",
       "year": "1930"
     },
@@ -852,7 +852,7 @@
       "form": "AB 32 bars",
       "key": "G",
       "links": {},
-      "notes": "Begins with a minor ii\u2013V resolving to the Major I chord.",
+      "notes": "Begins with a minor ii-V resolving to the Major I chord",
       "recommendedversions": "Milt Jackson; Anita O'Day; Julie London",
       "songwriters": "Cole Porter",
       "type": "Swing",
@@ -863,9 +863,9 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Begins on the ii chord; B moves to the relative minor.",
+      "notes": "Begins on the ii chord; B moves to the relative minor",
       "recommendedversions": "Kenny Burrell; Mary Osbourne; Thelonious Monk",
-      "songwriters": "Harry Barris / Gordon Clifford",
+      "songwriters": "Harry Barris - Gordon Clifford",
       "type": "Swing",
       "year": "1931"
     },
@@ -874,18 +874,18 @@
       "form": "AABA 32 bars",
       "key": "F or Bb",
       "links": {},
-      "notes": "Major A section with a minor B section (from Bb to Dm).",
-      "recommendedversions": "Benny Goodman; Nat King Cole; St\u00e9phane Grappelli",
+      "notes": "Major A section with a minor B section (from Bb to Dm)",
+      "recommendedversions": "Benny Goodman; Nat King Cole; Stephane Grappelli",
       "songwriters": "Jimmy Campbell; Reg Connelly; Ted Shapiro",
       "type": "Ballad",
       "year": "(Year not specified)"
     },
     "Impressions": {
       "bpm": 100,
-      "form": "Jazz / Modal",
+      "form": "Jazz - Modal",
       "key": "C",
       "links": {},
-      "notes": "AABA 32 bars using only two chords.",
+      "notes": "AABA 32 bars using only two chords",
       "recommendedversions": "John Coltrane; Miles Davis; Wes Montgomery",
       "songwriters": "John Coltrane",
       "type": "Free",
@@ -896,7 +896,7 @@
       "form": "ABAC 32 bars",
       "key": "Ab",
       "links": {},
-      "notes": "Opens with a II\u2013V\u2013I; a very bluesy swing tune.",
+      "notes": "Opens with a II-V-I; a very bluesy swing tune",
       "recommendedversions": "Ella Fitzgerald; Buddy Rich; Duke Ellington & Louis Armstrong",
       "songwriters": "Duke Ellington",
       "type": "Swing",
@@ -907,7 +907,7 @@
       "form": "AABA 32 bars",
       "key": "Dm",
       "links": {},
-      "notes": "Features a minor run-down and key change in the B section.",
+      "notes": "Features a minor run-down and key change in the B section",
       "recommendedversions": "Duke Ellington & John Coltrane; Django Reinhardt; Ella Fitzgerald",
       "songwriters": "Duke Ellington",
       "type": "Ballad",
@@ -918,20 +918,20 @@
       "form": "Jazz (AB 32 bars)",
       "key": "G",
       "links": {},
-      "notes": "Chords later used for the bebop tune \u201cDonna Lee\u201d.",
+      "notes": "Chords later used for the bebop tune Donna Lee",
       "recommendedversions": "Louis Armstrong; Lester Young; Art Tatum",
-      "songwriters": "James Hanley / Ballard MacDonald",
+      "songwriters": "James Hanley - Ballard MacDonald",
       "type": "Early",
       "year": "1917"
     },
     "Invitation": {
       "bpm": 100,
-      "form": "/ Latin ABC 48 bars",
+      "form": "Latin ABC 48 bars",
       "key": "Cm",
       "links": {},
-      "notes": "Takes the same melody through several keys; minor and moody.",
+      "notes": "Takes the same melody through several keys; minor and moody",
       "recommendedversions": "Joe Henderson; Bill Evans; Dexter Gordon",
-      "songwriters": "Bronislaw Kaper / Paul Webster",
+      "songwriters": "Bronislaw Kaper - Paul Webster",
       "type": "Swing",
       "year": "1950"
     },
@@ -940,53 +940,53 @@
       "form": "AABA 32 bars",
       "key": "Bb",
       "links": {},
-      "notes": "Features use of a bIII diminished chord.",
+      "notes": "Features use of a bIII diminished chord",
       "recommendedversions": "Chet Baker; Jo Stafford; Barney Kessel",
-      "songwriters": "Jimmy Van Heusen / Johnny Burke",
+      "songwriters": "Jimmy Van Heusen - Johnny Burke",
       "type": "Ballad",
       "year": "1943"
     },
-    "It Don\u2019t Mean a Thing (If It Ain\u2019t Got That Swing)": {
+    "It Don't Mean a Thing (If It Ain't Got That Swing)": {
       "bpm": 100,
       "form": "AABA 32 bars",
       "key": "Bb",
       "links": {},
-      "notes": "Starts in the relative minor then shifts to the relative major.",
+      "notes": "Starts in the relative minor then shifts to the relative major",
       "recommendedversions": "Duke Ellington; Ella Fitzgerald; Louis Armstrong",
-      "songwriters": "Duke Ellington / Irving Mills",
+      "songwriters": "Duke Ellington - Irving Mills",
       "type": "Swing",
       "year": "1931"
     },
-    "I\u2019ll Remember April": {
+    "I'll Remember April": {
       "bpm": 100,
       "form": "AB 48 bars",
       "key": "G",
       "links": {},
-      "notes": "A quintessential bebop standard with tough harmonic moves.",
+      "notes": "A quintessential bebop standard with tough harmonic moves",
       "recommendedversions": "Chet Baker; Lenny Breau; Clifford Brown",
-      "songwriters": "Gene de Paul / Patricia Johnston / Don Raye",
+      "songwriters": "Gene de Paul - Patricia Johnston - Don Raye",
       "type": "Bebop",
       "year": "1941"
     },
-    "I\u2019m Beginning to See the Light": {
+    "I'm Beginning to See the Light": {
       "bpm": 100,
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Features many secondary dominants; bridge starts on III7.",
+      "notes": "Features many secondary dominants; bridge starts on III7",
       "recommendedversions": "Duke Ellington & Ella Fitzgerald; Harry James; Peggy Lee",
-      "songwriters": "Duke Ellington / Johnny Hodges / Harry James / Don George",
+      "songwriters": "Duke Ellington - Johnny Hodges - Harry James - Don George",
       "type": "Swing",
       "year": "1944"
     },
-    "I\u2019ve Found a New Baby": {
+    "I've Found a New Baby": {
       "bpm": 100,
       "form": "AABA 32 bars",
       "key": "Dm",
       "links": {},
-      "notes": "Listen for Charlie Christian\u2019s solo.",
+      "notes": "Listen for Charlie Christian's solo",
       "recommendedversions": "Charlie Christian with Benny Goodman; Lester Young; Django Reinhardt",
-      "songwriters": "Jack Palmer / Spencer Williams",
+      "songwriters": "Jack Palmer - Spencer Williams",
       "type": "Swing",
       "year": "1926"
     },
@@ -995,7 +995,7 @@
       "form": "ABAC 64 bars",
       "key": "Eb",
       "links": {},
-      "notes": "In 3/4 time; a study in 3rds with a bluesy feel.",
+      "notes": "In 3-4 time; a study in 3rds with a bluesy feel",
       "recommendedversions": "Fats Waller; Joe Pass; Vince Guaraldi",
       "songwriters": "Fats Waller",
       "type": "Waltz",
@@ -1006,9 +1006,9 @@
       "form": "AABA 32 bars",
       "key": "G",
       "links": {},
-      "notes": "Lyrical melody that starts on the IV chord then moves to the minor iv.",
+      "notes": "Lyrical melody that starts on the IV chord then moves to the minor iv",
       "recommendedversions": "Chet Baker; Oscar Peterson; Pat Martino",
-      "songwriters": "John Klenner / Sam Lewis",
+      "songwriters": "John Klenner - Sam Lewis",
       "type": "Swing",
       "year": "1931"
     },
@@ -1017,7 +1017,7 @@
       "form": "AABA (64 bars)",
       "key": "F",
       "links": {},
-      "notes": "Features a minor iv, descending chord sequences, and a #IV diminished.",
+      "notes": "Features a minor iv, descending chord sequences, and a sharpIV diminished",
       "recommendedversions": "Ella Fitzgerald; Peggy Lee; Blossom Dearie",
       "songwriters": "Cole Porter",
       "type": "Swing",
@@ -1028,7 +1028,7 @@
       "form": "NA",
       "key": "C",
       "links": {},
-      "notes": "Catchy bluesy melody with an alternating dominant A section.",
+      "notes": "Catchy bluesy melody with an alternating dominant A section",
       "recommendedversions": "Benny Golson; Quincy Jones; Art Farmer",
       "songwriters": "Benny Golson",
       "type": "Blues",
@@ -1039,7 +1039,7 @@
       "form": "(AABC, 16 bars)",
       "key": "C",
       "links": {},
-      "notes": "Known for the famous Ladybird turnaround (I, III, bVI, bii) and a backdoor dominant.",
+      "notes": "Known for the famous Ladybird turnaround (I, III, bVI, bii) and a backdoor dominant",
       "recommendedversions": "Dexter Gordon; Chet Baker; Tadd Dameron",
       "songwriters": "Tadd Dameron",
       "type": "Bebop",
@@ -1047,10 +1047,10 @@
     },
     "Lester Leaps In": {
       "bpm": 100,
-      "form": "/ Rhythm Changes (AABA)",
+      "form": "Rhythm Changes (AABA)",
       "key": "Bb",
       "links": {},
-      "notes": "A fast-paced Kansas City style jazz number.",
+      "notes": "A fast-paced Kansas City style jazz number",
       "recommendedversions": "Count Basie Orchestra; Charlie Parker; Nat King Cole",
       "songwriters": "Lester Young (or Freddie Green)",
       "type": "Swing",
@@ -1061,9 +1061,9 @@
       "form": "Jazz (AB 32 bars)",
       "key": "G",
       "links": {},
-      "notes": "Not a blues but loaded with dominants; starts on IV7.",
+      "notes": "Not a blues but loaded with dominants; starts on IV7",
       "recommendedversions": "Sidney Bechet; Cannonball Adderley; Django Reinhardt",
-      "songwriters": "Phillip Brahms / Douglas Furber",
+      "songwriters": "Phillip Brahms - Douglas Furber",
       "type": "Early",
       "year": "1922"
     },
@@ -1072,7 +1072,7 @@
       "form": "(AABA 32 bars)",
       "key": "Dm",
       "links": {},
-      "notes": "A latin-flavored tune with few chords; starts in D Dorian; bridge shifts to Eb then D Major.",
+      "notes": "A latin-flavored tune with few chords; starts in D Dorian; bridge shifts to Eb then D Major",
       "recommendedversions": "Freddie Hubbard; Arturo Sandoval; Eddie Harris",
       "songwriters": "Freddie Hubbard",
       "type": "Modal",
@@ -1083,8 +1083,8 @@
       "form": "AABA 64 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Opening chord can be played as a Major 7 or dominant 7th; many interpretations.",
-      "recommendedversions": "Dexter Gordon; Oscar Peterson; St\u00e9phane Grappelli",
+      "notes": "Opening chord can be played as a Major 7 or dominant 7th; many interpretations",
+      "recommendedversions": "Dexter Gordon; Oscar Peterson; Stephane Grappelli",
       "songwriters": "Cole Porter",
       "type": "Swing",
       "year": "1930"
@@ -1094,9 +1094,9 @@
       "form": "AABA 32 bars",
       "key": "G",
       "links": {},
-      "notes": "Features many phrases starting on beat 2.",
+      "notes": "Features many phrases starting on beat 2",
       "recommendedversions": "George Barnes; Billie Holiday; Mildred Bailey",
-      "songwriters": "Sigmund Romberg / Oscar Hammerstein II",
+      "songwriters": "Sigmund Romberg - Oscar Hammerstein II",
       "type": "Swing",
       "year": "1928"
     },
@@ -1105,9 +1105,9 @@
       "form": "AABA 32 bars",
       "key": "F",
       "links": {},
-      "notes": "Begins with ii-Vs from another key.",
+      "notes": "Begins with ii-Vs from another key",
       "recommendedversions": "Billie Holiday; Charlie Parker; Blossom Dearie",
-      "songwriters": "Jimmy David / Roger Ramirez / James Sherman",
+      "songwriters": "Jimmy David - Roger Ramirez - James Sherman",
       "type": "Ballad",
       "year": "1941"
     },
@@ -1116,9 +1116,9 @@
       "form": "AABA 32 bars",
       "key": "Ab",
       "links": {},
-      "notes": "Signature composition with a contrasting B section.",
+      "notes": "Signature composition with a contrasting B section",
       "recommendedversions": "George Shearing; Ella Fitzgerald; Dexter Gordon",
-      "songwriters": "George Shearing / George Weiss",
+      "songwriters": "George Shearing - George Weiss",
       "type": "Swing",
       "year": "1952"
     },
@@ -1127,7 +1127,7 @@
       "form": "AABC 56 bars",
       "key": "Db",
       "links": {},
-      "notes": "A sections of 7, 14, and 24 bars respectively.",
+      "notes": "A sections of 7, 14, and 24 bars respectively",
       "recommendedversions": "John Coltrane; Stan Getz; Dianne Reeves",
       "songwriters": "Billy Strayhorn",
       "type": "Ballad",
@@ -1138,9 +1138,9 @@
       "form": "AB form",
       "key": "C",
       "links": {},
-      "notes": "Often performed with key changes; a staple for crooners.",
+      "notes": "Often performed with key changes; a staple for crooners",
       "recommendedversions": "Louis Armstrong; Ella Fitzgerald; Frank Sinatra",
-      "songwriters": "Kurt Weill / Bertolt Brecht",
+      "songwriters": "Kurt Weill - Bertolt Brecht",
       "type": "Swing",
       "year": "1928"
     },
@@ -1149,7 +1149,7 @@
       "form": "AABA 32 bars",
       "key": "D Dorian",
       "links": {},
-      "notes": "Features quartal harmony; chords may be played as slash minors or suspended chords.",
+      "notes": "Features quartal harmony; chords may be played as slash minors or suspended chords",
       "recommendedversions": "Herbie Hancock; Grant Green; Cory Wong",
       "songwriters": "Herbie Hancock",
       "type": "Modal",
@@ -1160,7 +1160,7 @@
       "form": "(AABA 40 bars)",
       "key": "Bb",
       "links": {},
-      "notes": "Features a rhythmic riff in the A section and sustained notes in the B section.",
+      "notes": "Features a rhythmic riff in the A section and sustained notes in the B section",
       "recommendedversions": "Dizzy Gillespie; Chano Pozo; Gil Fuller",
       "songwriters": "Dizzy Gillespie",
       "type": "Latin",
@@ -1171,9 +1171,9 @@
       "form": "AABA 32 bars",
       "key": "F",
       "links": {},
-      "notes": "A bluesy swing tune with a B section that modulates by a fourth.",
+      "notes": "A bluesy swing tune with a B section that modulates by a fourth",
       "recommendedversions": "Billie Holiday; Sarah Vaughan; Ella Fitzgerald",
-      "songwriters": "Fred Alhert / Roy Turk",
+      "songwriters": "Fred Alhert - Roy Turk",
       "type": "Swing",
       "year": "1929"
     },
@@ -1182,9 +1182,9 @@
       "form": "AABA 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "The B section modulates to the relative minor.",
+      "notes": "The B section modulates to the relative minor",
       "recommendedversions": "Benny Goodman & Charlie Christian; Ray Brown; Louis Armstrong",
-      "songwriters": "Eubie Blake / Andy Razaf",
+      "songwriters": "Eubie Blake - Andy Razaf",
       "type": "Ballad",
       "year": "1930"
     },
@@ -1193,8 +1193,8 @@
       "form": "Blues (AB 16 bars)",
       "key": "Fm",
       "links": {},
-      "notes": "Riff-based head mixing single-note lines with chord stabs; features a descending chord sequence in the B section.",
-      "recommendedversions": "Kenny Burrell; Kenny Burrell w/ Nigel Kennedy; Kenny Burrell live at the Village Vanguard",
+      "notes": "Riff-based head mixing single-note lines with chord stabs; features a descending chord sequence in the B section",
+      "recommendedversions": "Kenny Burrell; Kenny Burrell w- Nigel Kennedy; Kenny Burrell live at the Village Vanguard",
       "songwriters": "Kenny Burrell",
       "type": "Minor",
       "year": "1963"
@@ -1204,18 +1204,18 @@
       "form": "AABA 40 bars",
       "key": "G Dorian",
       "links": {},
-      "notes": "A section in G Dorian; B section in A Aeolian.",
-      "recommendedversions": "Miles Davis; Jimmy Smith w/ Wes Montgomery; Bill Evans",
+      "notes": "A section in G Dorian; B section in A Aeolian",
+      "recommendedversions": "Miles Davis; Jimmy Smith w- Wes Montgomery; Bill Evans",
       "songwriters": "Miles Davis",
       "type": "Modal",
       "year": "1958"
     },
     "Minor Swing": {
       "bpm": 100,
-      "form": "/ Minor Blues (16 bars)",
+      "form": "Minor Blues (16 bars)",
       "key": "Am",
       "links": {},
-      "notes": "Head/intro consists solely of triads; straightforward for soloing.",
+      "notes": "Head-intro consists solely of triads; straightforward for soloing",
       "recommendedversions": "Django Reinhardt; Les Doigts de l'Homme; Jimmy Rosenberg with Andreas Oberg",
       "songwriters": "Django Reinhardt",
       "type": "Swing",
@@ -1226,18 +1226,18 @@
       "form": "AABA 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Features a backdoor dominant in the A section.",
+      "notes": "Features a backdoor dominant in the A section",
       "recommendedversions": "Erroll Garner; Ella Fitzgerald; Stan Getz",
       "songwriters": "Erroll Garner",
       "type": "Ballad",
       "year": "1954"
     },
-    "Moanin\u2019": {
+    "Moanin'": {
       "bpm": 100,
-      "form": "Blues / Hard Bop (AABA 32 bars)",
+      "form": "Blues - Hard Bop (AABA 32 bars)",
       "key": "Fm",
       "links": {},
-      "notes": "Melody with heavy call and response elements.",
+      "notes": "Melody with heavy call and response elements",
       "recommendedversions": "Art Blakey; Quincy Jones; Wes Montgomery",
       "songwriters": "Bobby Timmons",
       "type": "Minor",
@@ -1248,7 +1248,7 @@
       "form": "AB 32 bars",
       "key": "Bb",
       "links": {},
-      "notes": "Melody uses chromatic approach notes.",
+      "notes": "Melody uses chromatic approach notes",
       "recommendedversions": "Duke Ellington; Ella Fitzgerald; Louis Armstrong",
       "songwriters": "Duke Ellington & Barney Bigard",
       "type": "Ballad",
@@ -1259,9 +1259,9 @@
       "form": "ABAC 32 bars",
       "key": "F",
       "links": {},
-      "notes": "Features descending chord movements; Barney Kessel\u2019s version is notable.",
+      "notes": "Features descending chord movements; Barney Kessel's version is notable",
       "recommendedversions": "Barney Kessel; Audrey Hepburn; Aimee Nolte",
-      "songwriters": "Henry Mancini / Johnny Mercer",
+      "songwriters": "Henry Mancini - Johnny Mercer",
       "type": "Waltz",
       "year": "1961"
     },
@@ -1270,9 +1270,9 @@
       "form": "AABA 28 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Unusual 6-bar A sections; lyrics in haiku form.",
+      "notes": "Unusual 6-bar A sections; lyrics in haiku form",
       "recommendedversions": "Johnny Smith; Stan Getz; Ella Fitzgerald & Louis Armstrong",
-      "songwriters": "Karl Suessdorf / John Blackburn",
+      "songwriters": "Karl Suessdorf - John Blackburn",
       "type": "Ballad",
       "year": "1943"
     },
@@ -1281,7 +1281,7 @@
       "form": "Minor Blues (12 bars)",
       "key": "Cm",
       "links": {},
-      "notes": "Written as a tribute to bassist Paul Chambers.",
+      "notes": "Written as a tribute to bassist Paul Chambers",
       "recommendedversions": "Doug Raney; John Coltrane; Eric Johnson",
       "songwriters": "John Coltrane",
       "type": "Uptempo",
@@ -1292,9 +1292,9 @@
       "form": "ABC 72 bars",
       "key": "Em",
       "links": {},
-      "notes": "Shifts from E minor to the parallel Major.",
+      "notes": "Shifts from E minor to the parallel Major",
       "recommendedversions": "John Coltrane; Tony Bennett; Jonathan Kreisberg",
-      "songwriters": "Richard Rodgers / Oscar Hammerstein II",
+      "songwriters": "Richard Rodgers - Oscar Hammerstein II",
       "type": "Waltz",
       "year": "?"
     },
@@ -1303,9 +1303,9 @@
       "form": "ABAC 32 bars",
       "key": "Bb",
       "links": {},
-      "notes": "The Johnny Smith version is noted for its pure jazz guitar tone.",
+      "notes": "The Johnny Smith version is noted for its pure jazz guitar tone",
       "recommendedversions": "Tony Bennett with Bill Evans; Johnny Smith; Bill Evans Trio",
-      "songwriters": "Victor Young / Ned Washington",
+      "songwriters": "Victor Young - Ned Washington",
       "type": "Ballad",
       "year": "1949"
     },
@@ -1314,9 +1314,9 @@
       "form": "AABC 36 bars",
       "key": "Cm",
       "links": {},
-      "notes": "Features a minor run-down with the B section modulating to the relative major.",
+      "notes": "Features a minor run-down with the B section modulating to the relative major",
       "recommendedversions": "Chet Baker; Ella Fitzgerald; Bill Evans with Jim Hall",
-      "songwriters": "Richard Rodgers / Lorenz Hart",
+      "songwriters": "Richard Rodgers - Lorenz Hart",
       "type": "Ballad",
       "year": "1937"
     },
@@ -1325,9 +1325,9 @@
       "form": "ABAC 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Includes a minor run-down with many harmonic twists.",
+      "notes": "Includes a minor run-down with many harmonic twists",
       "recommendedversions": "Ella Fitzgerald; Tony Bennett; Ben Webster",
-      "songwriters": "Richard Rodgers / Lorenz Hart",
+      "songwriters": "Richard Rodgers - Lorenz Hart",
       "type": "Ballad",
       "year": "1935"
     },
@@ -1336,7 +1336,7 @@
       "form": "AABC 32 bars",
       "key": "Ab",
       "links": {},
-      "notes": "Features abundant pedal tones from the bass.",
+      "notes": "Features abundant pedal tones from the bass",
       "recommendedversions": "John Coltrane; George Benson; McCoy Tyner",
       "songwriters": "John Coltrane",
       "type": "Ballad",
@@ -1347,7 +1347,7 @@
       "form": "AABA (32 or 36 bars)",
       "key": "Em",
       "links": {},
-      "notes": "Joe Pass\u2019s accompaniment exemplifies time-stretching under a singer.",
+      "notes": "Joe Pass's accompaniment exemplifies time-stretching under a singer",
       "recommendedversions": "Nat King Cole; Ella Fitzgerald & Joe Pass; Etta Jones",
       "songwriters": "eden ahbez",
       "type": "Ballad",
@@ -1358,7 +1358,7 @@
       "form": "AAB 48 bars",
       "key": "C",
       "links": {},
-      "notes": "A section with a minor ii-V resolving to a major chord; B section moves up a minor 3rd.",
+      "notes": "A section with a minor ii-V resolving to a major chord; B section moves up a minor 3rd",
       "recommendedversions": "Oscar Peterson; Art Tatum with Roy Eldridge; Django Reinhardt",
       "songwriters": "Cole Porter",
       "type": "Swing",
@@ -1366,21 +1366,21 @@
     },
     "Night in Tunisia": {
       "bpm": 100,
-      "form": "/ Afro Cuban (AABA + interlude)",
+      "form": "Afro Cuban (AABA + interlude)",
       "key": "Dm",
       "links": {},
-      "notes": "Early fusion of jazz harmony with Afro-Cuban rhythms; A section features a tritone (Eb7 in place of A7).",
+      "notes": "Early fusion of jazz harmony with Afro-Cuban rhythms; A section features a tritone (Eb7 in place of A7)",
       "recommendedversions": "Dizzy Gillespie; Charlie Parker; Rene Thomas",
       "songwriters": "Dizzy Gillespie",
       "type": "Bebop",
       "year": "1942"
     },
-    "Now\u2019s the Time": {
+    "Now's the Time": {
       "bpm": 100,
-      "form": "/ Blues (12 bars)",
+      "form": "Blues (12 bars)",
       "key": "F",
       "links": {},
-      "notes": "Features a repetitive head.",
+      "notes": "Features a repetitive head",
       "recommendedversions": "Charlie Parker; Art Blakey; The Modern Jazz Quartet",
       "songwriters": "Charlie Parker",
       "type": "Bebop",
@@ -1391,7 +1391,7 @@
       "form": "AB 32 bars",
       "key": "F or G",
       "links": {},
-      "notes": "Heavily chromatic melody; works very well as a solo guitar piece.",
+      "notes": "Heavily chromatic melody; works very well as a solo guitar piece",
       "recommendedversions": "Django Reinhardt; Tal Farlow; Joe Pass",
       "songwriters": "Django Reinhardt",
       "type": "Ballad",
@@ -1402,9 +1402,9 @@
       "form": "AABA 32 bars",
       "key": "G",
       "links": {},
-      "notes": "Opens with a I-to-IV7 move; includes a #IV diminished on the bridge.",
+      "notes": "Opens with a I-to-IV7 move; includes a sharpIV diminished on the bridge",
       "recommendedversions": "Benny Goodman; Lester Young with Count Basie; Herb Ellis with Charlie Byrd",
-      "songwriters": "George Gershwin / Ira Gershwin",
+      "songwriters": "George Gershwin - Ira Gershwin",
       "type": "Swing",
       "year": "1924"
     },
@@ -1413,7 +1413,7 @@
       "form": "Bop (AABA 32 bars)",
       "key": "Bb",
       "links": {},
-      "notes": "Based on Rhythm Changes.",
+      "notes": "Based on Rhythm Changes",
       "recommendedversions": "Miles Davis; Sonny Rollins; Grant Green",
       "songwriters": "Sonny Rollins",
       "type": "Hard",
@@ -1421,12 +1421,12 @@
     },
     "On Green Dolphin Street": {
       "bpm": 100,
-      "form": "/ Swing ABAC 32 bars",
+      "form": "Swing ABAC 32 bars",
       "key": "C or Eb",
       "links": {},
-      "notes": "A sections have a latin feel, with B and C swinging; opening moves from major to minor.",
+      "notes": "A sections have a latin feel, with B and C swinging; opening moves from major to minor",
       "recommendedversions": "Grant Green; Miles Davis; Wynton Kelly",
-      "songwriters": "Bronis\u0142aw Kaper / Ned Washington",
+      "songwriters": "Bronislaw Kaper - Ned Washington",
       "type": "Latin",
       "year": "1947"
     },
@@ -1435,7 +1435,7 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Notable III7 introduction as in \u201cAll of Me\u201d; Oscar Moore solo featured in Nat King Cole\u2019s version.",
+      "notes": "Notable III7 introduction as in All of Me; Oscar Moore solo featured in Nat King Cole's version",
       "recommendedversions": "Nat King Cole; Louis Armstrong; Peggy Lee",
       "songwriters": "Jimmy McHugh",
       "type": "Swing",
@@ -1446,7 +1446,7 @@
       "form": "ABA 40 bars",
       "key": "Bb",
       "links": {},
-      "notes": "A section centers around one note; B section provides contrasting fast phrases with tritones.",
+      "notes": "A section centers around one note; B section provides contrasting fast phrases with tritones",
       "recommendedversions": "Antonio Carlos Jobim; Caterina Valente; Stan Getz",
       "songwriters": "Antonio Carlos Jobim",
       "type": "Latin",
@@ -1457,7 +1457,7 @@
       "form": "ABAC 32 bars",
       "key": "G",
       "links": {},
-      "notes": "A contrafact using the same changes as \u201cHow High the Moon\u201d.",
+      "notes": "A contrafact using the same changes as How High the Moon",
       "recommendedversions": "Charlie Parker; Barry Harris; Bud Powell",
       "songwriters": "Charlie Parker",
       "type": "Bebop",
@@ -1468,7 +1468,7 @@
       "form": "ABAC 32 bars",
       "key": "G",
       "links": {},
-      "notes": "Great for learning about ii-Vs from different keys.",
+      "notes": "Great for learning about ii-Vs from different keys",
       "recommendedversions": "Chet Baker; Charlie Parker; Coleman Hawkins with Django Reinhardt",
       "songwriters": "Johnny Green",
       "type": "Swing",
@@ -1479,9 +1479,9 @@
       "form": "ABAC 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Uses ii-V-I to modulate to F major (IV chord in the song).",
+      "notes": "Uses ii-V-I to modulate to F major (IV chord in the song)",
       "recommendedversions": "Frank Sinatra with Count Basie; Billie Holiday; Jimmy Raney",
-      "songwriters": "Arthur Johnston / Johnny Burke",
+      "songwriters": "Arthur Johnston - Johnny Burke",
       "type": "Swing",
       "year": "1936"
     },
@@ -1490,7 +1490,7 @@
       "form": "AABA 32 bars",
       "key": "Bb",
       "links": {},
-      "notes": "A variation on rhythm changes.",
+      "notes": "A variation on rhythm changes",
       "recommendedversions": "Duke Ellington; Charlie Parker (live at Massey Hall); Dave Brubeck",
       "songwriters": "Juan Tizol",
       "type": "Swing",
@@ -1501,9 +1501,9 @@
       "form": "AABA 32 bars",
       "key": "D",
       "links": {},
-      "notes": "A section shifts from I major to i minor; B section moves to minor iV.",
+      "notes": "A section shifts from I major to i minor; B section moves to minor iV",
       "recommendedversions": "Ahmad Jamal Trio; Ted Heath; Bireli Lagrene",
-      "songwriters": "Nat Simon / Buddy Bernier",
+      "songwriters": "Nat Simon - Buddy Bernier",
       "type": "Ballad",
       "year": "1936"
     },
@@ -1512,7 +1512,7 @@
       "form": "AABA 32 bars",
       "key": "F",
       "links": {},
-      "notes": "B section modulates to the key of A.",
+      "notes": "B section modulates to the key of A",
       "recommendedversions": "Chet Baker; Wes Montgomery; Paul Desmond with Jim Hall",
       "songwriters": "Jimmy Van Heusen",
       "type": "Ballad",
@@ -1523,7 +1523,7 @@
       "form": "(16 bar form)",
       "key": "Am",
       "links": {},
-      "notes": "Simple and effective latin phrase.",
+      "notes": "Simple and effective latin phrase",
       "recommendedversions": "Joe Henderson; Chick Corea; McCoy Tyner",
       "songwriters": "Joe Henderson",
       "type": "Latin",
@@ -1531,10 +1531,10 @@
     },
     "Rhapsody in Blue": {
       "bpm": 100,
-      "form": "/ Jazz",
+      "form": "Jazz",
       "key": "Bb",
       "links": {},
-      "notes": "An extended movement fusing classical elements with jazz harmony.",
+      "notes": "An extended movement fusing classical elements with jazz harmony",
       "recommendedversions": "Duke Ellington; Andre Previn; Glenn Miller",
       "songwriters": "George Gershwin",
       "type": "Classical",
@@ -1545,7 +1545,7 @@
       "form": "ABAC 32 bars",
       "key": "Ab",
       "links": {},
-      "notes": "Features exemplary solos by Charlie Christian.",
+      "notes": "Features exemplary solos by Charlie Christian",
       "recommendedversions": "Benny Goodman & Charlie Christian; Jonah Jones; Barney Kessel",
       "songwriters": "Alec Wilder",
       "type": "Swing",
@@ -1556,7 +1556,7 @@
       "form": "AABA 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "One of the most famous jazz ballads.",
+      "notes": "One of the most famous jazz ballads",
       "recommendedversions": "Thelonious Monk; Ella Fitzgerald; Wes Montgomery",
       "songwriters": "Thelonious Monk",
       "type": "Ballad",
@@ -1567,9 +1567,9 @@
       "form": "Jazz (AABBCD 36 bars)",
       "key": "C",
       "links": {},
-      "notes": "A classic example of early jazz.",
+      "notes": "A classic example of early jazz",
       "recommendedversions": "Bix Beiderbeke; Benny Goodman; Tommy Dorsey",
-      "songwriters": "Clarence Williams / Spencer Williams",
+      "songwriters": "Clarence Williams - Spencer Williams",
       "type": "Early",
       "year": "1919"
     },
@@ -1578,9 +1578,9 @@
       "form": "AABA 32 bars",
       "key": "Bb",
       "links": {},
-      "notes": "Based on rhythm changes.",
+      "notes": "Based on rhythm changes",
       "recommendedversions": "Dizzy Gillespie; Joshua Redman; (also features Charlie Parker and Bud Powell)",
-      "songwriters": "Dizzy Gillespie / Kenny Clarke",
+      "songwriters": "Dizzy Gillespie - Kenny Clarke",
       "type": "Bebop",
       "year": "1941"
     },
@@ -1589,9 +1589,9 @@
       "form": "ABA 56 bars",
       "key": "C",
       "links": {},
-      "notes": "Extensive time on the I chord; B section modulates to F then Eb.",
+      "notes": "Extensive time on the I chord; B section modulates to F then Eb",
       "recommendedversions": "Paul Desmond; Vince Guaraldi; Grant Green",
-      "songwriters": "Antonio Carlos Jobim / Luis Bonfa",
+      "songwriters": "Antonio Carlos Jobim - Luis Bonfa",
       "type": "Latin",
       "year": "1959"
     },
@@ -1600,9 +1600,9 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Quick major ii-V progressions moving in whole-tone steps.",
+      "notes": "Quick major ii-V progressions moving in whole-tone steps",
       "recommendedversions": "Duke Ellington; Joe Pass; Jimmy Smith with Kenny Burrell",
-      "songwriters": "Duke Ellington / Billy Strayhorn",
+      "songwriters": "Duke Ellington - Billy Strayhorn",
       "type": "Swing",
       "year": "1952"
     },
@@ -1611,7 +1611,7 @@
       "form": "AABA 32 bars",
       "key": "F",
       "links": {},
-      "notes": "A contrafact of \u201cHoneysuckle Rose\u201d.",
+      "notes": "A contrafact of Honeysuckle Rose",
       "recommendedversions": "Charlie Parker; Dexter Gordon; Quincy Jones",
       "songwriters": "Charlie Parker",
       "type": "Bebop",
@@ -1622,7 +1622,7 @@
       "form": "AABA 32 bars",
       "key": "Ab",
       "links": {},
-      "notes": "A section built on a single chord ideal for phrasing practice.",
+      "notes": "A section built on a single chord ideal for phrasing practice",
       "recommendedversions": "Benny Goodman & Charlie Christian; Herb Ellis & Joe Pass; Oscar Peterson with Herb Ellis",
       "songwriters": "Charlie Christian",
       "type": "Swing",
@@ -1633,7 +1633,7 @@
       "form": "AB 32 bars",
       "key": "G",
       "links": {},
-      "notes": "Often played in a latin style; the resolution comes at the very end.",
+      "notes": "Often played in a latin style; the resolution comes at the very end",
       "recommendedversions": "Dexter Gordon; Ella Fitzgerald; Tony Bennett",
       "songwriters": "Johnny Mandel",
       "type": "Ballad",
@@ -1644,9 +1644,9 @@
       "form": "AABA 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Features excellent soloing by Jim Hall in the John Lewis version.",
+      "notes": "Features excellent soloing by Jim Hall in the John Lewis version",
       "recommendedversions": "Anita O'Day; John Lewis & Jim Hall; Dexter Gordon",
-      "songwriters": "Hoagy Carmichael / Johnny Mercer",
+      "songwriters": "Hoagy Carmichael - Johnny Mercer",
       "type": "Ballad",
       "year": "1941"
     },
@@ -1655,7 +1655,7 @@
       "form": "AABA 32 bars",
       "key": "D Dorian",
       "links": {},
-      "notes": "A sections in D Dorian, with B in Eb Dorian; introduction to modal jazz and quartal voicings.",
+      "notes": "A sections in D Dorian, with B in Eb Dorian; introduction to modal jazz and quartal voicings",
       "recommendedversions": "Miles Davis; George Benson; Bill Evans",
       "songwriters": "Miles Davis",
       "type": "Modal",
@@ -1666,9 +1666,9 @@
       "form": "AABA 32 bars",
       "key": "Cm",
       "links": {},
-      "notes": "Simple A section with a B that moves to the relative major then returns to Cm.",
+      "notes": "Simple A section with a B that moves to the relative major then returns to Cm",
       "recommendedversions": "Emily Remler; Sonny Rollins; Artie Shaw",
-      "songwriters": "Sigmund Romberg / Oscar Hammerstein II",
+      "songwriters": "Sigmund Romberg - Oscar Hammerstein II",
       "type": "Swing",
       "year": "1928"
     },
@@ -1677,7 +1677,7 @@
       "form": "(12-bar)",
       "key": "Cm",
       "links": {},
-      "notes": "Starts in Cm then modulates through F, Eb, and Db; reputedly written by Chuck Wayne.",
+      "notes": "Starts in Cm then modulates through F, Eb, and Db; reputedly written by Chuck Wayne",
       "recommendedversions": "Miles Davis; Chet Baker; Bill Evans",
       "songwriters": "Miles Davis",
       "type": "Blues",
@@ -1688,9 +1688,9 @@
       "form": "ABAC 32 bars",
       "key": "Bb",
       "links": {},
-      "notes": "A gentle melody with interesting harmonic twists.",
+      "notes": "A gentle melody with interesting harmonic twists",
       "recommendedversions": "Bill Evans; Miles Davis; Chet Baker",
-      "songwriters": "Frank Churchill / Larry Morey",
+      "songwriters": "Frank Churchill - Larry Morey",
       "type": "Waltz",
       "year": "1937"
     },
@@ -1699,9 +1699,9 @@
       "form": "AABA 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Bridge often features a pedal on the 5th bass note.",
+      "notes": "Bridge often features a pedal on the 5th bass note",
       "recommendedversions": "Glenn Miller; Ben Webster; Tommy Emmanuel",
-      "songwriters": "Harold Arlen / Yip Harburg",
+      "songwriters": "Harold Arlen - Yip Harburg",
       "type": "Ballad",
       "year": "1939"
     },
@@ -1710,8 +1710,8 @@
       "form": "AAB 24 bars",
       "key": "Fm",
       "links": {},
-      "notes": "Largely diatonic; a relaxed groove.",
-      "recommendedversions": "Horace Silver; George Benson; Richard \u2018Groove\u2019 Holmes",
+      "notes": "Largely diatonic; a relaxed groove",
+      "recommendedversions": "Horace Silver; George Benson; Richard Groove Holmes",
       "songwriters": "Horace Silver",
       "type": "Latin",
       "year": "1964"
@@ -1721,7 +1721,7 @@
       "form": "(12-bar)",
       "key": "Bb",
       "links": {},
-      "notes": "Based on a simple minor pentatonic melody.",
+      "notes": "Based on a simple minor pentatonic melody",
       "recommendedversions": "Sonny Rollins; Grant Green; Milt Jackson",
       "songwriters": "Sonny Rollins",
       "type": "Blues",
@@ -1732,9 +1732,9 @@
       "form": "AABA 32 bars",
       "key": "Ab",
       "links": {},
-      "notes": "Bridge descends a semitone to G Major.",
+      "notes": "Bridge descends a semitone to G Major",
       "recommendedversions": "Duke Ellington; Oscar Peterson; Billie Holiday",
-      "songwriters": "Duke Ellington / Irving Mills / Mitchell Parish",
+      "songwriters": "Duke Ellington - Irving Mills - Mitchell Parish",
       "type": "Ballad",
       "year": "1932"
     },
@@ -1743,7 +1743,7 @@
       "form": "AAB (with intro)",
       "key": "Bm",
       "links": {},
-      "notes": "Landmark fusion piece; intro inspired by Joaqu\u00edn Rodrigo's Concierto de Aranjuez.",
+      "notes": "Landmark fusion piece; intro inspired by Joaquidn Rodrigo's Concierto de Aranjuez",
       "recommendedversions": "Chick Corea; Bireli Lagrene; Paco de Lucia and John McLaughlin",
       "songwriters": "Chick Corea",
       "type": "Fusion",
@@ -1754,9 +1754,9 @@
       "form": "(AABC 52 bars)",
       "key": "G",
       "links": {},
-      "notes": "B section shifts to the parallel minor.",
+      "notes": "B section shifts to the parallel minor",
       "recommendedversions": "Django Reinhardt; Duke Ellington; Louis Armstrong",
-      "songwriters": "W.C. Handy",
+      "songwriters": "W C Handy",
       "type": "Blues",
       "year": "1914"
     },
@@ -1765,7 +1765,7 @@
       "form": "(16-bar form)",
       "key": "C",
       "links": {},
-      "notes": "Features calypso rhythms and a catchy melody.",
+      "notes": "Features calypso rhythms and a catchy melody",
       "recommendedversions": "Sonny Rollins; Count Basie; Joshua Redman",
       "songwriters": "Sonny Rollins",
       "type": "Latin",
@@ -1776,9 +1776,9 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Features the legendary solo of Charlie Christian.",
+      "notes": "Features the legendary solo of Charlie Christian",
       "recommendedversions": "Charlie Christian; Nat King Cole; Lester Young",
-      "songwriters": "Hoagy Carmichael / Mitchell Parish",
+      "songwriters": "Hoagy Carmichael - Mitchell Parish",
       "type": "Ballad",
       "year": "1927"
     },
@@ -1787,9 +1787,9 @@
       "form": "ABAC 32 bars",
       "key": "Bb",
       "links": {},
-      "notes": "Notorious for its harmonic twists.",
+      "notes": "Notorious for its harmonic twists",
       "recommendedversions": "Bill Evans; Miles Davis; Ella Fitzgerald",
-      "songwriters": "Victor Young / Ned Washington",
+      "songwriters": "Victor Young - Ned Washington",
       "type": "Ballad",
       "year": "1944"
     },
@@ -1798,18 +1798,18 @@
       "form": "(16-bar minor)",
       "key": "Cm",
       "links": {},
-      "notes": "Begins with a pedal tone; last 8 bars move up a tone.",
+      "notes": "Begins with a pedal tone; last 8 bars move up a tone",
       "recommendedversions": "Ahmad Jamal; Lee Ritenour; Freddie Hubbard",
       "songwriters": "Oliver Nelson",
       "type": "Blues",
       "year": "1960"
     },
-    "Stompin\u2019 at the Savoy": {
+    "Stompin' at the Savoy": {
       "bpm": 100,
       "form": "AABA 32 bars",
       "key": "Db",
       "links": {},
-      "notes": "A great example of call and response.",
+      "notes": "A great example of call and response",
       "recommendedversions": "Benny Goodman; Ella Fitzgerald & Louis Armstrong; Kenny Burrell",
       "songwriters": "Edgar Sampson",
       "type": "Swing",
@@ -1820,9 +1820,9 @@
       "form": "AABC 32 bars",
       "key": "G",
       "links": {},
-      "notes": "A bluesy ballad with a distinct mood.",
+      "notes": "A bluesy ballad with a distinct mood",
       "recommendedversions": "Billie Holiday; Oscar Peterson; Sidney Bechet",
-      "songwriters": "Harold Arlen / Ted Koehler",
+      "songwriters": "Harold Arlen - Ted Koehler",
       "type": "Ballad",
       "year": "1933"
     },
@@ -1831,18 +1831,18 @@
       "form": "(12-bar)",
       "key": "F",
       "links": {},
-      "notes": "Features strong chromaticism in the melody.",
+      "notes": "Features strong chromaticism in the melody",
       "recommendedversions": "Thelonious Monk; Miles Davis with John Coltrane; Mike Stern",
       "songwriters": "Thelonious Monk",
       "type": "Blues",
       "year": "1951"
     },
-    "Struttin\u2019 with Some BBQ": {
+    "Struttin' with Some BBQ": {
       "bpm": 100,
       "form": "AB 32 bars",
       "key": "F",
       "links": {},
-      "notes": "Listen to George Barnes\u2019s version for great interplay.",
+      "notes": "Listen to George Barnes's version for great interplay",
       "recommendedversions": "Louis Armstrong; Steve Giarratano; Jonah Jones; Ruby Braff",
       "songwriters": "Lil Hardin",
       "type": "Swing",
@@ -1853,9 +1853,9 @@
       "form": "(16-bar form)",
       "key": "Am",
       "links": {},
-      "notes": "Listen for the turnaround in the Ella and Louis versions.",
+      "notes": "Listen for the turnaround in the Ella and Louis versions",
       "recommendedversions": "Ella Fitzgerald; Billie Holiday; Chet Baker",
-      "songwriters": "George Gershwin / DuBose Heyward",
+      "songwriters": "George Gershwin - DuBose Heyward",
       "type": "Ballad",
       "year": "1935"
     },
@@ -1864,7 +1864,7 @@
       "form": "(16-bar form)",
       "key": "Am",
       "links": {},
-      "notes": "Features a ii-V in bar ii; simple for improvisation.",
+      "notes": "Features a ii-V in bar ii; simple for improvisation",
       "recommendedversions": "Bobby Hepp; West Montgomery; Pat Martino",
       "songwriters": "Bobby Hepp",
       "type": "Soul",
@@ -1875,20 +1875,20 @@
       "form": "(32 bars, AAB)",
       "key": "G",
       "links": {},
-      "notes": "Dominant movements in 4ths during the A section.",
+      "notes": "Dominant movements in 4ths during the A section",
       "recommendedversions": "Django Reinhardt; Nat King Cole; Count Basie",
-      "songwriters": "Ben Bernie / Maceo Pinkard / Kenneth Casey",
+      "songwriters": "Ben Bernie - Maceo Pinkard - Kenneth Casey",
       "type": "Swing",
       "year": "?"
     },
-    "S\u2019Wonderful": {
+    "S'Wonderful": {
       "bpm": 100,
-      "form": "/ Latin AABA 32 bars",
+      "form": "Latin AABA 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Often played with a latin feel.",
+      "notes": "Often played with a latin feel",
       "recommendedversions": "Tony Bennett; Julie London; Fred Astaire",
-      "songwriters": "George Gershwin / Ira Gershwin",
+      "songwriters": "George Gershwin - Ira Gershwin",
       "type": "Swing",
       "year": "1927"
     },
@@ -1897,7 +1897,7 @@
       "form": "Jazz (ABA, 24 bars)",
       "key": "Ebm",
       "links": {},
-      "notes": "A section is a two-chord vamp in 5/4 time.",
+      "notes": "A section is a two-chord vamp in 5-4 time",
       "recommendedversions": "Dave Brubeck; George Benson; Quincy Jones",
       "songwriters": "Paul Desmond",
       "type": "Cool",
@@ -1908,7 +1908,7 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Features an II7 chord in the A section.",
+      "notes": "Features an II7 chord in the A section",
       "recommendedversions": "Duke Ellington; Ella Fitzgerald; Cab Calloway",
       "songwriters": "Billy Strayhorn",
       "type": "Swing",
@@ -1919,9 +1919,9 @@
       "form": "ABAC 32 bars",
       "key": "F",
       "links": {},
-      "notes": "B section ends with an interesting key change.",
+      "notes": "B section ends with an interesting key change",
       "recommendedversions": "Coleman Hawkins; Ben Webster; Ray Brown; Jim Hall",
-      "songwriters": "Victor Schertzinger / Johnny Mercer",
+      "songwriters": "Victor Schertzinger - Johnny Mercer",
       "type": "Swing",
       "year": "1941"
     },
@@ -1930,9 +1930,9 @@
       "form": "ABAC 32 bars",
       "key": "Ab",
       "links": {},
-      "notes": "B section modulates to C Major; nice use of IV7 for a bluesy feel.",
+      "notes": "B section modulates to C Major; nice use of IV7 for a bluesy feel",
       "recommendedversions": "Oscar Peterson; Anita O'Day; George Van Eps; Tal Farlow",
-      "songwriters": "Vincent Youmans / Irving Caesar",
+      "songwriters": "Vincent Youmans - Irving Caesar",
       "type": "Swing",
       "year": "1924"
     },
@@ -1941,9 +1941,9 @@
       "form": "ABAC 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "The Kenny Burrell version exemplifies full, rich archtop tone.",
+      "notes": "The Kenny Burrell version exemplifies full, rich archtop tone",
       "recommendedversions": "Ben Webster; Kenny Burrell; Ella Fitzgerald & Louis Armstrong",
-      "songwriters": "Walter Goss / Jack Lawrence",
+      "songwriters": "Walter Goss - Jack Lawrence",
       "type": "Ballad",
       "year": "1946"
     },
@@ -1952,7 +1952,7 @@
       "form": "NA",
       "key": "Bb",
       "links": {},
-      "notes": "12-bar blues with a repetitive head.",
+      "notes": "12-bar blues with a repetitive head",
       "recommendedversions": "Sonny Rollins & John Coltrane; Emily Remler; Dexter Gordon",
       "songwriters": "Sonny Rollins",
       "type": "Blues",
@@ -1963,9 +1963,9 @@
       "form": "48 bars",
       "key": "Bb",
       "links": {},
-      "notes": "Many phrases begin on beat 2 in the A section.",
+      "notes": "Many phrases begin on beat 2 in the A section",
       "recommendedversions": "Frank Sinatra; Ella Fitzgerald; Tony Bennett",
-      "songwriters": "Richard Rodgers / Lorenz Hart",
+      "songwriters": "Richard Rodgers - Lorenz Hart",
       "type": "AABC",
       "year": "1937"
     },
@@ -1974,9 +1974,9 @@
       "form": "AABA 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Opens with a shift from major to minor; B section modulates to the relative minor.",
+      "notes": "Opens with a shift from major to minor; B section modulates to the relative minor",
       "recommendedversions": "Oscar Peterson; Etta James; Lester Young",
-      "songwriters": "George Gershwin / Ira Gershwin",
+      "songwriters": "George Gershwin - Ira Gershwin",
       "type": "Ballad",
       "year": "1924"
     },
@@ -1985,9 +1985,9 @@
       "form": "AABA 32 bars",
       "key": "F",
       "links": {},
-      "notes": "Features a wonderful ii-V to the IV chord in bar 2.",
+      "notes": "Features a wonderful ii-V to the IV chord in bar 2",
       "recommendedversions": "Ella Fitzgerald & Louis Armstrong; Oscar Peterson; George Shearing & Nancy Wilson",
-      "songwriters": "Hoagy Carmichael / Ned Washington",
+      "songwriters": "Hoagy Carmichael - Ned Washington",
       "type": "Ballad",
       "year": "1937"
     },
@@ -1996,9 +1996,9 @@
       "form": "AAB 48 bars",
       "key": "F",
       "links": {},
-      "notes": "B section modulates up a minor 3rd.",
+      "notes": "B section modulates up a minor 3rd",
       "recommendedversions": "Benny Goodman with Peggy Lee; Billie Holiday with Teddy Wilson; Wes Montgomery",
-      "songwriters": "Jerome Kern / Dorothy Fields",
+      "songwriters": "Jerome Kern - Dorothy Fields",
       "type": "Swing",
       "year": "1936"
     },
@@ -2007,9 +2007,9 @@
       "form": "ABAC 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Features a backdoor dominant (bVII7); sometimes played as a ballad.",
+      "notes": "Features a backdoor dominant (bVII7); sometimes played as a ballad",
       "recommendedversions": "Chet Baker; John Scofield; Tal Farlow",
-      "songwriters": "Harry Warren / Mack Gordon",
+      "songwriters": "Harry Warren - Mack Gordon",
       "type": "Swing",
       "year": "1942"
     },
@@ -2018,9 +2018,9 @@
       "form": "AABA 32 bars",
       "key": "Bb",
       "links": {},
-      "notes": "Features tritones in the A section; B shifts to the relative minor.",
+      "notes": "Features tritones in the A section; B shifts to the relative minor",
       "recommendedversions": "Chet Baker; Tal Farlow; Billie Holiday",
-      "songwriters": "Isham Jones / Marty Symes",
+      "songwriters": "Isham Jones - Marty Symes",
       "type": "Swing",
       "year": "1936"
     },
@@ -2029,29 +2029,29 @@
       "form": "AABA 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "B section modulates to the iii minor.",
+      "notes": "B section modulates to the iii minor",
       "recommendedversions": "Ella Fitzgerald; Chet Baker; Billy Bauer",
-      "songwriters": "Jack Strachey / Eric Maschwitz",
+      "songwriters": "Jack Strachey - Eric Maschwitz",
       "type": "Ballad",
       "year": "1936"
     },
-    "They Can\u2019t Take That Away from Me": {
+    "They Can't Take That Away from Me": {
       "bpm": 100,
       "form": "AABC 36 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Often features call and response in the A sections.",
+      "notes": "Often features call and response in the A sections",
       "recommendedversions": "Mel Torme; Ruby Braff & George Barnes; Ahmad Jamal",
-      "songwriters": "George Gershwin / Ira Gershwin",
+      "songwriters": "George Gershwin - Ira Gershwin",
       "type": "Swing",
       "year": "1937"
     },
-    "Things Ain\u2019t What They Used to Be": {
+    "Things Ain't What They Used to Be": {
       "bpm": 100,
       "form": "(12-bar)",
       "key": "Db or F",
       "links": {},
-      "notes": "Riff-based head.",
+      "notes": "Riff-based head",
       "recommendedversions": "Oscar Peterson; Jim Hall; Count Basie",
       "songwriters": "Mercer Ellington",
       "type": "Blues",
@@ -2062,7 +2062,7 @@
       "form": "Jazz (AABACDEF)",
       "key": "Bb",
       "links": {},
-      "notes": "A fast-tempo early jazz tune.",
+      "notes": "A fast-tempo early jazz tune",
       "recommendedversions": "Original Dixieland Jazz Band; Bireli Lagrene; Django Reinhardt",
       "songwriters": "Original Dixieland Jazz Band",
       "type": "Early",
@@ -2073,9 +2073,9 @@
       "form": "ABCA 32 bars",
       "key": "Dm",
       "links": {},
-      "notes": "Riff-based head with a minor blues feel; essentially the tune \u201cSwing to Bop\u201d by Charlie Christian.",
+      "notes": "Riff-based head with a minor blues feel; essentially the tune Swing to Bop by Charlie Christian",
       "recommendedversions": "Count Basie; Oscar Peterson; Charlie Byrd; Barney Kessel & Herb Ellis",
-      "songwriters": "Edgard Battle / Eddie Durham",
+      "songwriters": "Edgard Battle - Eddie Durham",
       "type": "Swing",
       "year": "1937"
     },
@@ -2084,7 +2084,7 @@
       "form": "AB 32 bars",
       "key": "D",
       "links": {},
-      "notes": "Starts in D Major then shifts to C and Bb Major.",
+      "notes": "Starts in D Major then shifts to C and Bb Major",
       "recommendedversions": "Miles Davis; Sonny Rollins; Chet Baker",
       "songwriters": "Miles Davis",
       "type": "Bebop",
@@ -2095,7 +2095,7 @@
       "form": "(AABAC 78 bars)",
       "key": "F",
       "links": {},
-      "notes": "A simple melody with interesting harmonic twists; often misspelled as \u201cDebbie\u201d.",
+      "notes": "A simple melody with interesting harmonic twists; often misspelled as Debbie",
       "recommendedversions": "Bill Evans; Oscar Peterson; Sylvan Luc",
       "songwriters": "Bill Evans",
       "type": "Waltz",
@@ -2106,7 +2106,7 @@
       "form": "(16-bar)",
       "key": "F",
       "links": {},
-      "notes": "Features a funky groove.",
+      "notes": "Features a funky groove",
       "recommendedversions": "Herbie Hancock; Mongo Santamaria; Hank Garland",
       "songwriters": "Herbie Hancock",
       "type": "Blues",
@@ -2117,7 +2117,7 @@
       "form": "AABA 44 bars",
       "key": "D",
       "links": {},
-      "notes": "Includes an interesting diminished chord in bar ii and beautiful chord movements.",
+      "notes": "Includes an interesting diminished chord in bar ii and beautiful chord movements",
       "recommendedversions": "Antonio Carlos Jobim; Paul Desmond; Ahmad Jamal",
       "songwriters": "Antonio Carlos Jobim",
       "type": "Latin",
@@ -2128,7 +2128,7 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Features minor ii-Vs that resolve to a major chord; listen to \u201cHot House\u201d for similar changes.",
+      "notes": "Features minor ii-Vs that resolve to a major chord; listen to Hot House for similar changes",
       "recommendedversions": "Charlie Parker; Nat King Cole Trio; Wynton Marsalis",
       "songwriters": "Cole Porter",
       "type": "Swing",
@@ -2139,9 +2139,9 @@
       "form": "ABAC 32 bars",
       "key": "Eb",
       "links": {},
-      "notes": "Heavily features the classic I\u2013vi\u2013ii\u2013V turnaround.",
+      "notes": "Heavily features the classic I-vi-ii-V turnaround",
       "recommendedversions": "Bill Evans; Chet Baker; Tony Bennett with Count Basie",
-      "songwriters": "Victor Young / Edward Heyman",
+      "songwriters": "Victor Young - Edward Heyman",
       "type": "Ballad",
       "year": "1952"
     },
@@ -2150,7 +2150,7 @@
       "form": "Swing (AABA 32 bars)",
       "key": "G",
       "links": {},
-      "notes": "B section modulates to C minor.",
+      "notes": "B section modulates to C minor",
       "recommendedversions": "Billie Holiday; The Modern Jazz Quartet; Wes Montgomery",
       "songwriters": "Ann Ronell",
       "type": "Bluesy",
@@ -2161,9 +2161,9 @@
       "form": "Blues",
       "key": "Fm",
       "links": {},
-      "notes": "Riff-based, with a call-and-response head.",
+      "notes": "Riff-based, with a call-and-response head",
       "recommendedversions": "Nat Adderley; Nina Simone; Gregory Porter",
-      "songwriters": "Nat Adderley / Oscar Brown Jr.",
+      "songwriters": "Nat Adderley - Oscar Brown Jr",
       "type": "Minor",
       "year": "1960"
     },
@@ -2172,7 +2172,7 @@
       "form": "AABA 32 bars",
       "key": "C",
       "links": {},
-      "notes": "Features a backdoor dominant; bridge starts on the iii.",
+      "notes": "Features a backdoor dominant; bridge starts on the iii",
       "recommendedversions": "Charlie Parker; Gene Krupa; Tal Farlow",
       "songwriters": "Charlie Parker",
       "type": "Bebop",
@@ -2183,18 +2183,18 @@
       "form": "(16-bar)",
       "key": "Dm",
       "links": {},
-      "notes": "Opening 8 bars have a moody minor feel; last 8 bars move in 4ths.",
+      "notes": "Opening 8 bars have a moody minor feel; last 8 bars move in 4ths",
       "recommendedversions": "Miles Davis; Ella Fitzgerald; Wes Montgomery",
-      "songwriters": "Jerome Kern / Otto Harbach",
+      "songwriters": "Jerome Kern - Otto Harbach",
       "type": "Ballad",
       "year": "?"
     },
-    "You\u2019d be so Nice to Come Home To": {
+    "You'd be so Nice to Come Home To": {
       "bpm": 100,
       "form": "ABAC 32 bars",
       "key": "Am",
       "links": {},
-      "notes": "The Julie London version exemplifies the impact of a great arrangement.",
+      "notes": "The Julie London version exemplifies the impact of a great arrangement",
       "recommendedversions": "Julie London; Helen Merrill; Coleman Hawkins & Ben Webster",
       "songwriters": "Cole Porter",
       "type": "Swing",
@@ -2416,7 +2416,7 @@
               "time": 0
             },
             "theory": {
-              "note": "d.grdn solo target notes",
+              "note": "solo target notes",
               "time": 5280
             },
             "video": {
@@ -2938,7 +2938,7 @@
               "time": 0
             },
             "theory": {
-              "note": "j.larsen (link)",
+              "note": "larsen (link)",
               "time": 900
             },
             "video": {
@@ -4618,7 +4618,7 @@
               "time": 0
             },
             "theory": {
-              "note": "arpg dgrms x: arpg c/f",
+              "note": "arpg dgrms x: arpg c-f",
               "time": 3581
             },
             "video": {
@@ -4664,7 +4664,7 @@
               "time": 0
             },
             "video": {
-              "note": "J.STEPHAN",
+              "note": "STEPHAN",
               "time": 3600
             }
           },
@@ -5012,7 +5012,7 @@
               "time": 0
             },
             "video": {
-              "note": "J.LRSN/B.KSSL",
+              "note": "Larsen-Kessels",
               "time": 1888
             }
           },
@@ -5032,7 +5032,7 @@
               "time": 1146
             },
             "fun": {
-              "note": "idle moments (g.green) etc",
+              "note": "idle moments (green) etc",
               "time": 1109
             },
             "gig": {
@@ -5965,7 +5965,7 @@
               "time": 0
             },
             "theory": {
-              "note": "keys\u2794ireal (scales)",
+              "note": "keys ireal (scales)",
               "time": 2718
             },
             "video": {
@@ -7674,7 +7674,7 @@
               "time": 0
             },
             "fun": {
-              "note": "gig w/ roland",
+              "note": "gig w- roland",
               "time": 8100
             },
             "gig": {
@@ -7944,7 +7944,7 @@
               "time": 3699
             },
             "fun": {
-              "note": "wup)x: db\u2794g\u2794c arpg(sq)",
+              "note": "arpeggios",
               "time": 1080
             },
             "gig": {
@@ -7986,7 +7986,7 @@
               "time": 3539
             },
             "fun": {
-              "note": "wup)x: db\u2794g\u2794c arpg(sq) r:",
+              "note": "arpeggios",
               "time": 1200
             },
             "gig": {
@@ -8112,7 +8112,7 @@
               "time": 9000
             },
             "fun": {
-              "note": "wup)x:db\u2794g\u2794c arpg(sq)+bl",
+              "note": "arpeggios",
               "time": 1200
             },
             "gig": {
@@ -8459,13 +8459,13 @@
           "form": "ABAC 32 bars",
           "key": "C",
           "notes": "liked te Ella version",
-          "recommendedversions": "E.Fitzgerlad",
-          "songwriters": "Gerald Marks / Seymour Simons",
+          "recommendedversions": "Ella Fitzgerlad",
+          "songwriters": "Gerald Marks - Seymour Simons",
           "time": 8217,
           "type": "Swing",
           "year": "1931",
           "links": {
-            "https://www.youtube.com/watch?v=vG76JGRIzAg": {
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3DvG76JGRIzAg": {
               "key": "C",
               "kind": "youtube",
               "name": "All Of Me backing track",
@@ -8476,8 +8476,8 @@
         },
         "All The Things You Are": {
           "bpm": 120,
-          "form": "/ Swing AABC 36 bars",
-          "key": "A♭",
+          "form": "Swing AABC 36 bars",
+          "key": "Ab",
           "notes": "aligning Andy's lessons with Patreon stuff",
           "recommendedversions": "",
           "songwriters": "Jerome Kern",
@@ -8485,8 +8485,8 @@
           "type": "Ballad",
           "year": "1939",
           "links": {
-            "https://www.youtube.com/watch?v=6mDqEpQLUWQ": {
-              "key": "A♭",
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3D6mDqEpQLUWQ": {
+              "key": "Ab",
               "kind": "youtube",
               "name": "All The Things You Are backing track",
               "category": "backingTrack",
@@ -8497,7 +8497,7 @@
         "Autumn Leaves": {
           "bpm": 130,
           "form": "AAB 32 bars",
-          "key": "Em / Gm",
+          "key": "Em - Gm",
           "notes": "1st jazz tune",
           "recommendedversions": "scales",
           "songwriters": "Joseph Kosma",
@@ -8505,8 +8505,8 @@
           "type": "Swing",
           "year": "1945",
           "links": {
-            "https://www.youtube.com/watch?v=b7K5X1bRGoY": {
-              "key": "Em / Gm",
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3Db7K5X1bRGoY": {
+              "key": "Em - Gm",
               "kind": "youtube",
               "name": "Autumn Leaves backing track",
               "category": "backingTrack",
@@ -8525,7 +8525,7 @@
           "type": "Unknown",
           "year": "",
           "links": {
-            "https://www.youtube.com/watch?v=pKl9nM7Y8SI": {
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3DpKl9nM7Y8SI": {
               "key": "Dm",
               "kind": "youtube",
               "name": "Beautiful Love backing track",
@@ -8545,7 +8545,7 @@
           "type": "Unknown",
           "year": "",
           "links": {
-            "https://www.youtube.com/watch?v=7WSgiGLK4e8": {
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3D7WSgiGLK4e8": {
               "key": "Em",
               "kind": "youtube",
               "name": "Bistro Fada backing track",
@@ -8565,7 +8565,7 @@
           "type": "Unknown",
           "year": "",
           "links": {
-            "https://www.youtube.com/watch?v=DO16bhtQ7Bo": {
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3DDO16bhtQ7Bo": {
               "key": "Am",
               "kind": "youtube",
               "name": "Black Orpheus backing track",
@@ -8579,13 +8579,13 @@
           "form": "Unknown",
           "key": "Cm",
           "notes": "from Brendan",
-          "recommendedversions": "C1 (D.Gordon)",
+          "recommendedversions": "C1 (D_Gordon)",
           "songwriters": "",
           "time": 7722,
           "type": "Unknown",
           "year": "",
           "links": {
-            "https://www.youtube.com/watch?v=Dop0Q3XQy90": {
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3DDop0Q3XQy90": {
               "key": "Cm",
               "kind": "youtube",
               "name": "Blue Bossa backing track",
@@ -8597,7 +8597,7 @@
         "Blue Monk": {
           "bpm": 90,
           "form": "NA",
-          "key": "B♭",
+          "key": "Bb",
           "notes": "aligning Andy's lessons with Patreon stuff",
           "recommendedversions": "",
           "songwriters": "Thelonious Monk",
@@ -8605,8 +8605,8 @@
           "type": "Blues",
           "year": "1954",
           "links": {
-            "https://www.youtube.com/watch?v=DDfok9c0z8I": {
-              "key": "B♭",
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3DDDfok9c0z8I": {
+              "key": "Bb",
               "kind": "youtube",
               "name": "Blue Monk backing track",
               "category": "backingTrack",
@@ -8619,13 +8619,13 @@
           "form": "NA",
           "key": "C",
           "notes": "1st blues (exercise from Andy) ",
-          "recommendedversions": "C.Parker",
+          "recommendedversions": "C_Parker",
           "songwriters": "Charlie Parker",
           "time": 18489,
           "type": "Blues",
           "year": "1947",
           "links": {
-            "https://www.youtube.com/watch?v=pBA2szaTXso": {
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3DpBA2szaTXso": {
               "key": "C",
               "kind": "youtube",
               "name": "Cool Blues backing track",
@@ -8660,12 +8660,12 @@
           "key": "F",
           "notes": "Liked version of Ray Charles",
           "recommendedversions": "pentatonic",
-          "songwriters": "Hoagy Carmichael / Stuart Gorrell",
+          "songwriters": "Hoagy Carmichael - Stuart Gorrell",
           "time": 90294,
           "type": "Ballad",
           "year": "1930",
           "links": {
-            "https://www.youtube.com/watch?v=fFTiJmhNBjw": {
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3DfFTiJmhNBjw": {
               "key": "F",
               "kind": "youtube",
               "name": "Georgia On My Mind backing track",
@@ -8685,7 +8685,7 @@
           "type": "Swing",
           "year": "1929",
           "links": {
-            "https://www.youtube.com/watch?v=ktupwIOnczQ": {
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3DktupwIOnczQ": {
               "key": "F",
               "kind": "youtube",
               "name": "Honeysuckle Rose backing track",
@@ -8697,7 +8697,7 @@
         "Misty": {
           "bpm": 60,
           "form": "AABA 32 bars",
-          "key": "E♭m",
+          "key": "Ebm",
           "notes": "Liked the Wes Montgomery version",
           "recommendedversions": "scales",
           "songwriters": "Erroll Garner",
@@ -8706,7 +8706,7 @@
           "year": "1954",
           "links": {
             "TODO_3": {
-              "key": "E♭m",
+              "key": "Ebm",
               "kind": "youtube",
               "name": "Misty backing track",
               "category": "backingTrack",
@@ -8765,7 +8765,7 @@
           "type": "Unknown",
           "year": "",
           "links": {
-            "https://www.youtube.com/watch?v=2hMU0FQ3Je4": {
+            "https%3A%2F%2Fwww_youtube_com%2Fwatch%3Fv%3D2hMU0FQ3Je4": {
               "key": "F",
               "kind": "youtube",
               "name": "Watermelom Man backing track",
@@ -10331,111 +10331,112 @@
         }
       },
       "videos": {
-        "https:__www_youtube_com_watch?v=1eJZHowdnWQ": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3D1eJZHowdnWQ": {
           "date": "20231231",
-          "title": "etude 2.1-2.2"
+          "title": "etude 2_1-2_2"
         },
-        "https:__www_youtube_com_watch?v=2hMU0FQ3Je4": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3D2hMU0FQ3Je4": {
           "date": "20241212",
           "title": "watermelon man own solo (take 2)"
         },
-        "https:__www_youtube_com_watch?v=3VWs3CtAZTY": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3D3VWs3CtAZTY": {
           "date": "20241212",
           "title": "watermelon man own solo (take 1)"
         },
-        "https:__www_youtube_com_watch?v=4RVjoDLxj-E": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3D4RVjoDLxj-E": {
           "date": "20240405",
           "title": "Workout (autumn leaves)"
         },
-        "https:__www_youtube_com_watch?v=6mDqEpQLUWQ": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3D6mDqEpQLUWQ": {
           "date": "20250318",
-          "title": "All the things you are -  approaching 3ds (take 2/rubato)"
+          "title": "All the things you are -  approaching 3ds (take 2-rubato)"
         },
-        "https:__www_youtube_com_watch?v=7WSgiGLK4e8": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3D7WSgiGLK4e8": {
           "date": "20240417",
           "title": "bistro fada   BMP80%"
         },
-        "https:__www_youtube_com_watch?v=9LUXDw4vA3s": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3D9LUXDw4vA3s": {
           "date": "20250310",
           "title": "All the things you are (approaching 3ds)"
         },
-        "https:__www_youtube_com_watch?v=D6qDJSfdPcg": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DD6qDJSfdPcg": {
           "date": "20250120",
           "title": "all the things you are (take 1)"
         },
-        "https:__www_youtube_com_watch?v=DDfok9c0z8I": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DDDfok9c0z8I": {
           "date": "20250203",
           "title": "blue monk (take 1)"
         },
-        "https:__www_youtube_com_watch?v=Dop0Q3XQy90": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DDop0Q3XQy90": {
           "date": "20231221",
           "title": "Blue Bossa - Finished but not perfect :-)"
         },
-        "https:__www_youtube_com_watch?v=IIbpAR9dFbc": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DIIbpAR9dFbc": {
           "date": "20240308",
           "title": "workout 7 8"
         },
-        "https:__www_youtube_com_watch?v=KmdsepCNy8E": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DKmdsepCNy8E": {
           "date": "20240114",
           "title": "Lesson 3"
         },
-        "https:__www_youtube_com_watch?v=N3QzAwnvZgA": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DN3QzAwnvZgA": {
           "date": "20240126",
           "title": "Lesson 5-Autumn leaves Jam(take2)"
         },
-        "https:__www_youtube_com_watch?v=OGlclcJSmTU": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DOGlclcJSmTU": {
           "date": "20240123",
-          "title": "Etude 4.8"
+          "title": "Etude 4_8"
         },
-        "https:__www_youtube_com_watch?v=XU4BQ4qD-JQ": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DXU4BQ4qD-JQ": {
           "date": "20240302",
           "title": "workout 7 3"
         },
-        "https:__www_youtube_com_watch?v=XipE3ZXo-ZQ": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DXipE3ZXo-ZQ": {
           "date": "20250225",
           "title": "All the things you are in 3rds (take 1)"
         },
-        "https:__www_youtube_com_watch?v=b7K5X1bRGoY": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3Db7K5X1bRGoY": {
           "date": "20240617",
           "title": "autumn leaves 20240613"
         },
-        "https:__www_youtube_com_watch?v=fFTiJmhNBjw": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DfFTiJmhNBjw": {
           "date": "20241030",
           "title": "georgia my 1st chord melody"
         },
-        "https:__www_youtube_com_watch?v=ktupwIOnczQ": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DktupwIOnczQ": {
           "date": "20231222",
-          "title": "etude 1.1"
+          "title": "etude 1_1"
         },
-        "https:__www_youtube_com_watch?v=lupj8_80CBk": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3Dlupj8%2F80CBk": {
           "date": "20240222",
-          "title": "etude 6.11"
+          "title": "etude 6_11"
         },
-        "https:__www_youtube_com_watch?v=p0nQxF99KsM": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3Dp0nQxF99KsM": {
           "date": "20240105",
-          "title": "etude 2.5-2.6"
+          "title": "etude 2_5-2_6"
         },
-        "https:__www_youtube_com_watch?v=pBA2szaTXso": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DpBA2szaTXso": {
           "date": "20241217",
           "title": "C Blues Variation Arpeggios  (80%)"
         },
-        "https:__www_youtube_com_watch?v=pKl9nM7Y8SI": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DpKl9nM7Y8SI": {
           "date": "20250326",
           "title": "Beautiful love (take,1)"
         },
-        "https:__www_youtube_com_watch?v=sSydVYjNeGk": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DsSydVYjNeGk": {
           "date": "20231228",
-          "title": "etude 1.1 -1. 8"
+          "title": "etude 1_1 -1_ 8"
         },
-        "https:__www_youtube_com_watch?v=vG76JGRIzAg": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DvG76JGRIzAg": {
           "date": "20240618",
           "title": "all of me 20240618"
         },
-        "https:__www_youtube_com_watch?v=zXQE3tdp_Sg": {
+        "https%3A%3Awww%2F%2Fyoutube%2Fcom%2Fwatch%3Fv%3DzXQE3tdp%2FSg": {
           "date": "20240104",
-          "title": "etude 2.3-2.4"
+          "title": "etude 2_3-2_4"
         }
       }
     }
+    }
   }
-}
+

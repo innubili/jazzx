@@ -77,17 +77,19 @@ Statistics recalculateStatisticsFromSessions(List<Session> sessions) {
   final totalAvgDaily = <PracticeCategory, int>{};
   final totalAvgMonthly = <PracticeCategory, int>{};
   final totalYears = years.length;
-  final totalAvgYearly = sessions.length ~/ (totalYears == 0 ? 1 : totalYears);
+  final totalAvgYearly = <PracticeCategory, int>{};
 
   for (var cat in totalByCategory.keys) {
-    totalAvgMonthly[cat] = (totalByCategory[cat]! / (totalYears * 12)).round();
-    totalAvgDaily[cat] = (totalByCategory[cat]! / (totalYears * 365)).round();
+    final total = totalByCategory[cat]!; // <-- Safely force unwrap
+    totalAvgMonthly[cat] = (total / (totalYears * 12)).round();
+    totalAvgDaily[cat] = (total / (totalYears * 365)).round();
+    totalAvgYearly[cat] = (total / totalYears).round();
   }
 
   return Statistics(
     avgDaily: CategoryStats(values: totalAvgDaily),
     avgMonthly: CategoryStats(values: totalAvgMonthly),
-    avgYearly: totalAvgYearly,
+    avgYearly: CategoryStats(values: totalAvgYearly),
     total: CategoryStats(values: totalByCategory),
     years: years,
   );

@@ -62,7 +62,7 @@ class PracticeDetailWidget extends StatelessWidget {
                       debugPrint(
                         "Pressed icon for $type on ${selectedSong.title}",
                       );
-                      // TODO: Handle actual action (e.g. launch link)
+                      // _TODO: Handle actual action (e.g. launch link)
                     },
                   )
                 else

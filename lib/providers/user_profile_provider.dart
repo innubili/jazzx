@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/user_profile.dart';
 import '../models/song.dart';
+import '../services/firebase_service.dart';
 
 class UserProfileProvider extends ChangeNotifier {
   UserProfile? _profile;
@@ -11,7 +12,17 @@ class UserProfileProvider extends ChangeNotifier {
   String? get userId => _userId;
   Map<String, dynamic> get rawJson => _rawJson;
 
-  /// Allows manually setting the user profile.
+  /// Loads the user profile from Firebase
+  Future<void> loadUserProfile() async {
+    final profile = await FirebaseService().loadUserProfile();
+    if (profile != null) {
+      _profile = profile;
+      _userId = profile.id;
+      notifyListeners();
+    }
+  }
+
+  /// Allows manually setting the user profile from raw JSON (optional fallback)
   void setUser({
     required String userId,
     required Map<String, dynamic> profile,

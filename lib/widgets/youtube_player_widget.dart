@@ -11,7 +11,7 @@ class YouTubePlayerWidget extends StatefulWidget {
 }
 
 class _YouTubePlayerWidgetState extends State<YouTubePlayerWidget> {
-  YoutubePlayerController? _controller;
+  late YoutubePlayerController _controller;
 
   String extractYouTubeVideoId(String url) {
     final uri = Uri.tryParse(url);
@@ -28,10 +28,10 @@ class _YouTubePlayerWidgetState extends State<YouTubePlayerWidget> {
   void initState() {
     super.initState();
     final videoId = extractYouTubeVideoId(widget.youtubeUrl);
-    _controller = YoutubePlayerController.fromVideoId(
-      videoId: videoId,
-      autoPlay: false,
+    _controller = YoutubePlayerController(
+      initialVideoId: videoId,
       params: const YoutubePlayerParams(
+        autoPlay: false,
         showFullscreenButton: true,
         showControls: true,
         strictRelatedVideos: true,
@@ -44,24 +44,18 @@ class _YouTubePlayerWidgetState extends State<YouTubePlayerWidget> {
     super.didUpdateWidget(oldWidget);
     if (widget.youtubeUrl != oldWidget.youtubeUrl) {
       final newVideoId = extractYouTubeVideoId(widget.youtubeUrl);
-      _controller?.loadVideoById(videoId: newVideoId);
+      _controller.load(newVideoId);
     }
   }
 
   @override
   void dispose() {
-    _controller?.close();
+    _controller.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _controller != null
-        ? YoutubePlayerScaffold(
-          controller: _controller!,
-          aspectRatio: 16 / 9,
-          builder: (context, player) => player,
-        )
-        : const SizedBox.shrink();
+    return YoutubePlayerIFrame(controller: _controller, aspectRatio: 16 / 9);
   }
 }

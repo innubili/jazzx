@@ -1,15 +1,18 @@
+// lib/models/user_profile.dart
+
 import '../utils/utils.dart';
 import 'session.dart';
 import 'song.dart';
 import 'statistics.dart';
 import 'video.dart';
+import 'preferences.dart';
 
 class UserProfile {
-  final String id; // typically the user's email or UID
+  final String id;
   final ProfilePreferences preferences;
   final Map<String, Session> sessions;
   final Map<String, Song> songs;
-  final Statistics statistics;
+  Statistics statistics; // Mutable
   final Map<String, Video> videos;
 
   UserProfile({
@@ -21,7 +24,6 @@ class UserProfile {
     required this.videos,
   });
 
-  // Static method to provide a default UserProfile
   static UserProfile defaultProfile() {
     return UserProfile(
       id: 'none',
@@ -34,105 +36,47 @@ class UserProfile {
   }
 
   factory UserProfile.fromJson(String id, Map<String, dynamic> json) {
-    final preferencesData = json['preferences'] ?? {};
-    final sessionsData = json['sessions'] ?? {};
-    final songsData = json['songs'] ?? {};
-    final statisticsData = json['statistics'] ?? {};
-    //    final videosData = json['videos'] ?? {};
+    final sessionsJson = normalizeFirebaseJson(json['sessions'] ?? {});
+    final songsJson = normalizeFirebaseJson(json['songs'] ?? {});
+    final videosJson = normalizeFirebaseJson(json['videos'] ?? {});
+    final prefsJson = normalizeFirebaseJson(json['preferences'] ?? {});
+    final statisticsJson = normalizeFirebaseJson(json['statistics'] ?? {});
+
+    final sessions = <String, Session>{
+      for (final entry in sessionsJson.entries)
+        entry.key: Session.fromJson(normalizeFirebaseJson(entry.value)),
+    };
+
+    final songs = <String, Song>{
+      for (final entry in songsJson.entries)
+        entry.key: Song.fromJson(entry.key, normalizeFirebaseJson(entry.value)),
+    };
+
+    final videos = <String, Video>{
+      for (final entry in videosJson.entries)
+        entry.key: Video.fromKeyAndJson(
+          entry.key,
+          normalizeFirebaseJson(entry.value),
+        ),
+    };
+
+    final stats = Statistics.fromJson(statisticsJson);
+    final prefs = ProfilePreferences.fromJson(prefsJson);
+
+    log.info('UserProfile.fromJson sessions[${sessions.length}]');
+    log.info('UserProfile.fromJson songs[${songs.length}]');
+    log.info('UserProfile.fromJson videos[${videos.length}]');
+    log.info(
+      'UserProfile.fromJson statistics.total[${stats.total.values.length}]',
+    );
 
     return UserProfile(
       id: id,
-      preferences: ProfilePreferences.fromJson(preferencesData),
-      sessions: (sessionsData as Map<String, dynamic>).map(
-        (key, value) => MapEntry(key, Session.fromJson(value)),
-      ),
-      songs:
-          (() {
-            final Map<String, Song> parsedSongs = {};
-            songsData.forEach((key, value) {
-              if (value is Map<String, dynamic>) {
-                parsedSongs[key] = Song.fromJson(key, value);
-              } else {
-                log.warning('Invalid song entry for key "$key" — skipped.');
-              }
-            });
-            return parsedSongs;
-          })(),
-      statistics: Statistics.fromJson(statisticsData),
-      videos:
-          (json['videos'] as Map?)?.map(
-            (key, value) => MapEntry(key as String, Video.fromJson(value)),
-          ) ??
-          {},
-    );
-  }
-}
-
-class ProfilePreferences {
-  final bool darkMode;
-  final int exerciseBpm;
-  final String instrument;
-  final bool admin;
-  final bool pro;
-  final bool metronomeEnabled;
-  final bool multiEnabled;
-  final String name;
-  final String teacher;
-  final int warmupBpm;
-  final bool warmupEnabled;
-  final int warmupTime;
-  final String lastSessionId;
-
-  static ProfilePreferences defaultPreferences() {
-    return ProfilePreferences(
-      darkMode: false,
-      exerciseBpm: 100,
-      instrument: '',
-      admin: false,
-      pro: false,
-      metronomeEnabled: true,
-      multiEnabled: false,
-      name: '',
-      teacher: '',
-      warmupBpm: 80,
-      warmupEnabled: true,
-      warmupTime: 300,
-      lastSessionId: '',
-    );
-  }
-
-  ProfilePreferences({
-    required this.darkMode,
-    required this.exerciseBpm,
-    required this.instrument,
-    required this.admin,
-    required this.pro,
-    required this.metronomeEnabled,
-    required this.multiEnabled,
-    required this.name,
-    required this.teacher,
-    required this.warmupBpm,
-    required this.warmupEnabled,
-    required this.warmupTime,
-    required this.lastSessionId,
-  });
-
-  factory ProfilePreferences.fromJson(Map<String, dynamic> json) {
-    final internal = json['internal'] ?? {};
-    return ProfilePreferences(
-      darkMode: json['darkMode'] ?? false,
-      exerciseBpm: json['exerciseBpm'] ?? 100,
-      instrument: json['instrument'] ?? '',
-      admin: internal['admin'] ?? false,
-      pro: internal['pro'] ?? false,
-      metronomeEnabled: json['metronomeEnabled'] ?? true,
-      multiEnabled: json['multiEnabled'] ?? false,
-      name: json['name'] ?? '',
-      teacher: json['teacher'] ?? '',
-      warmupBpm: json['warmupBpm'] ?? 80,
-      warmupEnabled: json['warmupEnabled'] ?? true,
-      warmupTime: json['warmupTime'] ?? 300,
-      lastSessionId: json['lastSessionId'] ?? '',
+      preferences: prefs,
+      sessions: sessions,
+      songs: songs,
+      statistics: stats,
+      videos: videos,
     );
   }
 }

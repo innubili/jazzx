@@ -1,5 +1,4 @@
-// lib/models/session.dart
-
+import '../utils/utils.dart';
 import 'practice_category.dart';
 
 class SessionCategory {
@@ -10,18 +9,29 @@ class SessionCategory {
 
   SessionCategory({required this.time, this.note, this.bpm, this.songs});
 
-  factory SessionCategory.fromJson(Map<String, dynamic> json) =>
-      SessionCategory(
-        time: json['time'] ?? 0,
-        note: json['note'],
-        bpm: json['bpm'],
-        songs: (json['songs'] as Map?)?.map((k, v) => MapEntry(k, v as int)),
-      );
+  factory SessionCategory.fromJson(Map<String, dynamic> json) {
+    final safeJson = asStringKeyedMap(json);
+    return SessionCategory(
+      time: safeJson['time'] ?? 0,
+      note: safeJson['note'],
+      bpm: safeJson['bpm'],
+      songs:
+          safeJson['songs'] is Map
+              ? Map<String, int>.from(safeJson['songs'])
+              : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'time': time,
+    if (note != null) 'note': note,
+    if (bpm != null) 'bpm': bpm,
+    if (songs != null) 'songs': songs,
+  };
 
   @override
-  String toString() {
-    return 'SessionCategory(time: $time, note: $note, bpm: $bpm, songs: ${songs?.keys.toList()})';
-  }
+  String toString() =>
+      'SessionCategory(time: $time, note: $note, bpm: $bpm, songs: ${songs?.keys.toList()})';
 }
 
 class Session {
@@ -42,23 +52,25 @@ class Session {
   });
 
   factory Session.fromJson(Map<String, dynamic> json) {
-    final categories = <PracticeCategory, SessionCategory>{};
+    final safeJson = asStringKeyedMap(json);
+    final warmup = asStringKeyedMap(safeJson['warmup']);
+    final catRaw = asStringKeyedMap(safeJson['categories']);
 
-    final categoriesJson = json['categories'] as Map<String, dynamic>? ?? {};
-
-    for (var entry in categoriesJson.entries) {
-      final category = entry.key.tryToPracticeCategory();
-      if (category != null) {
-        categories[category] = SessionCategory.fromJson(entry.value);
+    final catMap = <PracticeCategory, SessionCategory>{};
+    for (final entry in catRaw.entries) {
+      final cat = entry.key.tryToPracticeCategory();
+      if (cat != null && entry.value is Map) {
+        catMap[cat] = SessionCategory.fromJson(
+          Map<String, dynamic>.from(entry.value),
+        );
       }
     }
 
-    final warmup = json['warmup'] ?? {};
     return Session(
-      duration: json['duration'] ?? 0,
-      ended: json['ended'] ?? 0,
-      instrument: json['instrument'] ?? '',
-      categories: categories,
+      duration: safeJson['duration'] ?? 0,
+      ended: safeJson['ended'] ?? 0,
+      instrument: safeJson['instrument'] ?? '',
+      categories: catMap,
       warmupTime: warmup['time'],
       warmupBpm: warmup['bpm'],
     );
@@ -69,38 +81,27 @@ class Session {
       'duration': duration,
       'ended': ended,
       'instrument': instrument,
+      'categories': {
+        for (final entry in categories.entries)
+          entry.key.name: entry.value.toJson(),
+      },
+      'warmup': {'time': warmupTime ?? 0, 'bpm': warmupBpm ?? 0},
     };
-
-    for (var entry in categories.entries) {
-      json[entry.key.name] = {
-        'time': entry.value.time,
-        if (entry.value.note != null) 'note': entry.value.note,
-        if (entry.value.bpm != null) 'bpm': entry.value.bpm,
-        if (entry.value.songs != null) 'songs': entry.value.songs,
-      };
-    }
-
-    json['warmup'] = {'time': warmupTime ?? 0, 'bpm': warmupBpm ?? 0};
-
     return json;
   }
 
-  /// Returns a session with all zero durations and no content.
-  static Session getDefault({String instrument = 'guitar'}) {
-    return Session(
-      duration: 0,
-      ended: 0,
-      instrument: instrument,
-      warmupTime: 0,
-      warmupBpm: 0,
-      categories: {
-        for (var cat in PracticeCategory.values) cat: SessionCategory(time: 0),
-      },
-    );
-  }
+  static Session getDefault({String instrument = 'guitar'}) => Session(
+    duration: 0,
+    ended: 0,
+    instrument: instrument,
+    warmupTime: 0,
+    warmupBpm: 0,
+    categories: {
+      for (final cat in PracticeCategory.values) cat: SessionCategory(time: 0),
+    },
+  );
 
   @override
-  String toString() {
-    return 'Session(instrument: $instrument, categories: ${categories.map((k, v) => MapEntry(k.name, v))})';
-  }
+  String toString() =>
+      'Session(instrument: $instrument, categories: ${categories.map((k, v) => MapEntry(k.name, v))})';
 }
