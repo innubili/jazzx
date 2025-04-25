@@ -1,0 +1,40 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "jazzx-97daf",
+                    "appId": "1:824026860782:android:469b7d976876f1f677f7ff",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "ios": {
+                "default": {
+                    "projectId": "jazzx-97daf",
+                    "appId": "1:824026860782:ios:8de6af7d8d4fd56077f7ff",
+                    "uploadDebugSymbols": false,
+                    "fileOutput": "ios/Runner/GoogleService-Info.plist"
+                }
+            },
+            "macos": {
+                "default": {
+                    "projectId": "jazzx-97daf",
+                    "default": {
+                        "projectId": "jazzx-97daf",
+                        "appId": "1:824026860782:ios:8de6af7d8d4fd56077f7ff",
+                        "uploadDebugSymbols": false,
+                        "fileOutput": "macos/Runner/GoogleService-Info.plist"
+                    }
+                },
+                "dart": {
+                    "lib/firebase_options.dart": {
+                        "projectId": "jazzx-97daf",
+                        "configurations": {
+                            "web": "1:824026860782:web:73e11e19366cf48377f7ff"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
