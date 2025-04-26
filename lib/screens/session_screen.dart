@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+
 import '../widgets/metronome_controller.dart';
 import '../widgets/practice_timer_widget.dart';
 import '../widgets/metronome_widget.dart';
 import '../widgets/practice_mode_buttons_widget.dart';
 import '../widgets/practice_detail_widget.dart';
+import '../widgets/main_drawer.dart'; // ✅ NEW
 import '../providers/user_profile_provider.dart';
 import '../models/practice_category.dart';
 import '../models/session.dart';
@@ -36,23 +38,6 @@ class _SessionScreenState extends State<SessionScreen> {
 
   late Session sessionData;
 
-  void _resetSessionData() {
-    final profile =
-        Provider.of<UserProfileProvider>(context, listen: false).profile;
-    final instrument = profile?.preferences.instrument ?? 'guitar';
-
-    setState(() {
-      sessionData = Session.getDefault(instrument: instrument);
-      _activeMode = null;
-      _queuedMode = null;
-      _hasStartedFirstPractice = false;
-      _isWarmup = false;
-    });
-
-    _metronomeController.stop();
-    _timerController.reset?.call();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -75,6 +60,23 @@ class _SessionScreenState extends State<SessionScreen> {
         }
       }
     }
+  }
+
+  void _resetSessionData() {
+    final profile =
+        Provider.of<UserProfileProvider>(context, listen: false).profile;
+    final instrument = profile?.preferences.instrument ?? 'guitar';
+
+    setState(() {
+      sessionData = Session.getDefault(instrument: instrument);
+      _activeMode = null;
+      _queuedMode = null;
+      _hasStartedFirstPractice = false;
+      _isWarmup = false;
+    });
+
+    _metronomeController.stop();
+    _timerController.reset?.call();
   }
 
   void _onCountComplete() {
@@ -157,7 +159,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
   void _skipWarmup() => _onCountComplete();
 
-  void _onSessionDone() async {
+  Future<void> _onSessionDone() async {
     _stopPractice(_timerController.getElapsedSeconds());
     final sessionMap = sessionData.toJson();
 
@@ -248,12 +250,11 @@ class _SessionScreenState extends State<SessionScreen> {
 
     final size = MediaQuery.of(context).size;
     final aspectRatio = size.width / size.height;
-
     final isVerticalLayout = aspectRatio < 1.5;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Session")),
-      drawer: _buildDrawer(context),
+      drawer: const MainDrawer(), // ✅ <-- USE MAIN DRAWER NOW
       body: Padding(
         padding: const EdgeInsets.all(16),
         child:
@@ -437,118 +438,6 @@ class _SessionScreenState extends State<SessionScreen> {
         const SizedBox(height: 16),
         MetronomeWidget(controller: _metronomeController),
       ],
-    );
-  }
-
-  Widget _drawerItem(
-    BuildContext context,
-    String label,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(label),
-      onTap: () {
-        Navigator.pop(context);
-        onTap();
-      },
-    );
-  }
-
-  Widget _buildDrawer(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          Consumer<UserProfileProvider>(
-            builder: (context, profileProvider, _) {
-              final profile = profileProvider.profile;
-              return DrawerHeader(
-                decoration: const BoxDecoration(color: Colors.deepPurple),
-                child:
-                    profile == null
-                        ? const Text(
-                          "JazzX",
-                          style: TextStyle(color: Colors.white, fontSize: 24),
-                        )
-                        : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.account_circle,
-                              size: 48,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              profile.preferences.name,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              profile.preferences.instrument,
-                              style: const TextStyle(color: Colors.white70),
-                            ),
-                          ],
-                        ),
-              );
-            },
-          ),
-          _drawerItem(
-            context,
-            "Metronome",
-            Icons.music_note,
-            () => Navigator.pushNamed(context, "/metronome"),
-          ),
-          _drawerItem(
-            context,
-            "My Songs",
-            Icons.bookmark,
-            () => Navigator.pushNamed(context, "/user-songs"),
-          ),
-          _drawerItem(
-            context,
-            "Jazz Standards",
-            Icons.library_music,
-            () => Navigator.pushNamed(context, "/jazz-standards"),
-          ),
-          _drawerItem(
-            context,
-            "Session Log",
-            Icons.history,
-            () => Navigator.pushNamed(context, "/session-log"),
-          ),
-          _drawerItem(
-            context,
-            "Statistics",
-            Icons.bar_chart,
-            () => Navigator.pushNamed(context, "/statistics"),
-          ),
-          const Divider(),
-          _drawerItem(
-            context,
-            "Settings",
-            Icons.settings,
-            () => Navigator.pushNamed(context, "/settings"),
-          ),
-          _drawerItem(
-            context,
-            "About",
-            Icons.info,
-            () => Navigator.pushNamed(context, "/about"),
-          ),
-          _drawerItem(context, "Logout", Icons.logout, () {
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Logged out (placeholder)")),
-            );
-          }),
-        ],
-      ),
     );
   }
 }

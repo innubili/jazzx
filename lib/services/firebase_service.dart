@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../models/user_profile.dart';
 import '../models/preferences.dart';
+import '../models/song.dart';
 import '../utils/utils.dart';
 import '../firebase_options.dart';
 import '../utils/statistics_utils.dart'; // ⬅️ Needed for recalculateStatisticsFromSessions
@@ -20,7 +21,6 @@ class FirebaseService {
   User? get currentUser => _auth?.currentUser;
   bool get isSignedIn => currentUser != null;
 
-  /// Initializes Firebase safely and lazily
   Future<void> initialize() async {
     if (_isInitialized) return;
 
@@ -87,9 +87,7 @@ class FirebaseService {
     final rawData = normalizeFirebaseJson(snapshot.value);
     if (rawData is! Map<String, dynamic>) return null;
 
-    // Detect if statistics is missing or invalid
     final hasValidStats = rawData['statistics'] is Map<String, dynamic>;
-
     final profile = UserProfile.fromJson(userKey, rawData);
 
     if (!hasValidStats) {
@@ -100,7 +98,6 @@ class FirebaseService {
         profile.sessions.values.toList(),
       );
       profile.statistics = updatedStats;
-
       await saveUserProfile(profile);
       log.info('✅ Recalculated statistics uploaded to Firebase');
     }
@@ -138,5 +135,39 @@ class FirebaseService {
   Future<void> signOut() async {
     await ensureInitialized();
     await _auth?.signOut();
+  }
+
+  // --------------- ⬇️ NEW for Jazz Standards ⬇️ ------------------
+
+  DatabaseReference get _jazzStandardsRef => _db!.ref('jazz_standards');
+
+  Future<List<Song>> loadJazzStandards() async {
+    await ensureInitialized();
+    try {
+      final snapshot = await _jazzStandardsRef.get();
+      if (!snapshot.exists || snapshot.value == null) {
+        log.warning('⚠️ No jazz standards found in Firebase');
+        return [];
+      }
+
+      final rawData = normalizeFirebaseJson(snapshot.value);
+      if (rawData is! Map<String, dynamic>) {
+        log.warning(
+          '⚠️ Unexpected format for jazz standards: ${rawData.runtimeType}',
+        );
+        return [];
+      }
+
+      final standards = <Song>[];
+      rawData.forEach((title, data) {
+        standards.add(Song.fromJson(title, Map<String, dynamic>.from(data)));
+      });
+
+      //log.info('✅ Loaded ${standards.length} jazz standards from Firebase');
+      return standards;
+    } catch (e, stack) {
+      log.severe('💥 Failed to load jazz standards\n$e\n$stack');
+      return [];
+    }
   }
 }

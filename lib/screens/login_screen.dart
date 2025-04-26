@@ -1,20 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import '../utils/utils.dart';
-import 'signup_screen.dart';
-import 'google_signin_screen.dart'; // ✅ Re-added
+import '../secrets.dart'; // for googleClientIdWeb
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  LoginScreenState createState() => LoginScreenState(); // 🛠️ Public class name
+  LoginScreenState createState() => LoginScreenState();
 }
 
 class LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _loading = false;
+
+  late final GoogleSignIn _googleSignIn;
+
+  @override
+  void initState() {
+    super.initState();
+    _googleSignIn =
+        kIsWeb ? GoogleSignIn(clientId: googleClientIdWeb) : GoogleSignIn();
+  }
 
   Future<void> _login() async {
     setState(() => _loading = true);
@@ -28,13 +39,47 @@ class LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Login successful')));
-      // TODO: Navigate to home screen
     } on FirebaseAuthException catch (e) {
       log.warning('❌ Login failed: ${e.message}');
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Login failed: ${e.message}')));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() => _loading = true);
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        log.info('🛑 Google sign-in cancelled by user');
+        return;
+      }
+
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final result = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+      log.info("✅ Google sign-in success: ${result.user?.email}");
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Signed in with Google')));
+    } catch (e) {
+      log.warning("❌ Google sign-in failed: $e");
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Google sign-in failed: $e")));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -65,25 +110,15 @@ class LoginScreenState extends State<LoginScreen> {
             TextButton(
               onPressed: () {
                 log.info('-> Navigating to Signup Screen');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignupScreen()),
-                );
+                Navigator.pushNamed(context, '/signup');
               },
               child: const Text('Don\'t have an account? Sign Up'),
             ),
             const Divider(height: 32),
-            ElevatedButton(
-              onPressed: () {
-                log.info('-> Navigating to GoogleSignIn Screen');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const GoogleSignInScreen(),
-                  ),
-                );
-              },
-              child: const Text('Sign in with Google'),
+            ElevatedButton.icon(
+              onPressed: _signInWithGoogle,
+              icon: const Icon(Icons.account_circle),
+              label: const Text('Sign in with Google'),
             ),
           ],
         ),

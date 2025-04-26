@@ -64,16 +64,16 @@ dynamic normalizeFirebaseJson(dynamic input) {
   }
 }
 
-/// Converts a List into a Map<String, dynamic> with string indices ("0", "1", ...)
+/// Converts a List into a Map< String, dynamic > with string indices ("0", "1", ...)
 /// If already a Map, returns it directly.
 /// Otherwise, returns an empty Map.
 Map<String, dynamic> normalizeMapOrList(dynamic input, {String context = '?'}) {
   if (input is Map) {
     return Map<String, dynamic>.from(input);
   } else if (input is List) {
-    log.warning(
-      '⚠️ [$context] Converting List -> Map with ${input.length} entries',
-    );
+    //log.warning(
+    //  '⚠️ [$context] Converting List -> Map with ${input.length} entries',
+    //);
     return {
       for (int i = 0; i < input.length; i++)
         if (input[i] != null) i.toString(): input[i],

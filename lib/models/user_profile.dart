@@ -63,13 +63,6 @@ class UserProfile {
     final stats = Statistics.fromJson(statisticsJson);
     final prefs = ProfilePreferences.fromJson(prefsJson);
 
-    log.info('UserProfile.fromJson sessions[${sessions.length}]');
-    log.info('UserProfile.fromJson songs[${songs.length}]');
-    log.info('UserProfile.fromJson videos[${videos.length}]');
-    log.info(
-      'UserProfile.fromJson statistics.total[${stats.total.values.length}]',
-    );
-
     return UserProfile(
       id: id,
       preferences: prefs,

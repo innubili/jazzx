@@ -88,7 +88,7 @@ class MonthlyStats {
       try {
         final day = int.tryParse(key);
         final value = dayEntry.value;
-        log.info('\t\t📦 Parsing day $key, type=${value.runtimeType}');
+        // log.info('\t\t📦 Parsing day $key, type=${value.runtimeType}');
 
         if (day != null && value is Map) {
           days[day] = CategoryStats.fromJson(Map<String, dynamic>.from(value));
@@ -144,7 +144,7 @@ class YearlyStats {
       final month = int.tryParse(entry.key.toString());
 
       if (month != null && entry.value is Map) {
-        log.info('\t📦 Parsing month $month, type=${entry.value.runtimeType}');
+        //log.info('\t📦 Parsing month $month, type=${entry.value.runtimeType}');
         months[month] = MonthlyStats.fromJson(
           Map<String, dynamic>.from(entry.value),
           contextKey: 'year=? month=$month',
@@ -211,7 +211,7 @@ class Statistics {
     for (final entry in yearJson.entries) {
       final year = int.tryParse(entry.key.toString());
       if (year != null && entry.value is Map) {
-        log.info('📦 Parsing year $year, type=${entry.value.runtimeType}');
+        //log.info('📦 Parsing year $year, type=${entry.value.runtimeType}');
         years[year] = YearlyStats.fromJson(
           Map<String, dynamic>.from(entry.value),
         );
