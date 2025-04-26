@@ -9,24 +9,24 @@ dependencies:
     sdk: flutter
  
 
- # ✅ Firebase stack (compatible with each other and web-safe)
+ # Firebase stack (compatible with each other and web-safe)
   firebase_core: ^2.25.4
   firebase_auth_web: ^5.9.4
   firebase_core_web: ^2.11.0
   firebase_auth: ^4.19.4
   firebase_database: ^10.5.5
 
-  # ✅ YouTube Player compatible with Firebase
+  # YouTube Player compatible with Firebase
   youtube_player_iframe: ^2.3.0
 
-  # ✅ Other plugins (update as needed)
+  # Other plugins (update as needed)
   provider: ^6.1.1
   file_picker: ^6.1.1
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.7
   google_fonts: ^2.3.0
   path_provider: ^2.1.5
-  audioplayers: ^0.20.1
+  audioplayers: ^6.4.0
   logging: ^1.2.0
   url_launcher: ^6.2.5
   font_awesome_flutter: ^10.7.0 
@@ -47,8 +47,7 @@ flutter:
   assets:
     - assets/jazzx_db.json
     - assets/icons/
+    - assets/sounds/
 
 environment:
   sdk: ^3.7.2
-
-

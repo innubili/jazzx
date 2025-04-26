@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'metronome_controller.dart';
 import '../utils/utils.dart';
 
@@ -27,6 +28,8 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
 
   final List<DateTime> _tapTimes = [];
 
+  late final AudioPlayer _audioPlayer;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +38,7 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
     ); // Attach the widget's state to the controller
     _parseTimeSignature();
     _parseBitsPattern();
+    _audioPlayer = AudioPlayer();
   }
 
   @override
@@ -42,6 +46,7 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
     _timer?.cancel(); // just cancel the timer here
     isTick = false; // don't call setState!
     widget.controller.detach();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -57,6 +62,7 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
         tickCount++;
         isTick = true;
       });
+      _playTick();
       Future.delayed(Duration(milliseconds: 100), () {
         if (mounted) setState(() => isTick = false);
       });
@@ -182,6 +188,19 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
   // Exposed methods for incrementing and decrementing BPM
   void incrementBpm() => setBpm(bpm + 1);
   void decrementBpm() => setBpm(bpm - 1);
+
+  Future<void> _playTick() async {
+    try {
+      await _audioPlayer.play(AssetSource('sounds/tick.mp3'));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Metronome tick playback error: $e')),
+        );
+      }
+      debugPrint('Metronome tick playback error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
