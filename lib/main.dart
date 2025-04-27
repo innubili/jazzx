@@ -6,8 +6,8 @@ import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'utils/utils.dart';
+import 'utils/firebase_web_persistence.dart';
 import 'services/firebase_service.dart';
-import 'providers/preferences_provider.dart';
 import 'providers/user_profile_provider.dart';
 import 'providers/jazz_standards_provider.dart';
 import 'models/user_profile.dart';
@@ -22,6 +22,7 @@ import 'screens/jazz_standards_screen.dart';
 import 'screens/session_log_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/about_screen.dart';
+import 'screens/statistics_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,7 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     log.info('✅ Firebase initialized (${kIsWeb ? "Web" : "Non-Web"})');
+    await setWebFirebasePersistence();
     await FirebaseService().ensureInitialized();
     runApp(const JazzXApp());
   } catch (e, stack) {
@@ -56,7 +58,6 @@ class JazzXApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => PreferencesProvider()),
         ChangeNotifierProvider(create: (_) => UserProfileProvider()),
         ChangeNotifierProvider(create: (_) => JazzStandardsProvider()),
       ],
@@ -75,6 +76,7 @@ class JazzXApp extends StatelessWidget {
           '/jazz-standards': (context) => const JazzStandardsScreen(),
           '/session-log': (context) => const SessionLogScreen(),
           '/settings': (context) => const SettingsScreen(),
+          '/statistics': (context) => const StatisticsScreen(),
           '/about': (context) => const AboutScreen(),
         },
       ),
@@ -157,9 +159,6 @@ class _AuthGateState extends State<AuthGate> {
       _userProfile = results[1] as UserProfile?;
 
       if (_userProfile != null) {
-        context.read<PreferencesProvider>().setPreferences(
-          _userProfile!.preferences,
-        );
         context.read<UserProfileProvider>().setUserFromObject(_userProfile!);
         log.info(
           '✅ Profile loaded: ${_userProfile!.preferences.name}'

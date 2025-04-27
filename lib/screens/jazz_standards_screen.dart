@@ -11,7 +11,16 @@ class JazzStandardsScreen extends StatelessWidget {
     final standards = Provider.of<JazzStandardsProvider>(context).standards;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Jazz Standards")),
+      appBar: AppBar(
+        title: const Text("Jazz Standards"),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          tooltip: 'Back to Home',
+          onPressed: () {
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          },
+        ),
+      ),
       body: SongBrowserWidget(songs: standards, readOnly: true),
     );
   }

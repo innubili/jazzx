@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/link.dart';
 import '../models/song.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_profile_provider.dart';
 
 class LinkConfirmationDialog extends StatefulWidget {
   final Link initialLink;
@@ -43,6 +45,12 @@ class _LinkConfirmationDialogState extends State<LinkConfirmationDialog> {
       key: _key,
       category: _category,
     );
+    // Update provider (Firebase) if possible
+    final userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+    final song = userProfileProvider.profile?.songs[updated.name];
+    if (song != null) {
+      userProfileProvider.updateSongLink(updated.name, updated);
+    }
     Navigator.pop(context, updated);
   }
 

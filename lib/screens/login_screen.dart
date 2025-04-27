@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../utils/utils.dart';
 import '../secrets.dart'; // for googleClientIdWeb
@@ -117,7 +118,12 @@ class LoginScreenState extends State<LoginScreen> {
             const Divider(height: 32),
             ElevatedButton.icon(
               onPressed: _signInWithGoogle,
-              icon: const Icon(Icons.account_circle),
+              icon: SvgPicture.asset(
+                'assets/icons/google_icon.svg',
+                height: 24,
+                width: 24,
+                fit: BoxFit.contain,
+              ),
               label: const Text('Sign in with Google'),
             ),
           ],

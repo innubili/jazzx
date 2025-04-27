@@ -10,7 +10,16 @@ class SessionLogScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Session Log")),
+      appBar: AppBar(
+        title: const Text('Session Log'),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          tooltip: 'Back to Home',
+          onPressed: () {
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          },
+        ),
+      ),
       body: Consumer<SessionProvider>(
         builder: (context, sessionProvider, _) {
           final sessions = sessionProvider.sessions;

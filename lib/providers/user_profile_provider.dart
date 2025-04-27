@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/user_profile.dart';
 import '../models/song.dart';
+import '../models/link.dart';
+import '../models/preferences.dart';
+import '../models/statistics.dart';
 import '../services/firebase_service.dart';
 
 class UserProfileProvider extends ChangeNotifier {
@@ -51,6 +54,9 @@ class UserProfileProvider extends ChangeNotifier {
   void removeSong(String title) {
     if (_profile?.songs.containsKey(title) ?? false) {
       _profile!.songs.remove(title);
+      if (_profile != null && _userId != null) {
+        FirebaseService().saveUserSongs(_userId!, _profile!.songs);
+      }
       WidgetsBinding.instance.addPostFrameCallback((_) {
         notifyListeners();
       });
@@ -59,6 +65,9 @@ class UserProfileProvider extends ChangeNotifier {
 
   void updateSong(Song song) {
     _profile?.songs[song.title] = song;
+    if (_profile != null && _userId != null) {
+      FirebaseService().saveUserSongs(_userId!, _profile!.songs);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
     });
@@ -67,8 +76,81 @@ class UserProfileProvider extends ChangeNotifier {
   void addSong(Song song) {
     if (_profile == null) return;
     _profile!.songs[song.title] = song;
+    if (_userId != null) {
+      FirebaseService().saveUserSongs(_userId!, _profile!.songs);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
     });
+  }
+
+  // Add, update, and remove song links with partial update to Firebase
+  void addSongLink(String songTitle, Link link) {
+    if (_profile == null || _userId == null) return;
+    final song = _profile!.songs[songTitle];
+    if (song == null) return;
+    final updatedLinks = [...song.links, link];
+    _profile!.songs[songTitle] = song.copyWith(links: updatedLinks);
+    FirebaseService().saveSongLinks(_userId!, songTitle, updatedLinks);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
+  }
+
+  void updateSongLink(String songTitle, Link updatedLink) {
+    if (_profile == null || _userId == null) return;
+    final song = _profile!.songs[songTitle];
+    if (song == null) return;
+    final updatedLinks = song.links.map((l) => l.key == updatedLink.key ? updatedLink : l).toList();
+    _profile!.songs[songTitle] = song.copyWith(links: updatedLinks);
+    FirebaseService().saveSongLinks(_userId!, songTitle, updatedLinks);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
+  }
+
+  void removeSongLink(String songTitle, String linkKey) {
+    if (_profile == null || _userId == null) return;
+    final song = _profile!.songs[songTitle];
+    if (song == null) return;
+    final updatedLinks = song.links.where((l) => l.key != linkKey).toList();
+    _profile!.songs[songTitle] = song.copyWith(links: updatedLinks);
+    FirebaseService().saveSongLinks(_userId!, songTitle, updatedLinks);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
+  }
+
+  // Save only the user's statistics to Firebase (partial update)
+  Future<void> saveUserStatistics(Statistics stats) async {
+    if (_profile == null || _userId == null) return;
+    _profile = _profile!.copyWith(statistics: stats);
+    await FirebaseService().saveStatistics(stats); // Use consistent key logic inside FirebaseService
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
+  }
+
+  // Save only the user's preferences to Firebase (partial update)
+  Future<void> saveUserPreferences(ProfilePreferences prefs) async {
+    if (_profile == null || _userId == null) return;
+    _profile = _profile!.copyWith(preferences: prefs);
+    await FirebaseService().savePreferences(prefs);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
+  }
+
+  // --- STATISTICS MANAGEMENT ---
+
+  /// Loads statistics from the user profile (Firebase).
+  Statistics? get statistics => _profile?.statistics;
+
+  /// Updates statistics in the user profile and saves to Firebase.
+  Future<void> updateStatistics(Statistics newStats) async {
+    if (_profile == null || _userId == null) return;
+    _profile = _profile!.copyWith(statistics: newStats);
+    await FirebaseService().saveStatistics(newStats); // Implement this in FirebaseService
+    notifyListeners();
   }
 }

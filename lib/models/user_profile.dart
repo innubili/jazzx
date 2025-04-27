@@ -72,4 +72,22 @@ class UserProfile {
       videos: videos,
     );
   }
+
+  UserProfile copyWith({
+    String? id,
+    ProfilePreferences? preferences,
+    Map<String, Session>? sessions,
+    Map<String, Song>? songs,
+    Statistics? statistics,
+    Map<String, Video>? videos,
+  }) {
+    return UserProfile(
+      id: id ?? this.id,
+      preferences: preferences ?? this.preferences,
+      sessions: sessions ?? this.sessions,
+      songs: songs ?? this.songs,
+      statistics: statistics ?? this.statistics,
+      videos: videos ?? this.videos,
+    );
+  }
 }

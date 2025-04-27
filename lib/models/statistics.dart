@@ -184,6 +184,7 @@ class Statistics {
   final CategoryStats avgYearly;
   final CategoryStats total;
   final Map<int, YearlyStats> years;
+  final Map<String, int> songSeconds;
 
   Statistics({
     required this.avgDaily,
@@ -191,6 +192,7 @@ class Statistics {
     required this.avgYearly,
     required this.total,
     required this.years,
+    required this.songSeconds,
   });
 
   factory Statistics.fromJson(Map<String, dynamic> json) {
@@ -222,12 +224,22 @@ class Statistics {
       }
     }
 
+    final songSecondsRaw = json['songSeconds'] ?? {};
+    final songSeconds = <String, int>{};
+    if (songSecondsRaw is Map) {
+      for (final entry in songSecondsRaw.entries) {
+        final value = entry.value;
+        songSeconds[entry.key.toString()] = value is int ? value : int.tryParse(value.toString()) ?? 0;
+      }
+    }
+
     return Statistics(
       avgDaily: avgDaily,
       avgMonthly: avgMonthly,
       avgYearly: avgYearly,
       total: total,
       years: years,
+      songSeconds: songSeconds,
     );
   }
 
@@ -237,6 +249,7 @@ class Statistics {
     avgYearly: CategoryStats.empty(),
     total: CategoryStats.empty(),
     years: {},
+    songSeconds: {},
   );
 
   Map<String, dynamic> toJson() => {
@@ -248,5 +261,6 @@ class Statistics {
       for (var entry in years.entries)
         entry.key.toString(): entry.value.toJson(),
     },
+    'songSeconds': songSeconds,
   };
 }

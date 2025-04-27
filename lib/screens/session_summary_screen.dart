@@ -53,7 +53,16 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Session Summary")),
+      appBar: AppBar(
+        title: const Text('Session Summary'),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          tooltip: 'Back to Home',
+          onPressed: () {
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          },
+        ),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

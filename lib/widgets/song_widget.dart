@@ -5,6 +5,8 @@ import '../screens/link_search_screen.dart' show LinkSearchScreen;
 import 'link_widget.dart';
 import 'link_view_panel.dart';
 import 'link_editor_widgets.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_profile_provider.dart';
 
 class SongWidget extends StatefulWidget {
   final Song song;
@@ -323,6 +325,9 @@ class _SongWidgetState extends State<SongWidget> {
   Widget _editableLinks() {
     if (!_editMode && _editedSong.links.isEmpty) return const SizedBox();
 
+    final userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+    final songTitle = _editedSong.title;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -342,8 +347,10 @@ class _SongWidgetState extends State<SongWidget> {
               List<Link> newLinks = [..._editedSong.links];
               if (existingIndex >= 0) {
                 newLinks[existingIndex] = updated;
+                userProfileProvider.updateSongLink(songTitle, updated);
               } else {
                 newLinks.add(updated);
+                userProfileProvider.addSongLink(songTitle, updated);
               }
               setState(
                 () => _editedSong = _editedSong.copyWith(links: newLinks),
@@ -352,6 +359,7 @@ class _SongWidgetState extends State<SongWidget> {
             onDelete: () {
               final updatedLinks =
                   _editedSong.links.where((l) => l != link).toList();
+              userProfileProvider.removeSongLink(songTitle, link.key);
               setState(() {
                 _editedSong = _editedSong.copyWith(links: updatedLinks);
                 if (_previewLink == link) _previewLink = null;
@@ -404,6 +412,7 @@ class _SongWidgetState extends State<SongWidget> {
                 );
 
                 if (confirmed != null) {
+                  userProfileProvider.addSongLink(songTitle, confirmed);
                   setState(() {
                     _editedSong = _editedSong.copyWith(
                       links: [..._editedSong.links, confirmed],

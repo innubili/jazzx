@@ -5,6 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/link.dart';
 import 'link_editor_widgets.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_profile_provider.dart';
 
 class LinkWidget extends StatelessWidget {
   final Link link;
@@ -69,11 +71,11 @@ class LinkWidget extends StatelessWidget {
       onCloseViewer();
       await Future.delayed(const Duration(milliseconds: 150));
     }
-
-    final edited = await showDialog<Link>(
+    final edited = await showDialog<Link?>(
       context: context,
       builder: (_) => LinkConfirmationDialog(initialLink: link),
     );
+    if (!context.mounted) return;
     if (edited != null) onUpdated(edited);
   }
 
@@ -104,8 +106,8 @@ class LinkWidget extends StatelessWidget {
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder:
-                        (_) => AlertDialog(
-                          title: const Text('Confirm Deletion'),
+                        (context) => AlertDialog(
+                          title: const Text('Delete Link'),
                           content: const Text(
                             'Are you sure you want to delete this link?',
                           ),
@@ -121,7 +123,20 @@ class LinkWidget extends StatelessWidget {
                           ],
                         ),
                   );
-                  if (confirm == true) onDelete();
+                  if (!context.mounted) return;
+                  if (confirm == true) {
+                    onDelete();
+                    // Also update provider if available
+                    final userProfileProvider =
+                        Provider.of<UserProfileProvider>(
+                          context,
+                          listen: false,
+                        );
+                    final song = userProfileProvider.profile?.songs[link.name];
+                    if (song != null) {
+                      userProfileProvider.removeSongLink(link.name, link.key);
+                    }
+                  }
                 },
               ),
     );

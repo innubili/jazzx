@@ -1,38 +1,13 @@
-import 'dart:convert';
-import 'package:flutter/services.dart' as services;
-import 'package:flutter/material.dart';
 import '../models/session.dart';
 import '../models/statistics.dart';
 import '../models/practice_category.dart';
-import 'utils.dart';
 
-Future<void> recalculateAndUpdateStatistics(BuildContext context) async {
-  final rawJson = await services.rootBundle.loadString('assets/jazzx_db.json');
-  final Map<String, dynamic> json = jsonDecode(rawJson);
-
-  final users = json['users'] as Map<String, dynamic>;
-  for (final entry in users.entries) {
-    final userData = entry.value as Map<String, dynamic>;
-    final sessionsMap = userData['sessions'] as Map<String, dynamic>? ?? {};
-    final sessions =
-        sessionsMap.entries.map((e) => Session.fromJson(e.value)).toList();
-
-    final updatedStats = recalculateStatisticsFromSessions(sessions);
-    userData['statistics'] = updatedStats.toJson();
-  }
-
-  final encoded = const JsonEncoder.withIndent('  ').convert(json);
-  await services.rootBundle.loadStructuredData(
-    'assets/jazzx_db.json',
-    (data) async => encoded,
-  );
-
-  log.info('✅ Statistics recalculated and saved to assets.');
-}
-
+// Keep recalculateStatisticsFromSessions for in-memory stats calculation only.
 Statistics recalculateStatisticsFromSessions(List<Session> sessions) {
   final totalByCategory = <PracticeCategory, int>{};
   final yearlyData = <int, Map<int, Map<int, Map<PracticeCategory, int>>>>{};
+  // Song statistics: Map<SongTitle, int seconds>
+  final songSeconds = <String, int>{};
 
   for (var session in sessions) {
     final date = DateTime.fromMillisecondsSinceEpoch(session.ended * 1000);
@@ -50,6 +25,14 @@ Statistics recalculateStatisticsFromSessions(List<Session> sessions) {
 
       totalByCategory[category] = (totalByCategory[category] ?? 0) + duration;
       dayMap[category] = (dayMap[category] ?? 0) + duration;
+
+      // Add song time if songs are present in this category
+      final songs = entry.value.songs;
+      if (songs != null) {
+        for (final songEntry in songs.entries) {
+          songSeconds[songEntry.key] = (songSeconds[songEntry.key] ?? 0) + songEntry.value;
+        }
+      }
     }
   }
 
@@ -133,5 +116,6 @@ Statistics recalculateStatisticsFromSessions(List<Session> sessions) {
     avgYearly: CategoryStats(values: avgYearlyByCategory),
     total: CategoryStats(values: totalByCategory),
     years: years,
+    songSeconds: songSeconds,
   );
 }

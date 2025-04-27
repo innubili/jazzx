@@ -15,7 +15,16 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Metronome")),
+      appBar: AppBar(
+        title: const Text('Metronome'),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          tooltip: 'Back to Home',
+          onPressed: () {
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

@@ -28,7 +28,16 @@ class _SongDetailsScreenState extends State<SongDetailsScreen> {
     final song = widget.song;
 
     return Scaffold(
-      appBar: AppBar(title: Text(song.title)),
+      appBar: AppBar(
+        title: Text(song.title),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          tooltip: 'Back to Home',
+          onPressed: () {
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

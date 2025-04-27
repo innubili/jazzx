@@ -67,7 +67,8 @@ class CustomDrawer extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        profile.preferences.instrument,
+                        // Show all user's instruments as a comma-separated string
+                        profile.preferences.instruments.join(', '),
                         style: const TextStyle(color: Colors.white70),
                       ),
                     ],

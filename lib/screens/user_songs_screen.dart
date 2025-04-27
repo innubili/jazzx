@@ -32,7 +32,16 @@ class UserSongsScreen extends StatelessWidget {
         Provider.of<JazzStandardsProvider>(context, listen: false).standards;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Songs')),
+      appBar: AppBar(
+        title: const Text('My Songs'),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          tooltip: 'Back to Home',
+          onPressed: () {
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          },
+        ),
+      ),
       body: SongBrowserWidget(
         songs: songs,
         readOnly: false,

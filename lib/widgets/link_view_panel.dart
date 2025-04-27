@@ -28,8 +28,6 @@ class LinkViewPanel extends StatefulWidget {
 }
 
 class _LinkViewPanelState extends State<LinkViewPanel> {
-  WebViewController? _webViewController;
-
   @override
   void initState() {
     super.initState();
@@ -56,11 +54,10 @@ class _LinkViewPanelState extends State<LinkViewPanel> {
       if (uriId.isNotEmpty) {
         final embedUrl =
             'https://open.spotify.com/embed/${isPlaylist ? 'playlist' : 'track'}/$uriId';
-        final controller =
-            WebViewController()
-              ..setJavaScriptMode(JavaScriptMode.unrestricted)
-              ..loadRequest(Uri.parse(embedUrl));
-        setState(() => _webViewController = controller);
+        // Remove unused variable 'controller'
+        WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..loadRequest(Uri.parse(embedUrl));
       }
     }
   }

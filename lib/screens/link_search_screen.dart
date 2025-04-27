@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/link.dart';
 import '../services/youtube_service.dart';
@@ -99,23 +98,6 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
 
   void _onSearch(String query) {
     _searchAllSources(query);
-  }
-
-  Future<void> _pickLocalFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      final file = result.files.first;
-      final fileResult = SearchResult(
-        url: file.path ?? '',
-        title: file.name,
-        kind: LinkKind.media,
-      );
-      setState(() {
-        _results.clear();
-        _results.add(fileResult);
-        _selectedResult = fileResult;
-      });
-    }
   }
 
   void _onSelect(SearchResult result) {
@@ -243,7 +225,16 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Find link for "${widget.songTitle}"')),
+      appBar: AppBar(
+        title: Text('Find link for "${widget.songTitle}"'),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          tooltip: 'Back to Home',
+          onPressed: () {
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          },
+        ),
+      ),
       body: Column(
         children: [
           SearchBarWidget(

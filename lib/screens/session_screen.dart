@@ -10,7 +10,7 @@ import '../widgets/practice_timer_widget.dart';
 import '../widgets/metronome_widget.dart';
 import '../widgets/practice_mode_buttons_widget.dart';
 import '../widgets/practice_detail_widget.dart';
-import '../widgets/main_drawer.dart'; // ✅ NEW
+import '../widgets/main_drawer.dart'; // 
 import '../providers/user_profile_provider.dart';
 import '../models/practice_category.dart';
 import '../models/session.dart';
@@ -65,7 +65,10 @@ class _SessionScreenState extends State<SessionScreen> {
   void _resetSessionData() {
     final profile =
         Provider.of<UserProfileProvider>(context, listen: false).profile;
-    final instrument = profile?.preferences.instrument ?? 'guitar';
+    // Use first instrument or fallback to 'guitar' if none
+    final instrument = (profile?.preferences.instruments.isNotEmpty ?? false)
+        ? profile!.preferences.instruments.first
+        : 'guitar';
 
     setState(() {
       sessionData = Session.getDefault(instrument: instrument);
@@ -254,7 +257,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Session")),
-      drawer: const MainDrawer(), // ✅ <-- USE MAIN DRAWER NOW
+      drawer: const MainDrawer(), // 
       body: Padding(
         padding: const EdgeInsets.all(16),
         child:

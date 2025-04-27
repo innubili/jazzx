@@ -4,6 +4,8 @@ import 'package:firebase_database/firebase_database.dart';
 import '../models/user_profile.dart';
 import '../models/preferences.dart';
 import '../models/song.dart';
+import '../models/link.dart';
+import '../models/statistics.dart';
 import '../utils/utils.dart';
 import '../firebase_options.dart';
 import '../utils/statistics_utils.dart'; // ⬅️ Needed for recalculateStatisticsFromSessions
@@ -130,6 +132,34 @@ class FirebaseService {
           },
       },
     });
+  }
+
+  /// Save only the user's songs to Firebase (partial update)
+  Future<void> saveUserSongs(String userId, Map<String, Song> songs) async {
+    await ensureInitialized();
+    final ref = _db!.ref('users/$userId/songs');
+    await ref.set({
+      for (var entry in songs.entries)
+        entry.key: entry.value.toJson(),
+    });
+  }
+
+  /// Save only the links for a specific song (partial update)
+  Future<void> saveSongLinks(String userId, String songTitle, List<Link> links) async {
+    await ensureInitialized();
+    final ref = _db!.ref('users/$userId/songs/$songTitle/links');
+    await ref.set([
+      for (var link in links) link.toJson(),
+    ]);
+  }
+
+  /// Saves the user's statistics to Firebase under their user profile.
+  Future<void> saveStatistics(Statistics stats) async {
+    await ensureInitialized();
+    final sanitizedKey = sanitizedUserKey;
+    if (sanitizedKey == null) return;
+    final ref = _db!.ref('users/$sanitizedKey/statistics');
+    await ref.set(stats.toJson());
   }
 
   Future<void> signOut() async {
