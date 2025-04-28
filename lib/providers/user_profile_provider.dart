@@ -171,4 +171,40 @@ class UserProfileProvider extends ChangeNotifier {
       notifyListeners();
     });
   }
+
+  /// Save a session and update lastSessionId in preferences if needed, but only persist the single session to Firebase.
+  Future<void> saveSessionWithId(String sessionId, Session session) async {
+    if (_profile == null || _userId == null) return;
+    final newSessions = Map<String, Session>.from(_profile!.sessions);
+    newSessions[sessionId] = session;
+
+    // Debug: Print session to be saved
+    print('[UserProfileProvider] Saving session $sessionId: ${session.toJson()}');
+    print('[UserProfileProvider] All sessions before save:');
+    newSessions.forEach((k, v) => print('  $k: ${v.toJson()}'));
+
+    // Update lastSessionId if needed
+    String lastSessionId = _profile!.preferences.lastSessionId;
+    ProfilePreferences prefsToSave = _profile!.preferences;
+    if (lastSessionId.isEmpty || int.parse(sessionId) > int.parse(lastSessionId)) {
+      prefsToSave = _profile!.preferences.copyWith(lastSessionId: sessionId);
+      await FirebaseService().savePreferences(prefsToSave);
+    }
+    // Update profile in memory
+    _profile = _profile!.copyWith(
+      preferences: prefsToSave,
+      sessions: newSessions,
+    );
+    try {
+      // Only persist the single session
+      await FirebaseService().saveSingleSession(_userId!, sessionId, session);
+      print('[UserProfileProvider] Single session successfully saved to Firebase.');
+    } catch (e, st) {
+      print('[UserProfileProvider] ERROR saving single session to Firebase: $e\n$st');
+      rethrow;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
+  }
 }

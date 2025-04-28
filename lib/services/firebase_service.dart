@@ -6,6 +6,7 @@ import '../models/preferences.dart';
 import '../models/song.dart';
 import '../models/link.dart';
 import '../models/statistics.dart';
+import '../models/session.dart';
 import '../utils/utils.dart';
 import '../firebase_options.dart';
 import '../utils/statistics_utils.dart'; // ⬅️ Needed for recalculateStatisticsFromSessions
@@ -110,7 +111,7 @@ class FirebaseService {
   Future<void> saveUserProfile(UserProfile profile) async {
     await ensureInitialized();
     final ref = _db!.ref('users/${profile.id}');
-    await ref.set({
+    final data = {
       'preferences': profile.preferences.toJson(),
       'sessions': {
         for (var entry in profile.sessions.entries)
@@ -131,7 +132,20 @@ class FirebaseService {
                 .replaceAll('-', ''),
           },
       },
-    });
+    };
+    log.info(
+      '[FirebaseService] Writing user profile to Firebase for ${profile.id}...',
+    );
+    log.info('[FirebaseService] Data: ' + data.toString());
+    try {
+      await ref.set(data);
+      log.info('[FirebaseService] Profile write SUCCESS for ${profile.id}');
+    } catch (e, st) {
+      log.info(
+        '[FirebaseService] ERROR writing profile for ${profile.id}: $e\n$st',
+      );
+      rethrow;
+    }
   }
 
   /// Save only the user's songs to Firebase (partial update)
@@ -139,18 +153,19 @@ class FirebaseService {
     await ensureInitialized();
     final ref = _db!.ref('users/$userId/songs');
     await ref.set({
-      for (var entry in songs.entries)
-        entry.key: entry.value.toJson(),
+      for (var entry in songs.entries) entry.key: entry.value.toJson(),
     });
   }
 
   /// Save only the links for a specific song (partial update)
-  Future<void> saveSongLinks(String userId, String songTitle, List<Link> links) async {
+  Future<void> saveSongLinks(
+    String userId,
+    String songTitle,
+    List<Link> links,
+  ) async {
     await ensureInitialized();
     final ref = _db!.ref('users/$userId/songs/$songTitle/links');
-    await ref.set([
-      for (var link in links) link.toJson(),
-    ]);
+    await ref.set([for (var link in links) link.toJson()]);
   }
 
   /// Saves the user's statistics to Firebase under their user profile.
@@ -160,6 +175,30 @@ class FirebaseService {
     if (sanitizedKey == null) return;
     final ref = _db!.ref('users/$sanitizedKey/statistics');
     await ref.set(stats.toJson());
+  }
+
+  /// Save or update a single session for a user without overwriting all sessions.
+  Future<void> saveSingleSession(
+    String userId,
+    String sessionId,
+    Session session,
+  ) async {
+    await ensureInitialized();
+    final ref = _db!.ref('users/$userId/sessions/$sessionId');
+    final data = session.toJson();
+    log.info(
+      '[FirebaseService] Writing single session $sessionId for user $userId...',
+    );
+    log.info('[FirebaseService] Data: ' + data.toString());
+    try {
+      await ref.set(data);
+      log.info('[FirebaseService] Single session write SUCCESS for $sessionId');
+    } catch (e, st) {
+      log.info(
+        '[FirebaseService] ERROR writing single session $sessionId: $e\n$st',
+      );
+      rethrow;
+    }
   }
 
   Future<void> signOut() async {

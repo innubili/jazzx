@@ -47,6 +47,10 @@ class SessionLogScreen extends StatelessWidget {
               final pickedTime = await showTimePicker(
                 context: context,
                 initialTime: TimeOfDay.fromDateTime(now),
+                builder: (context, child) => MediaQuery(
+                  data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                  child: child!,
+                ),
               );
               if (pickedTime == null) return;
               final sessionDateTime = DateTime(

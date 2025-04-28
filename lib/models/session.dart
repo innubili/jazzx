@@ -1,13 +1,15 @@
 import '../utils/utils.dart';
 import 'practice_category.dart';
+import '../utils/session_utils.dart';
 
 class SessionCategory {
   final int time;
   final String? note;
   final int? bpm;
   final Map<String, int>? songs;
+  final List<String>? links;
 
-  SessionCategory({required this.time, this.note, this.bpm, this.songs});
+  SessionCategory({required this.time, this.note, this.bpm, this.songs, this.links});
 
   factory SessionCategory.fromJson(Map<String, dynamic> json) {
     final safeJson = asStringKeyedMap(json);
@@ -19,6 +21,9 @@ class SessionCategory {
           safeJson['songs'] is Map
               ? Map<String, int>.from(safeJson['songs'])
               : null,
+      links: safeJson['links'] is List
+          ? List<String>.from(safeJson['links'])
+          : null,
     );
   }
 
@@ -27,11 +32,12 @@ class SessionCategory {
     if (note != null) 'note': note,
     if (bpm != null) 'bpm': bpm,
     if (songs != null) 'songs': songs,
+    if (links != null) 'links': links,
   };
 
   @override
   String toString() =>
-      'SessionCategory(time: $time, note: $note, bpm: $bpm, songs: ${songs?.keys.toList()})';
+      'Cat.(time: $time, note: $note, bpm: $bpm, songs: ${songs?.keys.toList()}, links: $links)';
 }
 
 extension SessionCategoryCopyWith on SessionCategory {
@@ -40,12 +46,14 @@ extension SessionCategoryCopyWith on SessionCategory {
     String? note,
     int? bpm,
     Map<String, int>? songs,
+    List<String>? links,
   }) {
     return SessionCategory(
       time: time ?? this.time,
       note: note ?? this.note,
       bpm: bpm ?? this.bpm,
       songs: songs ?? this.songs,
+      links: links ?? this.links,
     );
   }
 }
@@ -106,6 +114,24 @@ class Session {
     return json;
   }
 
+  Session copyWith({
+    int? duration,
+    int? ended,
+    String? instrument,
+    Map<PracticeCategory, SessionCategory>? categories,
+    int? warmupTime,
+    int? warmupBpm,
+  }) {
+    return Session(
+      duration: duration ?? this.duration,
+      ended: ended ?? this.ended,
+      instrument: instrument ?? this.instrument,
+      categories: categories ?? this.categories,
+      warmupTime: warmupTime ?? this.warmupTime,
+      warmupBpm: warmupBpm ?? this.warmupBpm,
+    );
+  }
+
   Session copyWithCategory(PracticeCategory category, SessionCategory data) {
     final newCategories = Map<PracticeCategory, SessionCategory>.from(
       categories,
@@ -134,5 +160,5 @@ class Session {
 
   @override
   String toString() =>
-      'Session\n\t$instrument\n\tcategories: ${categories.map((k, v) => MapEntry(k.name, v))})';
+      'Session\n\t$instrument\n\twup:(${intSecondsToHHmm(warmupTime ?? 0)})\n\tcategories:\n\t${categories.map((k, v) => MapEntry(k.name, v))})';
 }

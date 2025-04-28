@@ -7,10 +7,10 @@ class Session2LinesWidget extends StatelessWidget {
   final Session session;
   final String sessionId;
   const Session2LinesWidget({
-    Key? key,
+    super.key,
     required this.session,
     required this.sessionId,
-  }) : super(key: key);
+  });
 
   String _formatDuration(int seconds) {
     final d = Duration(seconds: seconds);
@@ -48,13 +48,19 @@ class Session2LinesWidget extends StatelessWidget {
           children: [
             if (hasWarmup)
               Chip(
-                avatar: Icon(PracticeCategoryUtils.icons[PracticeCategory.warmup]),
+                avatar: Icon(
+                  PracticeCategoryUtils.icons[PracticeCategory.warmup],
+                ),
                 label: Text(_formatDuration(warmupTime)),
               ),
-            ...catTimes.where((e) => e.value.time > 0).map((e) => Chip(
-                  avatar: Icon(PracticeCategoryUtils.icons[e.key]),
-                  label: Text(_formatDuration(e.value.time)),
-                )),
+            ...catTimes
+                .where((e) => e.value.time > 0)
+                .map(
+                  (e) => Chip(
+                    avatar: Icon(PracticeCategoryUtils.icons[e.key]),
+                    label: Text(_formatDuration(e.value.time)),
+                  ),
+                ),
           ],
         ),
       ],

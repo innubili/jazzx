@@ -14,8 +14,18 @@ String sessionIdToReadableString(String sessionId) {
   }
   final date = DateTime.fromMillisecondsSinceEpoch(timestamp);
   final months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
   final mmmm = months[date.month - 1];
   final dd = date.day.toString().padLeft(2, '0');
@@ -25,9 +35,26 @@ String sessionIdToReadableString(String sessionId) {
   return '$dd-$mmmm-$yyyy $hh:$mm';
 }
 
+/// Converts an integer number of seconds to a string formatted as HH:mm
+String intSecondsToHHmm(int seconds) {
+  final int hours = seconds ~/ 3600;
+  final int minutes = (seconds % 3600) ~/ 60;
+  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+}
+
+/// Converts a double number of seconds to a string formatted as HH:mm
+String doubleSecondsToHHmm(double seconds) {
+  final int hours = seconds ~/ 3600;
+  final int minutes = (seconds % 3600) ~/ 60;
+  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+}
+
 /// Recalculates the duration for a session (sum of all category times + warmup).
 int recalculateSessionDuration(Session session) {
-  final categorySum = session.categories.values.fold<int>(0, (prev, cat) => prev + (cat.time));
+  final categorySum = session.categories.values.fold<int>(
+    0,
+    (prev, cat) => prev + (cat.time),
+  );
   final warmup = session.warmupTime ?? 0;
   return categorySum + warmup;
 }

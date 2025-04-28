@@ -156,6 +156,7 @@ class _SessionScreenState extends State<SessionScreen> {
         note: cat?.note,
         bpm: cat?.bpm,
         songs: cat?.songs,
+        links: cat?.links,
       );
     }
   }
@@ -288,6 +289,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                         ?.keys
                                         .toList() ??
                                     [],
+                                links: sessionData.categories[_activeMode!]?.links ?? [],
                                 onTimeChanged: (val) {
                                   final cat =
                                       sessionData.categories[_activeMode!] ??
@@ -299,6 +301,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                           note: cat.note,
                                           bpm: cat.bpm,
                                           songs: cat.songs,
+                                          links: cat.links,
                                         );
                                   });
                                 },
@@ -313,6 +316,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                           note: val,
                                           bpm: cat.bpm,
                                           songs: cat.songs,
+                                          links: cat.links,
                                         );
                                   });
                                 },
@@ -327,7 +331,20 @@ class _SessionScreenState extends State<SessionScreen> {
                                           note: cat.note,
                                           bpm: cat.bpm,
                                           songs: {for (var s in songs) s: 1},
+                                          links: cat.links,
                                         );
+                                  });
+                                },
+                                onLinksChanged: (links) {
+                                  final cat = sessionData.categories[_activeMode!] ?? SessionCategory(time: 0);
+                                  setState(() {
+                                    sessionData.categories[_activeMode!] = SessionCategory(
+                                      time: cat.time,
+                                      note: cat.note,
+                                      bpm: cat.bpm,
+                                      songs: cat.songs,
+                                      links: links,
+                                    );
                                   });
                                 },
                               ),
@@ -390,6 +407,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                           ?.keys
                                           .toList() ??
                                       [],
+                                  links: sessionData.categories[_activeMode!]?.links ?? [],
                                   onTimeChanged: (val) {
                                     final cat =
                                         sessionData.categories[_activeMode!] ??
@@ -401,6 +419,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                             note: cat.note,
                                             bpm: cat.bpm,
                                             songs: cat.songs,
+                                            links: cat.links,
                                           );
                                     });
                                   },
@@ -415,6 +434,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                             note: val,
                                             bpm: cat.bpm,
                                             songs: cat.songs,
+                                            links: cat.links,
                                           );
                                     });
                                   },
@@ -429,7 +449,20 @@ class _SessionScreenState extends State<SessionScreen> {
                                             note: cat.note,
                                             bpm: cat.bpm,
                                             songs: {for (var s in songs) s: 1},
+                                            links: cat.links,
                                           );
+                                    });
+                                  },
+                                  onLinksChanged: (links) {
+                                    final cat = sessionData.categories[_activeMode!] ?? SessionCategory(time: 0);
+                                    setState(() {
+                                      sessionData.categories[_activeMode!] = SessionCategory(
+                                        time: cat.time,
+                                        note: cat.note,
+                                        bpm: cat.bpm,
+                                        songs: cat.songs,
+                                        links: links,
+                                      );
                                     });
                                   },
                                 ),

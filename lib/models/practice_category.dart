@@ -100,3 +100,89 @@ class PracticeCategoryUtils {
     PracticeCategory.warmup: Icons.local_fire_department, // Added warmup icon
   };
 }
+
+/// --- PracticeCategory Field Schema ---
+///
+/// This schema defines which fields are ALLOWED (not required) for each PracticeCategory.
+/// Use this as the single source of truth for UI rendering, validation, and serialization logic.
+///
+/// Example usage:
+///   if (category.schema.allowsNote) ... // show note field
+///   if (category.schema.allowsSongs) ... // show songs picker
+///   if (category.schema.allowsLinks) ... // show links UI
+///
+/// Fields may be omitted in saved data for backwards compatibility.
+///
+/// Utility methods are provided via [PracticeCategorySchemaExtension].
+
+class CategoryFieldSchema {
+  final bool allowsNote;
+  final bool allowsBpm;
+  final bool allowsSongs;
+  final bool allowsLinks;
+
+  const CategoryFieldSchema({
+    this.allowsNote = false,
+    this.allowsBpm = false,
+    this.allowsSongs = false,
+    this.allowsLinks = false,
+  });
+
+  /// Returns true if any field is allowed for this category.
+  bool get allowsAny => allowsNote || allowsBpm || allowsSongs || allowsLinks;
+}
+
+/// Central schema for all PracticeCategory fields (based on JSON + PracticeDetailWidget)
+const Map<PracticeCategory, CategoryFieldSchema> practiceCategorySchema = {
+  PracticeCategory.exercise: CategoryFieldSchema(
+    allowsNote: true,
+    allowsBpm: true,
+    allowsLinks: true,
+  ),
+  PracticeCategory.newsong: CategoryFieldSchema(
+    allowsSongs: true,
+    allowsLinks: true,
+  ),
+  PracticeCategory.repertoire: CategoryFieldSchema(
+    allowsSongs: true,
+    allowsLinks: true,
+  ),
+  PracticeCategory.lesson: CategoryFieldSchema(
+    allowsNote: true,
+    allowsLinks: true,
+  ),
+  PracticeCategory.theory: CategoryFieldSchema(
+    allowsNote: true,
+    allowsLinks: true,
+  ),
+  PracticeCategory.video: CategoryFieldSchema(
+    allowsNote: true,
+    allowsLinks: true,
+  ),
+  PracticeCategory.gig: CategoryFieldSchema(
+    allowsNote: true,
+    allowsLinks: true,
+  ),
+  PracticeCategory.fun: CategoryFieldSchema(
+    allowsNote: true,
+    allowsLinks: true,
+  ),
+  PracticeCategory.warmup: CategoryFieldSchema(allowsBpm: true),
+};
+
+/// Extension with utility methods for category schema queries.
+extension PracticeCategorySchemaExtension on PracticeCategory {
+  /// Returns the schema for this category.
+  CategoryFieldSchema get schema => practiceCategorySchema[this]!;
+
+  /// Returns true if this category allows note.
+  bool get allowsNote => schema.allowsNote;
+  /// Returns true if this category allows bpm.
+  bool get allowsBpm => schema.allowsBpm;
+  /// Returns true if this category allows songs.
+  bool get allowsSongs => schema.allowsSongs;
+  /// Returns true if this category allows links.
+  bool get allowsLinks => schema.allowsLinks;
+  /// Returns true if any field is allowed.
+  bool get allowsAny => schema.allowsAny;
+}

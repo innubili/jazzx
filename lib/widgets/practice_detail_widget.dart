@@ -13,9 +13,11 @@ class PracticeDetailWidget extends StatelessWidget {
   final String note;
   final List<String> songs;
   final int time;
+  final List<String> links;
   final ValueChanged<String> onNoteChanged;
   final ValueChanged<List<String>> onSongsChanged;
   final ValueChanged<int> onTimeChanged;
+  final ValueChanged<List<String>> onLinksChanged;
 
   const PracticeDetailWidget({
     super.key,
@@ -26,6 +28,8 @@ class PracticeDetailWidget extends StatelessWidget {
     required this.onNoteChanged,
     required this.onSongsChanged,
     required this.onTimeChanged,
+    this.links = const [],
+    required this.onLinksChanged,
   });
 
   @override
@@ -59,11 +63,19 @@ class PracticeDetailWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _NoteTextField(note: note, onNoteChanged: onNoteChanged),
-          const SizedBox(height: 16),
+          if (category.allowsNote)
+            _NoteTextField(note: note, onNoteChanged: onNoteChanged),
+          if (category.allowsNote) const SizedBox(height: 16),
 
-          // New Song Picker
-          if (category == PracticeCategory.newsong)
+          if (category.allowsLinks)
+            _LinksField(
+              links: links,
+              onLinksChanged: onLinksChanged,
+            ),
+          if (category.allowsLinks) const SizedBox(height: 16),
+
+          // Song Picker for newsong
+          if (category == PracticeCategory.newsong && category.allowsSongs)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -113,7 +125,7 @@ class PracticeDetailWidget extends StatelessWidget {
               ],
             ),
           // Repertoire Multi Song Picker
-          if (category == PracticeCategory.repertoire)
+          if (category == PracticeCategory.repertoire && category.allowsSongs)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -196,6 +208,33 @@ class _NoteTextFieldState extends State<_NoteTextField> {
     return TextField(
       controller: _controller,
       decoration: const InputDecoration(labelText: "Note"),
+    );
+  }
+}
+
+class _LinksField extends StatelessWidget {
+  final List<String> links;
+  final ValueChanged<List<String>> onLinksChanged;
+  const _LinksField({required this.links, required this.onLinksChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = TextEditingController(text: links.join('\n'));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Links (one per line):'),
+        TextField(
+          controller: controller,
+          minLines: 1,
+          maxLines: 5,
+          decoration: const InputDecoration(hintText: 'Paste or type links here'),
+          onChanged: (value) {
+            final newLinks = value.split('\n').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+            onLinksChanged(newLinks);
+          },
+        ),
+      ],
     );
   }
 }
