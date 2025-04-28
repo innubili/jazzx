@@ -75,8 +75,11 @@ class LinkWidget extends StatelessWidget {
       context: context,
       builder: (_) => LinkConfirmationDialog(initialLink: link),
     );
+    await Future.delayed(const Duration(milliseconds: 150));
     if (!context.mounted) return;
-    if (edited != null) onUpdated(edited);
+    if (edited != null) {
+      onUpdated(edited);
+    }
   }
 
   @override

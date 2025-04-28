@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/main_drawer.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -8,14 +9,15 @@ class AboutScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('About'),
-        leading: IconButton(
-          icon: const Icon(Icons.home),
-          tooltip: 'Back to Home',
-          onPressed: () {
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-          },
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            tooltip: 'Open navigation menu',
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
         ),
       ),
+      drawer: const MainDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(

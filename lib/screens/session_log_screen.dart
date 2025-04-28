@@ -1,101 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/session_provider.dart';
-import '../widgets/confirm_dialog.dart';
-import 'session_summary_screen.dart';
+import '../widgets/main_drawer.dart';
+import '../providers/user_profile_provider.dart';
+import '../widgets/session_summary_widget.dart';
 
 class SessionLogScreen extends StatelessWidget {
   const SessionLogScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<UserProfileProvider>(context);
+    final sessionsMap = profileProvider.profile?.sessions ?? {};
+    // The session ID is the timestamp in SECONDS, not milliseconds
+    final sessionEntries = sessionsMap.entries.toList();
+    sessionEntries.sort((a, b) => int.parse(b.key).compareTo(int.parse(a.key)));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Session Log'),
-        leading: IconButton(
-          icon: const Icon(Icons.home),
-          tooltip: 'Back to Home',
-          onPressed: () {
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-          },
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            tooltip: 'Open navigation menu',
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
         ),
       ),
-      body: Consumer<SessionProvider>(
-        builder: (context, sessionProvider, _) {
-          final sessions = sessionProvider.sessions;
-
-          if (sessions.isEmpty) {
-            return const Center(child: Text("No sessions recorded."));
-          }
-
-          final sortedSessions = [...sessions]..sort((a, b) {
-            final aTs = a['timestamp'] ?? 0;
-            final bTs = b['timestamp'] ?? 0;
-            return bTs.compareTo(aTs);
-          });
-
-          return ListView.builder(
-            itemCount: sortedSessions.length,
-            itemBuilder: (context, index) {
-              final session = sortedSessions[index];
-              final sessionTimestamp = session['timestamp'] ?? 0;
-              final sessionDate = DateTime.fromMillisecondsSinceEpoch(
-                sessionTimestamp,
-              );
-
-              return ListTile(
-                title: Text('Session on ${sessionDate.toLocal()}'),
-                subtitle: Text('Duration: ${session['duration'] ?? 0} seconds'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => SessionSummaryScreen(
-                            sessionData: session,
-                            onConfirm: (updatedData) {
-                              final originalIndex = sessionProvider.sessions
-                                  .indexOf(session);
-                              if (originalIndex != -1) {
-                                sessionProvider.updateSession(
-                                  originalIndex,
-                                  updatedData,
-                                );
-                              }
-                              Navigator.pop(context);
-                            },
-                          ),
-                    ),
-                  );
-                },
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder:
-                          (ctx) => ConfirmDialog(
-                            title: "Confirm Deletion",
-                            content:
-                                "Are you sure you want to delete this session?",
-                            onCancel: () => Navigator.pop(ctx),
-                            onConfirm: () {
-                              Navigator.pop(ctx);
-                              final originalIndex = sessionProvider.sessions
-                                  .indexOf(session);
-                              if (originalIndex != -1) {
-                                sessionProvider.deleteSession(originalIndex);
-                              }
-                            },
-                          ),
+      drawer: const MainDrawer(),
+      body: sessionEntries.isEmpty
+          ? const Center(child: Text('No sessions recorded.'))
+          : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: sessionEntries.length,
+              separatorBuilder: (_, __) => const Divider(height: 16),
+              itemBuilder: (context, index) {
+                final entry = sessionEntries[index];
+                final sessionId = entry.key;
+                final session = entry.value;
+                return ListTile(
+                  title: SessionSummaryWidget(
+                    sessionId: sessionId,
+                    session: session,
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/session_summary',
+                      arguments: {
+                        'sessionData': session.toJson(),
+                        'onConfirm': null, // Implement edit/save if needed
+                      },
                     );
                   },
-                ),
-              );
-            },
-          );
-        },
-      ),
+                );
+              },
+            ),
     );
   }
 }

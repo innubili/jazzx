@@ -11,6 +11,11 @@ class MainDrawer extends StatelessWidget {
     return CustomDrawer(
       items: [
         DrawerItem(
+          label: 'Session (Home)',
+          icon: Icons.home,
+          onTap: () => _navigate(context, '/'),
+        ),
+        DrawerItem(
           label: 'Metronome',
           icon: Icons.music_note,
           onTap: () => _navigate(context, '/metronome'),

@@ -19,6 +19,7 @@ class SongWidget extends StatefulWidget {
   final VoidCallback? onSelected;
   final bool initiallyExpanded;
   final LinkKind? addLinkForKind;
+  final Widget? leading;
 
   const SongWidget({
     super.key,
@@ -32,6 +33,7 @@ class SongWidget extends StatefulWidget {
     this.onSelected,
     this.initiallyExpanded = false,
     this.addLinkForKind,
+    this.leading,
   });
 
   @override
@@ -223,6 +225,10 @@ class _SongWidgetState extends State<SongWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        if (widget.leading != null) ...[
+          widget.leading!,
+          const SizedBox(width: 8),
+        ],
         Expanded(
           child:
               _editMode
@@ -238,17 +244,13 @@ class _SongWidgetState extends State<SongWidget> {
                           () => _editedSong = _editedSong.copyWith(title: val),
                         ),
                   )
-                  : RichText(
-                    text: TextSpan(
+                  : Text.rich(
+                      _highlightedText(_editedSong.title),
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
                       ),
-                      children: [_highlightedText(_editedSong.title)],
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
         ),
         if (!_editMode && !widget.readOnly) ...[
           IconButton(

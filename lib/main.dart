@@ -23,6 +23,7 @@ import 'screens/session_log_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/about_screen.dart';
 import 'screens/statistics_screen.dart';
+import 'screens/session_summary_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -78,6 +79,7 @@ class JazzXApp extends StatelessWidget {
           '/settings': (context) => const SettingsScreen(),
           '/statistics': (context) => const StatisticsScreen(),
           '/about': (context) => const AboutScreen(),
+          '/session_summary': (context) => const SessionSummaryScreen(),
         },
       ),
     );

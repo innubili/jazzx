@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/song.dart';
+import '../widgets/main_drawer.dart';
 
 class SongDetailsScreen extends StatefulWidget {
   final Song song;
@@ -30,14 +31,15 @@ class _SongDetailsScreenState extends State<SongDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(song.title),
-        leading: IconButton(
-          icon: const Icon(Icons.home),
-          tooltip: 'Back to Home',
-          onPressed: () {
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-          },
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            tooltip: 'Open navigation menu',
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
         ),
       ),
+      drawer: const MainDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/user_profile_provider.dart';
 import '../models/practice_category.dart';
 import '../models/statistics.dart';
+import '../widgets/main_drawer.dart';
 
 class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
@@ -34,16 +35,16 @@ class StatisticsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Statistics'),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.home),
-          tooltip: 'Back to Home',
-          onPressed: () {
-            Navigator.of(
-              context,
-            ).pushNamedAndRemoveUntil('/', (route) => false);
-          },
+        leading: Builder(
+          builder:
+              (context) => IconButton(
+                icon: const Icon(Icons.menu),
+                tooltip: 'Open navigation menu',
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
         ),
       ),
+      drawer: const MainDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -174,7 +175,7 @@ class StatisticsScreen extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   entry.key.length > 24
-                                      ? entry.key.substring(0, 21) + '...'
+                                      ? '${entry.key.substring(0, 21)}...'
                                       : entry.key,
                                   style: GoogleFonts.montserrat(fontSize: 14),
                                   overflow: TextOverflow.ellipsis,

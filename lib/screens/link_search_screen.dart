@@ -5,6 +5,7 @@ import '../services/youtube_service.dart';
 import '../services/spotify_service.dart';
 import '../widgets/search_bar_widget.dart';
 import '../widgets/link_view_panel.dart';
+import '../widgets/main_drawer.dart'; // Import the MainDrawer widget
 
 class LinkSearchScreen extends StatefulWidget {
   final String songTitle;
@@ -227,14 +228,15 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Find link for "${widget.songTitle}"'),
-        leading: IconButton(
-          icon: const Icon(Icons.home),
-          tooltip: 'Back to Home',
-          onPressed: () {
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-          },
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            tooltip: 'Open navigation menu',
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
         ),
       ),
+      drawer: const MainDrawer(),
       body: Column(
         children: [
           SearchBarWidget(

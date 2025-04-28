@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_profile_provider.dart';
 import '../utils/statistics_utils.dart';
-import '../models/preferences.dart' show Instruments, ProfilePreferences;
+import '../models/preferences.dart' show ProfilePreferences;
+import '../widgets/main_drawer.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,21 +13,10 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String? _editedName;
   List<String>? _editedInstruments;
-  String? _editedTeacher;
-  bool? _editedDarkMode;
-  bool? _editedAdmin;
-  bool? _editedPro;
   bool? _editedMetronomeEnabled;
-  int? _editedExerciseBpm;
-  int? _editedWarmupBpm;
   bool? _editedWarmupEnabled;
-  int? _editedWarmupTime;
-  String? _editedLastSessionId;
   bool? _editedAutoPause;
-  int? _editedPauseEveryMinutes;
-  int? _editedPauseBreakMinutes;
 
   @override
   void initState() {
@@ -35,8 +25,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final profile = context.read<UserProfileProvider?>()?.profile;
       if (profile != null) {
         _editedAutoPause = profile.preferences.autoPause;
-        _editedPauseEveryMinutes = profile.preferences.pauseEvery;
-        _editedPauseBreakMinutes = profile.preferences.pauseBreak;
       }
     });
   }
@@ -84,6 +72,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  void _updatePreferences(
+    BuildContext context,
+    ProfilePreferences prefs, {
+    ProfilePreferences Function(ProfilePreferences)? update,
+  }) {
+    final profileProvider = Provider.of<UserProfileProvider>(
+      context,
+      listen: false,
+    );
+    final newPrefs = update != null ? update(prefs) : prefs;
+    profileProvider.saveUserPreferences(newPrefs);
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<UserProfileProvider>(context);
@@ -96,16 +97,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        leading: IconButton(
-          icon: const Icon(Icons.home),
-          tooltip: 'Back to Home',
-          onPressed: () {
-            Navigator.of(
-              context,
-            ).pushNamedAndRemoveUntil('/', (route) => false);
-          },
+        leading: Builder(
+          builder:
+              (context) => IconButton(
+                icon: const Icon(Icons.menu),
+                tooltip: 'Open navigation menu',
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
         ),
       ),
+      drawer: const MainDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -118,40 +119,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   initialValue: profile.preferences.name,
                   decoration: const InputDecoration(labelText: 'Display Name'),
                   onChanged: (val) {
-                    setState(() => _editedName = val);
-                    final prefs = ProfilePreferences(
-                      darkMode: _editedDarkMode ?? profile.preferences.darkMode,
-                      exerciseBpm:
-                          _editedExerciseBpm ?? profile.preferences.exerciseBpm,
-                      instruments:
-                          _editedInstruments ?? profile.preferences.instruments,
-                      admin: _editedAdmin ?? profile.preferences.admin,
-                      pro: _editedPro ?? profile.preferences.pro,
-                      metronomeEnabled:
-                          _editedMetronomeEnabled ??
-                          profile.preferences.metronomeEnabled,
-                      name: val,
-                      teacher: _editedTeacher ?? profile.preferences.teacher,
-                      warmupBpm:
-                          _editedWarmupBpm ?? profile.preferences.warmupBpm,
-                      warmupEnabled:
-                          _editedWarmupEnabled ??
-                          profile.preferences.warmupEnabled,
-                      warmupTime:
-                          _editedWarmupTime ?? profile.preferences.warmupTime,
-                      lastSessionId:
-                          _editedLastSessionId ??
-                          profile.preferences.lastSessionId,
-                      autoPause:
-                          _editedAutoPause ?? profile.preferences.autoPause,
-                      pauseEvery:
-                          _editedPauseEveryMinutes ??
-                          profile.preferences.pauseEvery,
-                      pauseBreak:
-                          _editedPauseBreakMinutes ??
-                          profile.preferences.pauseBreak,
+                    _updatePreferences(
+                      context,
+                      profile.preferences,
+                      update: (prefs) => prefs.copyWith(name: val),
                     );
-                    profileProvider.saveUserPreferences(prefs);
                   },
                 ),
                 const SizedBox(height: 16),
@@ -172,46 +144,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             updated.remove(instrument);
                             _editedInstruments = updated;
                           });
-                          final prefs = ProfilePreferences(
-                            darkMode:
-                                _editedDarkMode ?? profile.preferences.darkMode,
-                            exerciseBpm:
-                                _editedExerciseBpm ??
-                                profile.preferences.exerciseBpm,
-                            instruments:
-                                _editedInstruments ??
-                                profile.preferences.instruments,
-                            admin: _editedAdmin ?? profile.preferences.admin,
-                            pro: _editedPro ?? profile.preferences.pro,
-                            metronomeEnabled:
-                                _editedMetronomeEnabled ??
-                                profile.preferences.metronomeEnabled,
-                            name: _editedName ?? profile.preferences.name,
-                            teacher:
-                                _editedTeacher ?? profile.preferences.teacher,
-                            warmupBpm:
-                                _editedWarmupBpm ??
-                                profile.preferences.warmupBpm,
-                            warmupEnabled:
-                                _editedWarmupEnabled ??
-                                profile.preferences.warmupEnabled,
-                            warmupTime:
-                                _editedWarmupTime ??
-                                profile.preferences.warmupTime,
-                            lastSessionId:
-                                _editedLastSessionId ??
-                                profile.preferences.lastSessionId,
-                            autoPause:
-                                _editedAutoPause ??
-                                profile.preferences.autoPause,
-                            pauseEvery:
-                                _editedPauseEveryMinutes ??
-                                profile.preferences.pauseEvery,
-                            pauseBreak:
-                                _editedPauseBreakMinutes ??
-                                profile.preferences.pauseBreak,
+                          _updatePreferences(
+                            context,
+                            profile.preferences,
+                            update:
+                                (prefs) => prefs.copyWith(
+                                  instruments: _editedInstruments,
+                                ),
                           );
-                          profileProvider.saveUserPreferences(prefs);
                         },
                       ),
                     ),
@@ -219,61 +159,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: const Icon(Icons.add),
                       tooltip: 'Add Instrument',
                       onPressed: () async {
+                        final controller = TextEditingController();
                         final instrument = await showDialog<String>(
                           context: context,
                           builder:
-                              (context) => SimpleDialog(
+                              (context) => AlertDialog(
                                 title: const Text('Add Instrument'),
-                                children: [
-                                  ...Instruments.where(
-                                    (i) => !selectedInstruments.contains(i),
-                                  ).map(
-                                    (inst) => SimpleDialogOption(
-                                      onPressed:
-                                          () => Navigator.pop(context, inst),
-                                      child: Text(inst),
-                                    ),
+                                content: TextField(
+                                  controller: controller,
+                                  autofocus: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Instrument',
                                   ),
-                                  SimpleDialogOption(
-                                    onPressed: () async {
-                                      final controller =
-                                          TextEditingController();
-                                      final custom = await showDialog<String>(
-                                        context: context,
-                                        builder:
-                                            (context) => AlertDialog(
-                                              title: const Text(
-                                                'Custom Instrument',
-                                              ),
-                                              content: TextField(
-                                                controller: controller,
-                                                decoration:
-                                                    const InputDecoration(
-                                                      labelText: 'Instrument',
-                                                    ),
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed:
-                                                      () => Navigator.pop(
-                                                        context,
-                                                      ),
-                                                  child: const Text('Cancel'),
-                                                ),
-                                                ElevatedButton(
-                                                  onPressed:
-                                                      () => Navigator.pop(
-                                                        context,
-                                                        controller.text,
-                                                      ),
-                                                  child: const Text('Add'),
-                                                ),
-                                              ],
-                                            ),
-                                      );
-                                      Navigator.pop(context, custom);
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if (mounted) {
+                                        Navigator.pop(context, controller.text);
+                                      }
                                     },
-                                    child: const Text('Custom...'),
+                                    child: const Text('Add'),
                                   ),
                                 ],
                               ),
@@ -286,46 +196,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             updated.add(instrument);
                             _editedInstruments = updated;
                           });
-                          final prefs = ProfilePreferences(
-                            darkMode:
-                                _editedDarkMode ?? profile.preferences.darkMode,
-                            exerciseBpm:
-                                _editedExerciseBpm ??
-                                profile.preferences.exerciseBpm,
-                            instruments:
-                                _editedInstruments ??
-                                profile.preferences.instruments,
-                            admin: _editedAdmin ?? profile.preferences.admin,
-                            pro: _editedPro ?? profile.preferences.pro,
-                            metronomeEnabled:
-                                _editedMetronomeEnabled ??
-                                profile.preferences.metronomeEnabled,
-                            name: _editedName ?? profile.preferences.name,
-                            teacher:
-                                _editedTeacher ?? profile.preferences.teacher,
-                            warmupBpm:
-                                _editedWarmupBpm ??
-                                profile.preferences.warmupBpm,
-                            warmupEnabled:
-                                _editedWarmupEnabled ??
-                                profile.preferences.warmupEnabled,
-                            warmupTime:
-                                _editedWarmupTime ??
-                                profile.preferences.warmupTime,
-                            lastSessionId:
-                                _editedLastSessionId ??
-                                profile.preferences.lastSessionId,
-                            autoPause:
-                                _editedAutoPause ??
-                                profile.preferences.autoPause,
-                            pauseEvery:
-                                _editedPauseEveryMinutes ??
-                                profile.preferences.pauseEvery,
-                            pauseBreak:
-                                _editedPauseBreakMinutes ??
-                                profile.preferences.pauseBreak,
+                          _updatePreferences(
+                            context,
+                            profile.preferences,
+                            update:
+                                (prefs) => prefs.copyWith(
+                                  instruments: _editedInstruments,
+                                ),
                           );
-                          profileProvider.saveUserPreferences(prefs);
                         }
                       },
                     ),
@@ -338,40 +216,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   initialValue: profile.preferences.teacher,
                   decoration: const InputDecoration(labelText: 'Teacher'),
                   onChanged: (val) {
-                    setState(() => _editedTeacher = val);
-                    final prefs = ProfilePreferences(
-                      darkMode: _editedDarkMode ?? profile.preferences.darkMode,
-                      exerciseBpm:
-                          _editedExerciseBpm ?? profile.preferences.exerciseBpm,
-                      instruments:
-                          _editedInstruments ?? profile.preferences.instruments,
-                      admin: _editedAdmin ?? profile.preferences.admin,
-                      pro: _editedPro ?? profile.preferences.pro,
-                      metronomeEnabled:
-                          _editedMetronomeEnabled ??
-                          profile.preferences.metronomeEnabled,
-                      name: _editedName ?? profile.preferences.name,
-                      teacher: val,
-                      warmupBpm:
-                          _editedWarmupBpm ?? profile.preferences.warmupBpm,
-                      warmupEnabled:
-                          _editedWarmupEnabled ??
-                          profile.preferences.warmupEnabled,
-                      warmupTime:
-                          _editedWarmupTime ?? profile.preferences.warmupTime,
-                      lastSessionId:
-                          _editedLastSessionId ??
-                          profile.preferences.lastSessionId,
-                      autoPause:
-                          _editedAutoPause ?? profile.preferences.autoPause,
-                      pauseEvery:
-                          _editedPauseEveryMinutes ??
-                          profile.preferences.pauseEvery,
-                      pauseBreak:
-                          _editedPauseBreakMinutes ??
-                          profile.preferences.pauseBreak,
+                    _updatePreferences(
+                      context,
+                      profile.preferences,
+                      update: (prefs) => prefs.copyWith(teacher: val),
                     );
-                    profileProvider.saveUserPreferences(prefs);
                   },
                 ),
                 const SizedBox(height: 24),
@@ -389,37 +238,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       profile.preferences.metronomeEnabled,
                   onChanged: (val) {
                     setState(() => _editedMetronomeEnabled = val);
-                    final prefs = ProfilePreferences(
-                      darkMode: _editedDarkMode ?? profile.preferences.darkMode,
-                      exerciseBpm:
-                          _editedExerciseBpm ?? profile.preferences.exerciseBpm,
-                      instruments:
-                          _editedInstruments ?? profile.preferences.instruments,
-                      admin: _editedAdmin ?? profile.preferences.admin,
-                      pro: _editedPro ?? profile.preferences.pro,
-                      metronomeEnabled: val,
-                      name: _editedName ?? profile.preferences.name,
-                      teacher: _editedTeacher ?? profile.preferences.teacher,
-                      warmupBpm:
-                          _editedWarmupBpm ?? profile.preferences.warmupBpm,
-                      warmupEnabled:
-                          _editedWarmupEnabled ??
-                          profile.preferences.warmupEnabled,
-                      warmupTime:
-                          _editedWarmupTime ?? profile.preferences.warmupTime,
-                      lastSessionId:
-                          _editedLastSessionId ??
-                          profile.preferences.lastSessionId,
-                      autoPause:
-                          _editedAutoPause ?? profile.preferences.autoPause,
-                      pauseEvery:
-                          _editedPauseEveryMinutes ??
-                          profile.preferences.pauseEvery,
-                      pauseBreak:
-                          _editedPauseBreakMinutes ??
-                          profile.preferences.pauseBreak,
+                    _updatePreferences(
+                      context,
+                      profile.preferences,
+                      update: (prefs) => prefs.copyWith(metronomeEnabled: val),
                     );
-                    profileProvider.saveUserPreferences(prefs);
                   },
                 ),
                 Padding(
@@ -432,43 +255,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     keyboardType: TextInputType.number,
                     onChanged: (val) {
-                      setState(() => _editedExerciseBpm = int.tryParse(val));
-                      final prefs = ProfilePreferences(
-                        darkMode:
-                            _editedDarkMode ?? profile.preferences.darkMode,
-                        exerciseBpm:
-                            int.tryParse(val) ??
-                            profile.preferences.exerciseBpm,
-                        instruments:
-                            _editedInstruments ??
-                            profile.preferences.instruments,
-                        admin: _editedAdmin ?? profile.preferences.admin,
-                        pro: _editedPro ?? profile.preferences.pro,
-                        metronomeEnabled:
-                            _editedMetronomeEnabled ??
-                            profile.preferences.metronomeEnabled,
-                        name: _editedName ?? profile.preferences.name,
-                        teacher: _editedTeacher ?? profile.preferences.teacher,
-                        warmupBpm:
-                            _editedWarmupBpm ?? profile.preferences.warmupBpm,
-                        warmupEnabled:
-                            _editedWarmupEnabled ??
-                            profile.preferences.warmupEnabled,
-                        warmupTime:
-                            _editedWarmupTime ?? profile.preferences.warmupTime,
-                        lastSessionId:
-                            _editedLastSessionId ??
-                            profile.preferences.lastSessionId,
-                        autoPause:
-                            _editedAutoPause ?? profile.preferences.autoPause,
-                        pauseEvery:
-                            _editedPauseEveryMinutes ??
-                            profile.preferences.pauseEvery,
-                        pauseBreak:
-                            _editedPauseBreakMinutes ??
-                            profile.preferences.pauseBreak,
+                      _updatePreferences(
+                        context,
+                        profile.preferences,
+                        update:
+                            (prefs) =>
+                                prefs.copyWith(exerciseBpm: int.tryParse(val)),
                       );
-                      profileProvider.saveUserPreferences(prefs);
                     },
                   ),
                 ),
@@ -486,38 +279,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       _editedWarmupEnabled ?? profile.preferences.warmupEnabled,
                   onChanged: (val) {
                     setState(() => _editedWarmupEnabled = val);
-                    final prefs = ProfilePreferences(
-                      darkMode: _editedDarkMode ?? profile.preferences.darkMode,
-                      exerciseBpm:
-                          _editedExerciseBpm ?? profile.preferences.exerciseBpm,
-                      instruments:
-                          _editedInstruments ?? profile.preferences.instruments,
-                      admin: _editedAdmin ?? profile.preferences.admin,
-                      pro: _editedPro ?? profile.preferences.pro,
-                      metronomeEnabled:
-                          _editedMetronomeEnabled ??
-                          profile.preferences.metronomeEnabled,
-                      name: _editedName ?? profile.preferences.name,
-                      teacher: _editedTeacher ?? profile.preferences.teacher,
-                      warmupBpm:
-                          _editedWarmupBpm ?? profile.preferences.warmupBpm,
-                      warmupEnabled: val,
-                      warmupTime:
-                          _editedWarmupTime ?? profile.preferences.warmupTime,
-                      lastSessionId:
-                          _editedLastSessionId ??
-                          profile.preferences.lastSessionId,
-                      autoPause:
-                          _editedAutoPause ?? profile.preferences.autoPause,
-                      pauseEvery:
-                          _editedPauseEveryMinutes ??
-                          profile.preferences.pauseEvery,
-                      pauseBreak:
-                          _editedPauseBreakMinutes ??
-                          profile.preferences.pauseBreak,
+                    _updatePreferences(
+                      context,
+                      profile.preferences,
+                      update: (prefs) => prefs.copyWith(warmupEnabled: val),
                     );
-                    profileProvider.saveUserPreferences(prefs);
                   },
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 18.0, right: 36.0),
+                  child: TextFormField(
+                    textAlign: TextAlign.right,
+                    initialValue:
+                        (profile.preferences.warmupTime ~/ 60).toString(),
+                    decoration: const InputDecoration(
+                      labelText: 'Warmup Duration (min)',
+                    ),
+                    keyboardType: TextInputType.number,
+                    onChanged: (val) {
+                      _updatePreferences(
+                        context,
+                        profile.preferences,
+                        update:
+                            (prefs) => prefs.copyWith(
+                              warmupTime:
+                                  int.tryParse(val) != null
+                                      ? int.tryParse(val)! * 60
+                                      : prefs.warmupTime,
+                            ),
+                      );
+                    },
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 18.0, right: 36.0),
@@ -532,109 +324,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _editedWarmupEnabled ??
                         profile.preferences.warmupEnabled,
                     onChanged: (val) {
-                      setState(() => _editedWarmupBpm = int.tryParse(val));
-                      final prefs = ProfilePreferences(
-                        darkMode:
-                            _editedDarkMode ?? profile.preferences.darkMode,
-                        exerciseBpm:
-                            _editedExerciseBpm ??
-                            profile.preferences.exerciseBpm,
-                        instruments:
-                            _editedInstruments ??
-                            profile.preferences.instruments,
-                        admin: _editedAdmin ?? profile.preferences.admin,
-                        pro: _editedPro ?? profile.preferences.pro,
-                        metronomeEnabled:
-                            _editedMetronomeEnabled ??
-                            profile.preferences.metronomeEnabled,
-                        name: _editedName ?? profile.preferences.name,
-                        teacher: _editedTeacher ?? profile.preferences.teacher,
-                        warmupBpm:
-                            int.tryParse(val) ?? profile.preferences.warmupBpm,
-                        warmupEnabled:
-                            _editedWarmupEnabled ??
-                            profile.preferences.warmupEnabled,
-                        warmupTime:
-                            _editedWarmupTime ?? profile.preferences.warmupTime,
-                        lastSessionId:
-                            _editedLastSessionId ??
-                            profile.preferences.lastSessionId,
-                        autoPause:
-                            _editedAutoPause ?? profile.preferences.autoPause,
-                        pauseEvery:
-                            _editedPauseEveryMinutes ??
-                            profile.preferences.pauseEvery,
-                        pauseBreak:
-                            _editedPauseBreakMinutes ??
-                            profile.preferences.pauseBreak,
+                      _updatePreferences(
+                        context,
+                        profile.preferences,
+                        update:
+                            (prefs) =>
+                                prefs.copyWith(warmupBpm: int.tryParse(val)),
                       );
-                      profileProvider.saveUserPreferences(prefs);
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 18.0, right: 36.0),
-                  child: TextFormField(
-                    textAlign: TextAlign.right,
-                    initialValue:
-                        profile.preferences.warmupTime != null
-                            ? (profile.preferences.warmupTime / 60)
-                                .round()
-                                .toString()
-                            : '',
-                    decoration: const InputDecoration(
-                      labelText: 'Warmup Duration (min)',
-                    ),
-                    keyboardType: TextInputType.number,
-                    enabled:
-                        _editedWarmupEnabled ??
-                        profile.preferences.warmupEnabled,
-                    onChanged: (val) {
-                      setState(
-                        () =>
-                            _editedWarmupTime =
-                                int.tryParse(val) != null
-                                    ? int.tryParse(val)! * 60
-                                    : null,
-                      );
-                      final prefs = ProfilePreferences(
-                        darkMode:
-                            _editedDarkMode ?? profile.preferences.darkMode,
-                        exerciseBpm:
-                            _editedExerciseBpm ??
-                            profile.preferences.exerciseBpm,
-                        instruments:
-                            _editedInstruments ??
-                            profile.preferences.instruments,
-                        admin: _editedAdmin ?? profile.preferences.admin,
-                        pro: _editedPro ?? profile.preferences.pro,
-                        metronomeEnabled:
-                            _editedMetronomeEnabled ??
-                            profile.preferences.metronomeEnabled,
-                        name: _editedName ?? profile.preferences.name,
-                        teacher: _editedTeacher ?? profile.preferences.teacher,
-                        warmupBpm:
-                            _editedWarmupBpm ?? profile.preferences.warmupBpm,
-                        warmupEnabled:
-                            _editedWarmupEnabled ??
-                            profile.preferences.warmupEnabled,
-                        warmupTime:
-                            int.tryParse(val) != null
-                                ? int.tryParse(val)! * 60
-                                : profile.preferences.warmupTime,
-                        lastSessionId:
-                            _editedLastSessionId ??
-                            profile.preferences.lastSessionId,
-                        autoPause:
-                            _editedAutoPause ?? profile.preferences.autoPause,
-                        pauseEvery:
-                            _editedPauseEveryMinutes ??
-                            profile.preferences.pauseEvery,
-                        pauseBreak:
-                            _editedPauseBreakMinutes ??
-                            profile.preferences.pauseBreak,
-                      );
-                      profileProvider.saveUserPreferences(prefs);
                     },
                   ),
                 ),
@@ -651,38 +347,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   value: _editedAutoPause ?? profile.preferences.autoPause,
                   onChanged: (val) {
                     setState(() => _editedAutoPause = val);
-                    final prefs = ProfilePreferences(
-                      darkMode: _editedDarkMode ?? profile.preferences.darkMode,
-                      exerciseBpm:
-                          _editedExerciseBpm ?? profile.preferences.exerciseBpm,
-                      instruments:
-                          _editedInstruments ?? profile.preferences.instruments,
-                      admin: _editedAdmin ?? profile.preferences.admin,
-                      pro: _editedPro ?? profile.preferences.pro,
-                      metronomeEnabled:
-                          _editedMetronomeEnabled ??
-                          profile.preferences.metronomeEnabled,
-                      name: _editedName ?? profile.preferences.name,
-                      teacher: _editedTeacher ?? profile.preferences.teacher,
-                      warmupBpm:
-                          _editedWarmupBpm ?? profile.preferences.warmupBpm,
-                      warmupEnabled:
-                          _editedWarmupEnabled ??
-                          profile.preferences.warmupEnabled,
-                      warmupTime:
-                          _editedWarmupTime ?? profile.preferences.warmupTime,
-                      lastSessionId:
-                          _editedLastSessionId ??
-                          profile.preferences.lastSessionId,
-                      autoPause: val,
-                      pauseEvery:
-                          _editedPauseEveryMinutes ??
-                          profile.preferences.pauseEvery,
-                      pauseBreak:
-                          _editedPauseBreakMinutes ??
-                          profile.preferences.pauseBreak,
+                    _updatePreferences(
+                      context,
+                      profile.preferences,
+                      update: (prefs) => prefs.copyWith(autoPause: val),
                     );
-                    profileProvider.saveUserPreferences(prefs);
                   },
                 ),
                 Padding(
@@ -690,60 +359,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: TextFormField(
                     textAlign: TextAlign.right,
                     initialValue:
-                        ((_editedPauseEveryMinutes ??
-                                    profile.preferences.pauseEvery) ~/
-                                60)
-                            .toString(),
+                        (profile.preferences.pauseEvery ~/ 60).toString(),
                     decoration: const InputDecoration(
-                      labelText: 'Break Interval (min)',
+                      labelText: 'Pause Every (min)',
                     ),
                     keyboardType: TextInputType.number,
                     enabled: _editedAutoPause ?? profile.preferences.autoPause,
                     onChanged: (val) {
-                      setState(
-                        () =>
-                            _editedPauseEveryMinutes =
-                                int.tryParse(val) != null
-                                    ? int.tryParse(val)! * 60
-                                    : null,
+                      _updatePreferences(
+                        context,
+                        profile.preferences,
+                        update:
+                            (prefs) => prefs.copyWith(
+                              pauseEvery:
+                                  int.tryParse(val) != null
+                                      ? int.tryParse(val)! * 60
+                                      : prefs.pauseEvery,
+                            ),
                       );
-                      final prefs = ProfilePreferences(
-                        darkMode:
-                            _editedDarkMode ?? profile.preferences.darkMode,
-                        exerciseBpm:
-                            _editedExerciseBpm ??
-                            profile.preferences.exerciseBpm,
-                        instruments:
-                            _editedInstruments ??
-                            profile.preferences.instruments,
-                        admin: _editedAdmin ?? profile.preferences.admin,
-                        pro: _editedPro ?? profile.preferences.pro,
-                        metronomeEnabled:
-                            _editedMetronomeEnabled ??
-                            profile.preferences.metronomeEnabled,
-                        name: _editedName ?? profile.preferences.name,
-                        teacher: _editedTeacher ?? profile.preferences.teacher,
-                        warmupBpm:
-                            _editedWarmupBpm ?? profile.preferences.warmupBpm,
-                        warmupEnabled:
-                            _editedWarmupEnabled ??
-                            profile.preferences.warmupEnabled,
-                        warmupTime:
-                            _editedWarmupTime ?? profile.preferences.warmupTime,
-                        lastSessionId:
-                            _editedLastSessionId ??
-                            profile.preferences.lastSessionId,
-                        autoPause:
-                            _editedAutoPause ?? profile.preferences.autoPause,
-                        pauseEvery:
-                            int.tryParse(val) != null
-                                ? int.tryParse(val)! * 60
-                                : profile.preferences.pauseEvery,
-                        pauseBreak:
-                            _editedPauseBreakMinutes ??
-                            profile.preferences.pauseBreak,
-                      );
-                      profileProvider.saveUserPreferences(prefs);
                     },
                   ),
                 ),
@@ -752,60 +385,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: TextFormField(
                     textAlign: TextAlign.right,
                     initialValue:
-                        ((_editedPauseBreakMinutes ??
-                                    profile.preferences.pauseBreak) ~/
-                                60)
-                            .toString(),
+                        (profile.preferences.pauseBreak ~/ 60).toString(),
                     decoration: const InputDecoration(
-                      labelText: 'Break Duration (min)',
+                      labelText: 'Pause Break (min)',
                     ),
                     keyboardType: TextInputType.number,
                     enabled: _editedAutoPause ?? profile.preferences.autoPause,
                     onChanged: (val) {
-                      setState(
-                        () =>
-                            _editedPauseBreakMinutes =
-                                int.tryParse(val) != null
-                                    ? int.tryParse(val)! * 60
-                                    : null,
+                      _updatePreferences(
+                        context,
+                        profile.preferences,
+                        update:
+                            (prefs) => prefs.copyWith(
+                              pauseBreak:
+                                  int.tryParse(val) != null
+                                      ? int.tryParse(val)! * 60
+                                      : prefs.pauseBreak,
+                            ),
                       );
-                      final prefs = ProfilePreferences(
-                        darkMode:
-                            _editedDarkMode ?? profile.preferences.darkMode,
-                        exerciseBpm:
-                            _editedExerciseBpm ??
-                            profile.preferences.exerciseBpm,
-                        instruments:
-                            _editedInstruments ??
-                            profile.preferences.instruments,
-                        admin: _editedAdmin ?? profile.preferences.admin,
-                        pro: _editedPro ?? profile.preferences.pro,
-                        metronomeEnabled:
-                            _editedMetronomeEnabled ??
-                            profile.preferences.metronomeEnabled,
-                        name: _editedName ?? profile.preferences.name,
-                        teacher: _editedTeacher ?? profile.preferences.teacher,
-                        warmupBpm:
-                            _editedWarmupBpm ?? profile.preferences.warmupBpm,
-                        warmupEnabled:
-                            _editedWarmupEnabled ??
-                            profile.preferences.warmupEnabled,
-                        warmupTime:
-                            _editedWarmupTime ?? profile.preferences.warmupTime,
-                        lastSessionId:
-                            _editedLastSessionId ??
-                            profile.preferences.lastSessionId,
-                        autoPause:
-                            _editedAutoPause ?? profile.preferences.autoPause,
-                        pauseEvery:
-                            _editedPauseEveryMinutes ??
-                            profile.preferences.pauseEvery,
-                        pauseBreak:
-                            int.tryParse(val) != null
-                                ? int.tryParse(val)! * 60
-                                : profile.preferences.pauseBreak,
-                      );
-                      profileProvider.saveUserPreferences(prefs);
                     },
                   ),
                 ),

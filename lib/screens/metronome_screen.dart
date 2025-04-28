@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/metronome_widget.dart';
 import '../widgets/metronome_controller.dart';
+import '../widgets/main_drawer.dart'; 
 
 class MetronomeScreen extends StatefulWidget {
   const MetronomeScreen({super.key});
@@ -17,14 +18,15 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Metronome'),
-        leading: IconButton(
-          icon: const Icon(Icons.home),
-          tooltip: 'Back to Home',
-          onPressed: () {
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-          },
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            tooltip: 'Open navigation menu',
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
         ),
       ),
+      drawer: const MainDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
