@@ -63,7 +63,10 @@ class PracticeModeButtonsWidget extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.access_alarm, size: 36),
+                  Icon(
+                    PracticeCategoryUtils.icons[mode],
+                    size: 36,
+                  ),
                   const SizedBox(height: 8),
                   Text(mode.name.capitalize(), textAlign: TextAlign.center),
                 ],
@@ -144,7 +147,10 @@ class PracticeModeButtonsWidget extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.access_alarm, size: 24),
+                            Icon(
+                              PracticeCategoryUtils.icons[mode],
+                              size: 24,
+                            ),
                             const SizedBox(height: 4),
                             Text(
                               mode.name.capitalize(),
@@ -191,7 +197,10 @@ class PracticeModeButtonsWidget extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.access_alarm, size: 36),
+                    Icon(
+                      PracticeCategoryUtils.icons[mode],
+                      size: 36,
+                    ),
                     const SizedBox(height: 8),
                     Text(mode.name.capitalize(), textAlign: TextAlign.center),
                   ],

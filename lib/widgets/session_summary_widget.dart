@@ -107,6 +107,8 @@ extension PracticeCategoryDisplay on PracticeCategory {
         return 'Gig';
       case PracticeCategory.fun:
         return 'Fun';
+      case PracticeCategory.warmup:
+        return 'Warmup';
     }
   }
 }

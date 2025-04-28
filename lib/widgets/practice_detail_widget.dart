@@ -6,21 +6,26 @@ import '../providers/jazz_standards_provider.dart';
 import 'song_line_widget.dart';
 import 'song_picker_sheet.dart';
 import 'multi_song_picker_sheet.dart';
+import 'time_picker_wheel.dart';
 
 class PracticeDetailWidget extends StatelessWidget {
   final PracticeCategory category;
   final String note;
   final List<String> songs;
+  final int time;
   final ValueChanged<String> onNoteChanged;
   final ValueChanged<List<String>> onSongsChanged;
+  final ValueChanged<int> onTimeChanged;
 
   const PracticeDetailWidget({
     super.key,
     required this.category,
     required this.note,
     required this.songs,
+    required this.time,
     required this.onNoteChanged,
     required this.onSongsChanged,
+    required this.onTimeChanged,
   });
 
   @override
@@ -43,11 +48,18 @@ class PracticeDetailWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            decoration: const InputDecoration(labelText: "Note"),
-            controller: TextEditingController(text: note),
-            onChanged: onNoteChanged,
+          Row(
+            children: [
+              const Text('Time:'),
+              const SizedBox(width: 8),
+              TimePickerDropdown(
+                initialSeconds: time,
+                onChanged: onTimeChanged,
+              ),
+            ],
           ),
+          const SizedBox(height: 16),
+          _NoteTextField(note: note, onNoteChanged: onNoteChanged),
           const SizedBox(height: 16),
 
           // New Song Picker
@@ -136,6 +148,54 @@ class PracticeDetailWidget extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+class _NoteTextField extends StatefulWidget {
+  final String note;
+  final ValueChanged<String> onNoteChanged;
+  const _NoteTextField({required this.note, required this.onNoteChanged});
+
+  @override
+  State<_NoteTextField> createState() => _NoteTextFieldState();
+}
+
+class _NoteTextFieldState extends State<_NoteTextField> {
+  late final TextEditingController _controller;
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.note);
+    _controller.addListener(_handleChange);
+  }
+
+  @override
+  void didUpdateWidget(covariant _NoteTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.note != widget.note && _controller.text != widget.note) {
+      _controller.text = widget.note;
+    }
+  }
+
+  void _handleChange() {
+    if (_controller.text != widget.note) {
+      widget.onNoteChanged(_controller.text);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_handleChange);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      decoration: const InputDecoration(labelText: "Note"),
     );
   }
 }

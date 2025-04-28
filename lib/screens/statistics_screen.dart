@@ -117,6 +117,11 @@ class StatisticsScreen extends StatelessWidget {
                         children: [
                           Row(
                             children: [
+                              Icon(
+                                PracticeCategoryUtils.icons[entry.key],
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   entry.key.name.capitalize(),

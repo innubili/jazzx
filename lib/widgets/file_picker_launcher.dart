@@ -1,7 +1,7 @@
 // FilePickerLauncher widget for selecting local files
 
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
+// import 'package:file_picker/file_picker.dart';
 
 class FilePickerLauncher extends StatefulWidget {
   final void Function(String path) onFilePicked;
@@ -14,16 +14,16 @@ class FilePickerLauncher extends StatefulWidget {
 
 class _FilePickerLauncherState extends State<FilePickerLauncher> {
   Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (!mounted) return;
+    // final result = await FilePicker.platform.pickFiles();
+    // if (!mounted) return;
 
-    if (result != null && result.files.single.path != null) {
-      widget.onFilePicked(result.files.single.path!);
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('No file selected')));
-    }
+    // if (result != null && result.files.single.path != null) {
+    //   widget.onFilePicked(result.files.single.path!);
+    // } else {
+    //   ScaffoldMessenger.of(
+    //     context,
+    //   ).showSnackBar(const SnackBar(content: Text('No file selected')));
+    // }
   }
 
   @override

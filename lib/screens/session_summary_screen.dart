@@ -52,6 +52,7 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen> {
     for (final entry in _noteControllers.entries) {
       updated[entry.key]['note'] = entry.value.text.trim();
     }
+    debugPrint('Session object: $updated'); // <-- Debug print for review
     widget.onConfirm!(updated);
   }
 
@@ -94,9 +95,7 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            "Duration: ${session['duration']?.toString() ?? '?'} sec",
-          ),
+          Text("Duration: ${session['duration']?.toString() ?? '?'} sec"),
           const SizedBox(height: 12),
           if (session.containsKey("warmup"))
             Text(

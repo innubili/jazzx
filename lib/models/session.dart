@@ -34,6 +34,22 @@ class SessionCategory {
       'SessionCategory(time: $time, note: $note, bpm: $bpm, songs: ${songs?.keys.toList()})';
 }
 
+extension SessionCategoryCopyWith on SessionCategory {
+  SessionCategory copyWith({
+    int? time,
+    String? note,
+    int? bpm,
+    Map<String, int>? songs,
+  }) {
+    return SessionCategory(
+      time: time ?? this.time,
+      note: note ?? this.note,
+      bpm: bpm ?? this.bpm,
+      songs: songs ?? this.songs,
+    );
+  }
+}
+
 class Session {
   final int duration;
   final int ended;
@@ -90,6 +106,21 @@ class Session {
     return json;
   }
 
+  Session copyWithCategory(PracticeCategory category, SessionCategory data) {
+    final newCategories = Map<PracticeCategory, SessionCategory>.from(
+      categories,
+    );
+    newCategories[category] = data;
+    return Session(
+      duration: duration,
+      ended: ended,
+      instrument: instrument,
+      categories: newCategories,
+      warmupTime: warmupTime,
+      warmupBpm: warmupBpm,
+    );
+  }
+
   static Session getDefault({String instrument = 'guitar'}) => Session(
     duration: 0,
     ended: 0,
@@ -103,5 +134,5 @@ class Session {
 
   @override
   String toString() =>
-      'Session(instrument: $instrument, categories: ${categories.map((k, v) => MapEntry(k.name, v))})';
+      'Session\n\t$instrument\n\tcategories: ${categories.map((k, v) => MapEntry(k.name, v))})';
 }

@@ -275,6 +275,7 @@ class _SessionScreenState extends State<SessionScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               child: PracticeDetailWidget(
                                 category: _activeMode!,
+                                time: sessionData.categories[_activeMode!]?.time ?? 0,
                                 note:
                                     sessionData
                                         .categories[_activeMode!]
@@ -287,6 +288,20 @@ class _SessionScreenState extends State<SessionScreen> {
                                         ?.keys
                                         .toList() ??
                                     [],
+                                onTimeChanged: (val) {
+                                  final cat =
+                                      sessionData.categories[_activeMode!] ??
+                                      SessionCategory(time: 0);
+                                  setState(() {
+                                    sessionData.categories[_activeMode!] =
+                                        SessionCategory(
+                                          time: val,
+                                          note: cat.note,
+                                          bpm: cat.bpm,
+                                          songs: cat.songs,
+                                        );
+                                  });
+                                },
                                 onNoteChanged: (val) {
                                   final cat =
                                       sessionData.categories[_activeMode!] ??
@@ -362,6 +377,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                 ),
                                 child: PracticeDetailWidget(
                                   category: _activeMode!,
+                                  time: sessionData.categories[_activeMode!]?.time ?? 0,
                                   note:
                                       sessionData
                                           .categories[_activeMode!]
@@ -374,6 +390,20 @@ class _SessionScreenState extends State<SessionScreen> {
                                           ?.keys
                                           .toList() ??
                                       [],
+                                  onTimeChanged: (val) {
+                                    final cat =
+                                        sessionData.categories[_activeMode!] ??
+                                        SessionCategory(time: 0);
+                                    setState(() {
+                                      sessionData.categories[_activeMode!] =
+                                          SessionCategory(
+                                            time: val,
+                                            note: cat.note,
+                                            bpm: cat.bpm,
+                                            songs: cat.songs,
+                                          );
+                                    });
+                                  },
                                   onNoteChanged: (val) {
                                     final cat =
                                         sessionData.categories[_activeMode!] ??
