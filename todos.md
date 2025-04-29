@@ -1,10 +1,10 @@
 # Jazzx Project TODOs
 
-- [ ] session edit : +/- in warmup (no toggle)
 - [ ] session edit: links
+- [ ] sessiom statistics, when calculate?
+- [ ] new song, select from all (see bookmarked first)
 - [ ] make tuner widget
 - [ ] ensure perfect timing on metronome
 - [ ] add more time patterns to metronome
-- [ ] add session manual entry to main drawer
 - [ ] improve practice category buttons layout
 - [ ] add file picker

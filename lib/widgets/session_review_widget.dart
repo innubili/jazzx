@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import '../models/session.dart';
 import '../models/practice_category.dart';
 // import '../models/link.dart'; // Removed unused import
-import '../widgets/practice_detail_widget.dart'; // Import PracticeDetailWidget
+//import '../widgets/practice_detail_widget.dart'; // Import PracticeDetailWidget
 import '../widgets/practice_mode_buttons_widget.dart'; // For StringCapitalize extension
+import 'practice_category_list.dart';
 
 class SessionReviewWidget extends StatefulWidget {
   final String sessionId;
@@ -38,8 +39,11 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
   PracticeCategory? _expandedCategory;
 
   void _updateSession(Session newSession) {
+    final updatedDuration =
+        (newSession.warmupTime ?? 0) +
+        newSession.categories.values.fold(0, (sum, cat) => sum + (cat.time));
     setState(() {
-      _editedSession = newSession;
+      _editedSession = newSession.copyWith(duration: updatedDuration.toInt());
     });
     widget.onSessionChanged?.call(_editedSession);
   }
@@ -58,29 +62,23 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.sessionDateTimeString != null) ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Session of ${widget.sessionDateTimeString!}',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  Text(
-                    _formatDuration(_editedSession.duration),
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-            ],
             const SizedBox(height: 8),
             if (widget.editMode) _buildAddCategoryChips(),
             const SizedBox(height: 8),
             // Warmup as a category card/editor at the top with expand/collapse
             _buildWarmupExpandableCard(),
             const Divider(thickness: 1, height: 32),
-            ..._buildCategoryEditors(exclude: {PracticeCategory.warmup}),
+            PracticeCategoryList(
+              session: _editedSession,
+              editMode: widget.editMode,
+              onSessionChanged: _updateSession,
+              expandedCategory: _expandedCategory,
+              onExpand: (cat) {
+                setState(() {
+                  _expandedCategory = _expandedCategory == cat ? null : cat;
+                });
+              },
+            ),
             const SizedBox(height: 16),
           ],
         ),
@@ -92,126 +90,6 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
     final hours = seconds ~/ 3600;
     final minutes = (seconds % 3600) ~/ 60;
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
-  }
-
-  List<Widget> _buildCategoryEditors({
-    Set<PracticeCategory> exclude = const {},
-  }) {
-    final sortedEntries =
-        _editedSession.categories.entries
-            .where((e) => !exclude.contains(e.key))
-            .toList()
-          ..sort((a, b) => b.value.time.compareTo(a.value.time));
-    final withTime = sortedEntries.where((e) => e.value.time > 0).toList();
-    final withoutTime = sortedEntries.where((e) => e.value.time == 0).toList();
-    List<Widget> widgets = [];
-    if (widget.editMode) {
-      widgets.addAll(withTime.map((entry) => _buildCategoryCard(entry)));
-      if (withTime.isNotEmpty && withoutTime.isNotEmpty) {
-        widgets.add(const Divider(thickness: 1, height: 32));
-      }
-      widgets.addAll(withoutTime.map((entry) => _buildCategoryCard(entry)));
-      return widgets;
-    }
-    // View mode: only show categories with time
-    return withTime.map((entry) => _buildCategoryCard(entry)).toList();
-  }
-
-  Widget _buildCategoryCard(MapEntry<PracticeCategory, SessionCategory> entry) {
-    final category = entry.key;
-    final data = entry.value;
-    final isExpanded = _expandedCategory == category;
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child:
-          widget.editMode
-              ? InkWell(
-                onTap: () {
-                  setState(() {
-                    _expandedCategory =
-                        _expandedCategory == category ? null : category;
-                  });
-                },
-                child: AnimatedCrossFade(
-                  crossFadeState:
-                      isExpanded
-                          ? CrossFadeState.showSecond
-                          : CrossFadeState.showFirst,
-                  duration: const Duration(milliseconds: 200),
-                  firstChild: _buildCategorySummary(category, data),
-                  secondChild: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildCategorySummary(category, data),
-                      PracticeDetailWidget(
-                        category: category,
-                        note: data.note ?? '',
-                        songs: data.songs?.keys.toList() ?? [],
-                        time: data.time,
-                        links: data.links ?? [],
-                        onTimeChanged: (newTime) {
-                          _updateSession(
-                            _editedSession.copyWithCategory(
-                              category,
-                              data.copyWith(time: newTime),
-                            ),
-                          );
-                        },
-                        onNoteChanged: (note) {
-                          _updateSession(
-                            _editedSession.copyWithCategory(
-                              category,
-                              data.copyWith(note: note),
-                            ),
-                          );
-                        },
-                        onSongsChanged: (songs) {
-                          _updateSession(
-                            _editedSession.copyWithCategory(
-                              category,
-                              data.copyWith(songs: {for (var s in songs) s: 1}),
-                            ),
-                          );
-                        },
-                        onLinksChanged: (links) {
-                          _updateSession(
-                            _editedSession.copyWithCategory(
-                              category,
-                              data.copyWith(links: links),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              : _buildCategorySummary(category, data),
-    );
-  }
-
-  Widget _buildCategorySummary(
-    PracticeCategory category,
-    SessionCategory data,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Row(
-        children: [
-          _categoryIcon(category),
-          const SizedBox(width: 8),
-          Text(
-            category.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const Spacer(),
-          Text(
-            _formatDuration(data.time),
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildAddCategoryChips() {
@@ -327,41 +205,46 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const Spacer(),
-                        Switch(
-                          value: enabled,
-                          onChanged: (val) {
-                            _updateSession(
-                              _editedSession.copyWith(
-                                warmupTime:
-                                    val ? 300 : 0, // default 5 min if enabled
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(width: 8),
-                        DropdownButton<int>(
-                          value: (warmupTime ~/ 60).clamp(0, 30),
-                          items: List.generate(
-                            7,
-                            (i) => DropdownMenuItem<int>(
-                              value: i * 5,
-                              child: Text('${i * 5}'),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.remove),
+                              onPressed:
+                                  warmupTime > 0
+                                      ? () {
+                                        final newTime = (warmupTime - 300)
+                                            .clamp(0, 1800);
+                                        _updateSession(
+                                          _editedSession.copyWith(
+                                            warmupTime: newTime,
+                                          ),
+                                        );
+                                      }
+                                      : null,
                             ),
-                          ),
-                          onChanged:
-                              enabled
-                                  ? (min) {
-                                    if (min != null) {
-                                      _updateSession(
-                                        _editedSession.copyWith(
-                                          warmupTime: min * 60,
-                                        ),
-                                      );
-                                    }
-                                  }
-                                  : null,
+                            Text(
+                              '${(warmupTime ~/ 60).clamp(0, 30)} min',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.add),
+                              onPressed:
+                                  warmupTime < 1800
+                                      ? () {
+                                        final newTime = (warmupTime + 300)
+                                            .clamp(0, 1800);
+                                        _updateSession(
+                                          _editedSession.copyWith(
+                                            warmupTime: newTime,
+                                          ),
+                                        );
+                                      }
+                                      : null,
+                            ),
+                          ],
                         ),
-                        const Text('min'),
                         const SizedBox(width: 8),
                         Text(
                           _formatDuration(warmupTime),
@@ -393,6 +276,57 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
                   ],
                 ),
               ),
+    );
+  }
+}
+
+class SessionHeaderRow extends StatelessWidget {
+  final String sessionLabel;
+  final String dateString;
+  final String timeString;
+  final String durationString;
+  final bool editMode;
+  final VoidCallback? onShowDatePicker;
+  final VoidCallback? onShowTimePicker;
+
+  const SessionHeaderRow({
+    super.key,
+    required this.sessionLabel,
+    required this.dateString,
+    required this.timeString,
+    required this.durationString,
+    required this.editMode,
+    this.onShowDatePicker,
+    this.onShowTimePicker,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 16),
+      child: Row(
+        children: [
+          Text(sessionLabel, style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(width: 8),
+          InkWell(
+            onTap: editMode ? onShowDatePicker : null,
+            child: Text(
+              dateString,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          const SizedBox(width: 8),
+          InkWell(
+            onTap: editMode ? onShowTimePicker : null,
+            child: Text(
+              timeString,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          const Spacer(),
+          Text(durationString, style: Theme.of(context).textTheme.titleLarge),
+        ],
+      ),
     );
   }
 }

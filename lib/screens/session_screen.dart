@@ -15,7 +15,9 @@ import '../providers/user_profile_provider.dart';
 import '../models/practice_category.dart';
 import '../models/session.dart';
 import '../screens/session_summary_screen.dart';
+import '../screens/session_review_screen.dart';
 import '../utils/utils.dart';
+import '../widgets/add_manual_session_button.dart';
 
 class SessionScreen extends StatefulWidget {
   const SessionScreen({super.key});
@@ -257,7 +259,26 @@ class _SessionScreenState extends State<SessionScreen> {
     final isVerticalLayout = aspectRatio < 1.5;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Session")),
+      appBar: AppBar(
+        title: const Text('Session'),
+        actions: [
+          AddManualSessionButton(
+            onManualSessionCreated: (sessionDateTime) {
+              final sessionId = sessionDateTime.millisecondsSinceEpoch ~/ 1000;
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => SessionReviewScreen(
+                    sessionId: sessionId.toString(),
+                    session: null, // Will be handled in SessionReviewScreen
+                    manualEntry: true,
+                    initialDateTime: sessionDateTime,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       drawer: const MainDrawer(), // 
       body: Padding(
         padding: const EdgeInsets.all(16),

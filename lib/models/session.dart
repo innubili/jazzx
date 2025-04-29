@@ -9,7 +9,13 @@ class SessionCategory {
   final Map<String, int>? songs;
   final List<String>? links;
 
-  SessionCategory({required this.time, this.note, this.bpm, this.songs, this.links});
+  SessionCategory({
+    required this.time,
+    this.note,
+    this.bpm,
+    this.songs,
+    this.links,
+  });
 
   factory SessionCategory.fromJson(Map<String, dynamic> json) {
     final safeJson = asStringKeyedMap(json);
@@ -21,9 +27,10 @@ class SessionCategory {
           safeJson['songs'] is Map
               ? Map<String, int>.from(safeJson['songs'])
               : null,
-      links: safeJson['links'] is List
-          ? List<String>.from(safeJson['links'])
-          : null,
+      links:
+          safeJson['links'] is List
+              ? List<String>.from(safeJson['links'])
+              : null,
     );
   }
 

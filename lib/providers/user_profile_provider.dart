@@ -6,6 +6,7 @@ import '../models/session.dart';
 import '../models/preferences.dart';
 import '../models/statistics.dart';
 import '../services/firebase_service.dart';
+import '../utils/utils.dart';
 
 class UserProfileProvider extends ChangeNotifier {
   UserProfile? _profile;
@@ -179,14 +180,15 @@ class UserProfileProvider extends ChangeNotifier {
     newSessions[sessionId] = session;
 
     // Debug: Print session to be saved
-    print('[UserProfileProvider] Saving session $sessionId: ${session.toJson()}');
-    print('[UserProfileProvider] All sessions before save:');
-    newSessions.forEach((k, v) => print('  $k: ${v.toJson()}'));
+    log.info('[UserProfileProvider] Saving session $sessionId: ${session.toJson()}');
+    log.info('[UserProfileProvider] All sessions before save:');
+    newSessions.forEach((k, v) => log.info('  $k: ${v.toJson()}'));
 
     // Update lastSessionId if needed
     String lastSessionId = _profile!.preferences.lastSessionId;
     ProfilePreferences prefsToSave = _profile!.preferences;
-    if (lastSessionId.isEmpty || int.parse(sessionId) > int.parse(lastSessionId)) {
+    if (lastSessionId.isEmpty ||
+        int.parse(sessionId) > int.parse(lastSessionId)) {
       prefsToSave = _profile!.preferences.copyWith(lastSessionId: sessionId);
       await FirebaseService().savePreferences(prefsToSave);
     }
@@ -198,9 +200,112 @@ class UserProfileProvider extends ChangeNotifier {
     try {
       // Only persist the single session
       await FirebaseService().saveSingleSession(_userId!, sessionId, session);
-      print('[UserProfileProvider] Single session successfully saved to Firebase.');
+      log.info('[UserProfileProvider] Single session successfully saved to Firebase.');
     } catch (e, st) {
-      print('[UserProfileProvider] ERROR saving single session to Firebase: $e\n$st');
+      log.info('[UserProfileProvider] ERROR saving single session to Firebase: $e\n$st');
+      rethrow;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
+  }
+
+  /// Loads only the last session at startup (from preferences.lastSessionId).
+  Future<Session?> loadLastSession() async {
+    await FirebaseService().ensureInitialized();
+    final prefs = await FirebaseService().getPreferences();
+    if (prefs == null || prefs.lastSessionId.isEmpty) return null;
+    final session = await FirebaseService().loadSingleSession(
+      prefs.lastSessionId,
+    );
+    if (session != null && _profile != null) {
+      _profile = _profile!.copyWith(sessions: {prefs.lastSessionId: session});
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notifyListeners();
+      });
+    }
+    return session;
+  }
+
+  /// Loads a page of sessions for session log/statistics (latest first, paginated)
+  /// Also loads the first page at startup for fast access to lastSessionId & session log.
+  Future<List<MapEntry<String, Session>>> loadInitialSessionsPage({
+    int pageSize = 100,
+  }) async {
+    final entries = await FirebaseService().loadSessionsPage(
+      pageSize: pageSize,
+      startAfterId: null,
+    );
+    if (_profile != null) {
+      // Merge into profile.sessions (avoid duplicates)
+      final newSessions = Map<String, Session>.from(_profile!.sessions);
+      for (var entry in entries) {
+        newSessions[entry.key] = entry.value;
+      }
+      // Update lastSessionId to latest if available
+      String? latestId = entries.isNotEmpty ? entries.first.key : null;
+      ProfilePreferences prefs = _profile!.preferences;
+      if (latestId != null && (prefs.lastSessionId.isEmpty || int.parse(latestId) > int.parse(prefs.lastSessionId))) {
+        prefs = prefs.copyWith(lastSessionId: latestId);
+      }
+      _profile = _profile!.copyWith(sessions: newSessions, preferences: prefs);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notifyListeners();
+      });
+    }
+    return entries;
+  }
+
+  /// Loads a page of sessions for session log/statistics (latest first, paginated)
+  Future<List<MapEntry<String, Session>>> loadSessionsPage({
+    int pageSize = 20,
+    String? startAfterId,
+  }) async {
+    final entries = await FirebaseService().loadSessionsPage(
+      pageSize: pageSize,
+      startAfterId: startAfterId,
+    );
+    if (_profile != null) {
+      // Merge into profile.sessions (avoid duplicates)
+      final newSessions = Map<String, Session>.from(_profile!.sessions);
+      for (var entry in entries) {
+        newSessions[entry.key] = entry.value;
+      }
+      _profile = _profile!.copyWith(sessions: newSessions);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notifyListeners();
+      });
+    }
+    return entries;
+  }
+
+  /// Remove a session by its sessionId and update Firebase and local profile.
+  Future<void> removeSessionById(String sessionId) async {
+    if (_profile == null || _userId == null) return;
+    final newSessions = Map<String, Session>.from(_profile!.sessions);
+    newSessions.remove(sessionId);
+    // Update lastSessionId if needed
+    ProfilePreferences prefsToSave = _profile!.preferences;
+    if (_profile!.preferences.lastSessionId == sessionId) {
+      // Set lastSessionId to latest remaining session or empty
+      String newLast = '';
+      if (newSessions.isNotEmpty) {
+        newLast = newSessions.keys.reduce(
+          (a, b) => int.parse(a) > int.parse(b) ? a : b,
+        );
+      }
+      prefsToSave = prefsToSave.copyWith(lastSessionId: newLast);
+      await FirebaseService().savePreferences(prefsToSave);
+    }
+    _profile = _profile!.copyWith(
+      sessions: newSessions,
+      preferences: prefsToSave,
+    );
+    try {
+      await FirebaseService().removeSingleSession(_userId!, sessionId);
+      log.info('[UserProfileProvider] Removed session $sessionId from Firebase.');
+    } catch (e, st) {
+      log.info('[UserProfileProvider] ERROR removing session from Firebase: $e\n$st');
       rethrow;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {

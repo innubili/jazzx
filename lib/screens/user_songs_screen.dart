@@ -88,7 +88,11 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
           final selectedSongTitle = await showModalBottomSheet<String>(
             context: context,
             isScrollControlled: true,
-            builder: (context) => SongPickerSheet(excludeTitles: excludeTitles),
+            builder:
+                (context) => SongPickerSheet(
+                  // excludeTitles: excludeTitles,
+                  bookmarkedTitles: <String>{},
+                ),
           );
 
           if (selectedSongTitle == null) return;

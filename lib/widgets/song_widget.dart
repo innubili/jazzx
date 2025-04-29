@@ -245,12 +245,12 @@ class _SongWidgetState extends State<SongWidget> {
                         ),
                   )
                   : Text.rich(
-                      _highlightedText(_editedSong.title),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    _highlightedText(_editedSong.title),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
         ),
         if (!_editMode && !widget.readOnly) ...[
           IconButton(
@@ -327,7 +327,10 @@ class _SongWidgetState extends State<SongWidget> {
   Widget _editableLinks() {
     if (!_editMode && _editedSong.links.isEmpty) return const SizedBox();
 
-    final userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+    final userProfileProvider = Provider.of<UserProfileProvider>(
+      context,
+      listen: false,
+    );
     final songTitle = _editedSong.title;
 
     return Column(

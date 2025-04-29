@@ -53,7 +53,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
     );
 
-    if (confirm == true && mounted) {
+    if (!mounted) return;
+    if (confirm == true) {
       final profileProvider = Provider.of<UserProfileProvider>(
         context,
         listen: false,
@@ -75,7 +76,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _onFixSessionDurations() async {
-    final profileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+    final profileProvider = Provider.of<UserProfileProvider>(
+      context,
+      listen: false,
+    );
     final profile = profileProvider.profile;
     if (profile == null) return;
     final sessions = profile.sessions;
@@ -89,22 +93,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Fix Session Durations?'),
-        content: Text('Found ${wrongs.length} session(s) with wrong duration. Update durations in Firebase?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Fix Session Durations?'),
+            content: Text(
+              'Found ${wrongs.length} session(s) with wrong duration. Update durations in Firebase?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Confirm'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Confirm'),
-          ),
-        ],
-      ),
     );
-    if (confirm == true && mounted) {
+    if (!mounted) return;
+    if (confirm == true) {
       for (final entry in wrongs.entries) {
         final sessionId = entry.key;
         final correctDuration = entry.value;
@@ -118,25 +126,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
           warmupBpm: oldSession.warmupBpm,
         );
         await profileProvider.updateSession(sessionId, updatedSession);
+        if (!mounted) return;
       }
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fixed durations for ${wrongs.length} session(s).')),
+        SnackBar(
+          content: Text('Fixed durations for ${wrongs.length} session(s).'),
+        ),
       );
     }
   }
 
-  void _updatePreferences(
+  Future<void> _updatePreferences(
     BuildContext context,
     ProfilePreferences prefs, {
     ProfilePreferences Function(ProfilePreferences)? update,
-  }) {
+  }) async {
+    if (!mounted) return;
     final profileProvider = Provider.of<UserProfileProvider>(
       context,
       listen: false,
     );
     final newPrefs = update != null ? update(prefs) : prefs;
-    profileProvider.saveUserPreferences(newPrefs);
+    await profileProvider.saveUserPreferences(newPrefs);
   }
 
   @override
@@ -173,6 +184,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   initialValue: profile.preferences.name,
                   decoration: const InputDecoration(labelText: 'Display Name'),
                   onChanged: (val) {
+                    setState(() {});
+                    if (!mounted) return;
                     _updatePreferences(
                       context,
                       profile.preferences,
@@ -198,6 +211,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             updated.remove(instrument);
                             _editedInstruments = updated;
                           });
+                          if (!mounted) return;
                           _updatePreferences(
                             context,
                             profile.preferences,
@@ -213,6 +227,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: const Icon(Icons.add),
                       tooltip: 'Add Instrument',
                       onPressed: () async {
+                        if (!mounted) return;
                         final controller = TextEditingController();
                         final instrument = await showDialog<String>(
                           context: context,
@@ -250,6 +265,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             updated.add(instrument);
                             _editedInstruments = updated;
                           });
+                          if (!mounted) return;
                           _updatePreferences(
                             context,
                             profile.preferences,
@@ -270,6 +286,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   initialValue: profile.preferences.teacher,
                   decoration: const InputDecoration(labelText: 'Teacher'),
                   onChanged: (val) {
+                    setState(() {});
+                    if (!mounted) return;
                     _updatePreferences(
                       context,
                       profile.preferences,
@@ -292,6 +310,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       profile.preferences.metronomeEnabled,
                   onChanged: (val) {
                     setState(() => _editedMetronomeEnabled = val);
+                    if (!mounted) return;
                     _updatePreferences(
                       context,
                       profile.preferences,
@@ -309,6 +328,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     keyboardType: TextInputType.number,
                     onChanged: (val) {
+                      setState(() {});
+                      if (!mounted) return;
                       _updatePreferences(
                         context,
                         profile.preferences,
@@ -333,6 +354,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       _editedWarmupEnabled ?? profile.preferences.warmupEnabled,
                   onChanged: (val) {
                     setState(() => _editedWarmupEnabled = val);
+                    if (!mounted) return;
                     _updatePreferences(
                       context,
                       profile.preferences,
@@ -354,6 +376,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _editedWarmupEnabled ??
                         profile.preferences.warmupEnabled,
                     onChanged: (val) {
+                      setState(() {});
+                      if (!mounted) return;
                       _updatePreferences(
                         context,
                         profile.preferences,
@@ -381,6 +405,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _editedWarmupEnabled ??
                         profile.preferences.warmupEnabled,
                     onChanged: (val) {
+                      setState(() {});
+                      if (!mounted) return;
                       _updatePreferences(
                         context,
                         profile.preferences,
@@ -404,6 +430,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   value: _editedAutoPause ?? profile.preferences.autoPause,
                   onChanged: (val) {
                     setState(() => _editedAutoPause = val);
+                    if (!mounted) return;
                     _updatePreferences(
                       context,
                       profile.preferences,
@@ -423,6 +450,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     keyboardType: TextInputType.number,
                     enabled: _editedAutoPause ?? profile.preferences.autoPause,
                     onChanged: (val) {
+                      setState(() {});
+                      if (!mounted) return;
                       _updatePreferences(
                         context,
                         profile.preferences,
@@ -449,6 +478,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     keyboardType: TextInputType.number,
                     enabled: _editedAutoPause ?? profile.preferences.autoPause,
                     onChanged: (val) {
+                      setState(() {});
+                      if (!mounted) return;
                       _updatePreferences(
                         context,
                         profile.preferences,

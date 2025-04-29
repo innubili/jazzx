@@ -98,8 +98,13 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen> {
           Text("Duration: ${session['duration']?.toString() ?? '?'} sec"),
           const SizedBox(height: 12),
           if (session.containsKey("warmup"))
-            Text(
-              "Warmup: ${session['warmup']['time']?.toString() ?? '?'} sec @ BPM ${session['warmup']['bpm']?.toString() ?? '?'}",
+            _WarmupEditor(
+              warmup: session['warmup'],
+              onChanged: (newWarmup) {
+                setState(() {
+                  session['warmup'] = newWarmup;
+                });
+              },
             ),
           const Divider(),
           ...categories.map((cat) {
@@ -135,6 +140,64 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _WarmupEditor extends StatefulWidget {
+  final Map<String, dynamic> warmup;
+  final void Function(Map<String, dynamic>) onChanged;
+
+  const _WarmupEditor({required this.warmup, required this.onChanged});
+
+  @override
+  State<_WarmupEditor> createState() => _WarmupEditorState();
+}
+
+class _WarmupEditorState extends State<_WarmupEditor> {
+  int _time = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _time = widget.warmup['time'] ?? 0;
+  }
+
+  void _incrementTime() {
+    setState(() {
+      if (_time < 30) _time += 5;
+    });
+    widget.onChanged({'time': _time});
+  }
+
+  void _decrementTime() {
+    setState(() {
+      if (_time > 0) _time -= 5;
+    });
+    widget.onChanged({'time': _time});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Warmup', style: TextStyle(fontWeight: FontWeight.bold)),
+        Row(
+          children: [
+            const Text('Time: '),
+            IconButton(
+              icon: const Icon(Icons.remove),
+              onPressed: _time > 0 ? _decrementTime : null,
+            ),
+            Text('$_time min'),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: _time < 30 ? _incrementTime : null,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

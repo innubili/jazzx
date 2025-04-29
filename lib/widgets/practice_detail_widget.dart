@@ -95,15 +95,13 @@ class PracticeDetailWidget extends StatelessWidget {
                 TextButton(
                   onPressed: () async {
                     final profile = profileProvider.profile;
-                    final excludeTitles = profile?.songs.keys.toList() ?? [];
-
+                    final userSongTitles = (profile?.songs.keys.toSet() ?? {}).map((e) => e.trim().toLowerCase()).toSet();
                     final selectedSongTitle =
                         await showModalBottomSheet<String>(
                           context: context,
                           isScrollControlled: true,
                           builder:
-                              (context) =>
-                                  SongPickerSheet(excludeTitles: excludeTitles),
+                              (context) => SongPickerSheet(bookmarkedTitles: userSongTitles),
                         );
 
                     if (selectedSongTitle == null) return;
@@ -186,7 +184,10 @@ class _NoteTextFieldState extends State<_NoteTextField> {
   void didUpdateWidget(covariant _NoteTextField oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.note != widget.note && _controller.text != widget.note) {
-      _controller.text = widget.note;
+      _controller.value = TextEditingValue(
+        text: widget.note,
+        selection: TextSelection.collapsed(offset: widget.note.length),
+      );
     }
   }
 

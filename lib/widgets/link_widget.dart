@@ -70,6 +70,7 @@ class LinkWidget extends StatelessWidget {
     if (isViewerOpen) {
       onCloseViewer();
       await Future.delayed(const Duration(milliseconds: 150));
+      if (!context.mounted) return;
     }
     final edited = await showDialog<Link?>(
       context: context,

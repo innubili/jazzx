@@ -162,6 +162,10 @@ class _AuthGateState extends State<AuthGate> {
 
       if (_userProfile != null) {
         context.read<UserProfileProvider>().setUserFromObject(_userProfile!);
+        // Load the latest 100 sessions at startup for fast session log access
+        await context.read<UserProfileProvider>().loadInitialSessionsPage(
+          pageSize: 100,
+        );
         log.info(
           '✅ Profile loaded: ${_userProfile!.preferences.name}'
           '\n\t\t -sessions[${_userProfile!.sessions.length}]'

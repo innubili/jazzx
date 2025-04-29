@@ -9,7 +9,6 @@ import '../models/statistics.dart';
 import '../models/session.dart';
 import '../utils/utils.dart';
 import '../firebase_options.dart';
-import '../utils/statistics_utils.dart'; // ⬅️ Needed for recalculateStatisticsFromSessions
 
 class FirebaseService {
   static final FirebaseService _instance = FirebaseService._internal();
@@ -90,19 +89,18 @@ class FirebaseService {
     final rawData = normalizeFirebaseJson(snapshot.value);
     if (rawData is! Map<String, dynamic>) return null;
 
-    final hasValidStats = rawData['statistics'] is Map<String, dynamic>;
-    final profile = UserProfile.fromJson(userKey, rawData);
+    // Remove sessions from rawData before constructing UserProfile
+    final Map<String, dynamic> profileData = Map.of(rawData);
+    profileData.remove('sessions');
+
+    final hasValidStats = profileData['statistics'] is Map<String, dynamic>;
+    final profile = UserProfile.fromJson(userKey, profileData);
 
     if (!hasValidStats) {
       log.warning(
-        '⚠️ Missing or invalid statistics — recalculating from sessions',
+        '⚠️ Missing or invalid statistics — recalculating from sessions (not loaded here)',
       );
-      final updatedStats = recalculateStatisticsFromSessions(
-        profile.sessions.values.toList(),
-      );
-      profile.statistics = updatedStats;
-      await saveUserProfile(profile);
-      log.info('✅ Recalculated statistics uploaded to Firebase');
+      // No recalculation possible without sessions; skip or handle elsewhere
     }
 
     return profile;
@@ -133,10 +131,8 @@ class FirebaseService {
           },
       },
     };
-    log.info(
-      '[FirebaseService] Writing user profile to Firebase for ${profile.id}...',
-    );
-    log.info('[FirebaseService] Data: ' + data.toString());
+    log.info('[FirebaseService] Writing user profile to Firebase for ${profile.id}...');
+    log.info('[FirebaseService] Data: $data');
     try {
       await ref.set(data);
       log.info('[FirebaseService] Profile write SUCCESS for ${profile.id}');
@@ -186,10 +182,8 @@ class FirebaseService {
     await ensureInitialized();
     final ref = _db!.ref('users/$userId/sessions/$sessionId');
     final data = session.toJson();
-    log.info(
-      '[FirebaseService] Writing single session $sessionId for user $userId...',
-    );
-    log.info('[FirebaseService] Data: ' + data.toString());
+    log.info('[FirebaseService] Writing single session $sessionId for user $userId...');
+    log.info('[FirebaseService] Data: $data');
     try {
       await ref.set(data);
       log.info('[FirebaseService] Single session write SUCCESS for $sessionId');
@@ -197,6 +191,56 @@ class FirebaseService {
       log.info(
         '[FirebaseService] ERROR writing single session $sessionId: $e\n$st',
       );
+      rethrow;
+    }
+  }
+
+  /// Loads only the session with the given sessionId for the current user.
+  Future<Session?> loadSingleSession(String sessionId) async {
+    await ensureInitialized();
+    final userKey = sanitizedUserKey;
+    if (userKey == null) return null;
+    final ref = _db!.ref('users/$userKey/sessions/$sessionId');
+    final snapshot = await ref.get();
+    if (!snapshot.exists || snapshot.value == null) return null;
+    final data = asStringKeyedMap(snapshot.value);
+    return Session.fromJson(data);
+  }
+
+  /// Loads a page of sessions, ordered by descending sessionId (latest first).
+  /// If startAfterId is provided, fetches sessions older than that id.
+  Future<List<MapEntry<String, Session>>> loadSessionsPage({int pageSize = 20, String? startAfterId}) async {
+    await ensureInitialized();
+    final userKey = sanitizedUserKey;
+    if (userKey == null) return [];
+    DatabaseReference ref = _db!.ref('users/$userKey/sessions');
+    Query query = ref.orderByKey().limitToLast(pageSize);
+    if (startAfterId != null && startAfterId.isNotEmpty) {
+      // endAt is inclusive, so we fetch one extra and remove duplicate
+      query = ref.orderByKey().endAt(startAfterId).limitToLast(pageSize + 1);
+    }
+    final snapshot = await query.get();
+    if (!snapshot.exists || snapshot.value == null) return [];
+    final raw = asStringKeyedMap(snapshot.value);
+    final entries = raw.entries.map((e) => MapEntry(e.key, Session.fromJson(asStringKeyedMap(e.value)))).toList();
+    // Sort descending (latest first)
+    entries.sort((a, b) => b.key.compareTo(a.key));
+    // Remove duplicate if paginating
+    if (startAfterId != null && entries.isNotEmpty && entries.first.key == startAfterId) {
+      entries.removeAt(0);
+    }
+    return entries;
+  }
+
+  /// Remove a single session for a user from Firebase.
+  Future<void> removeSingleSession(String userId, String sessionId) async {
+    await ensureInitialized();
+    final ref = _db!.ref('users/$userId/sessions/$sessionId');
+    try {
+      await ref.remove();
+      log.info('[FirebaseService] Removed session $sessionId for user $userId.');
+    } catch (e, st) {
+      log.warning('[FirebaseService] ERROR removing session $sessionId: $e\n$st');
       rethrow;
     }
   }

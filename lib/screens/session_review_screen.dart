@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/session.dart';
 import '../widgets/session_review_widget.dart';
-// import '../utils/utils.dart';
-// import '../utils/session_utils.dart';
+import '../utils/utils.dart';
 import '../providers/user_profile_provider.dart';
-// import '../services/firebase_service.dart';
+import '../widgets/confirm_dialog.dart';
+import '../widgets/session_date_time_picker.dart';
+import '../widgets/session_app_bar_actions.dart';
 
 class SessionReviewScreen extends StatefulWidget {
   final String sessionId;
@@ -79,6 +80,7 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
       }
       updated = updated.copyWith(ended: fixedEnded);
       // Optional: show a warning to the user
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -87,24 +89,18 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
         ),
       );
     }
-    print('[SessionReviewScreen] Saving session: ${updated.toJson()}');
+    log.info('[SessionReviewScreen] Saving session: ${updated.toJson()}');
     final profileProvider = Provider.of<UserProfileProvider>(
       context,
       listen: false,
     );
     final sessionId = updated.ended.toString();
     await profileProvider.saveSessionWithId(sessionId, updated);
+    if (!mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Session saved.')));
     _originalSession = updated;
-  }
-
-  String _formatDuration(int seconds) {
-    final minutes = seconds ~/ 60;
-    final hours = minutes ~/ 60;
-    final mins = minutes % 60;
-    return '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}';
   }
 
   void _onSessionChanged(Session session) {
@@ -119,6 +115,87 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
               .toInt();
       _editableSession = session.copyWith(duration: total);
     });
+  }
+
+  void _showDatePickerOnly() async {
+    int ts = _editableSession.ended;
+    if (ts == 0 && int.tryParse(widget.sessionId) != null) {
+      ts = int.parse(widget.sessionId);
+    }
+    DateTime initial = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
+    final firstDate = DateTime(2000);
+    if (initial.isBefore(firstDate)) {
+      initial = firstDate;
+    }
+    final picked = await SessionDateTimePicker.showDatePickerOnly(
+      context: context,
+      initial: initial,
+      firstDate: firstDate,
+      lastDate: DateTime(2100),
+    );
+    if (!mounted) return;
+    if (picked == null) return;
+    setState(() {
+      _editableSession = _editableSession.copyWith(
+        ended: (picked.millisecondsSinceEpoch ~/ 1000),
+      );
+    });
+  }
+
+  void _showTimePickerOnly() async {
+    int ts = _editableSession.ended;
+    if ((ts == 0 || ts == 1) &&
+        int.tryParse(widget.sessionId) != null &&
+        int.parse(widget.sessionId) > 1000000000) {
+      ts = int.parse(widget.sessionId);
+    }
+    final current = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
+    final picked = await SessionDateTimePicker.showTimePickerOnly(
+      context: context,
+      initial: current,
+    );
+    if (!mounted) return;
+    if (picked == null) return;
+    setState(() {
+      _editableSession = _editableSession.copyWith(
+        ended: (picked.millisecondsSinceEpoch ~/ 1000),
+      );
+    });
+  }
+
+  Future<bool> _onWillPop() async {
+    if (_editMode && _hasEdits) {
+      final discard = await showDialog<bool>(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text('Discard Changes?'),
+              content: const Text(
+                'You have unsaved changes. Do you really want to discard them?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Discard'),
+                ),
+              ],
+            ),
+      );
+      if (!mounted) return false;
+      return discard ?? false;
+    }
+    return true;
+  }
+
+  String _formatDuration(int seconds) {
+    final minutes = seconds ~/ 60;
+    final hours = minutes ~/ 60;
+    final mins = minutes % 60;
+    return '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}';
   }
 
   String _formatSessionDate(int ended) {
@@ -162,132 +239,60 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
     return months[month - 1];
   }
 
-  void _showDatePickerOnly() async {
-    int ts = _editableSession.ended;
-    if (ts == 0 && int.tryParse(widget.sessionId) != null) {
-      ts = int.parse(widget.sessionId);
-    }
-    DateTime initial = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
-    // Clamp initialDate to firstDate if needed
-    final firstDate = DateTime(2000);
-    if (initial.isBefore(firstDate)) {
-      initial = firstDate;
-    }
-    final pickedDate = await showDatePicker(
-      context: context,
-      initialDate: initial,
-      firstDate: firstDate,
-      lastDate: DateTime(2100),
-    );
-    if (pickedDate == null) return;
-    final newDateTime = DateTime(
-      pickedDate.year,
-      pickedDate.month,
-      pickedDate.day,
-      initial.hour,
-      initial.minute,
-    );
-    setState(() {
-      _editableSession = _editableSession.copyWith(
-        ended: (newDateTime.millisecondsSinceEpoch ~/ 1000),
-      );
-    });
-  }
-
-  void _showTimePickerOnly() async {
-    // Use the correct reference for the current time, fallback to sessionId if ended is 0 or 1
-    int ts = _editableSession.ended;
-    if ((ts == 0 || ts == 1) &&
-        int.tryParse(widget.sessionId) != null &&
-        int.parse(widget.sessionId) > 1000000000) {
-      ts = int.parse(widget.sessionId);
-    }
-    final current = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
-    final pickedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(current),
-      builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-          child: child!,
-        );
-      },
-    );
-    if (pickedTime == null) return;
-    // Only update the time, keep the date unchanged
-    final newDateTime = DateTime(
-      current.year,
-      current.month,
-      current.day,
-      pickedTime.hour,
-      pickedTime.minute,
-      current.second,
-      current.millisecond,
-      current.microsecond,
-    );
-    setState(() {
-      _editableSession = _editableSession.copyWith(
-        ended: (newDateTime.millisecondsSinceEpoch ~/ 1000),
-      );
-    });
-  }
-
-  Future<bool> _onWillPop() async {
-    if (_editMode && _hasEdits) {
-      final discard = await showDialog<bool>(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              title: const Text('Discard Changes?'),
-              content: const Text(
-                'You have unsaved changes. Do you really want to discard them?',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Discard'),
-                ),
-              ],
-            ),
-      );
-      return discard == true;
-    }
-    return true;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) async {
+        if (!didPop) return;
+        final shouldPop = await _onWillPop();
+        if (shouldPop && mounted) {
+          Navigator.of(context).maybePop();
+        }
+      },
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () async {
               final shouldPop = await _onWillPop();
+              if (!mounted) return;
               if (shouldPop) Navigator.of(context).maybePop();
             },
           ),
           title: Text(_editMode ? 'Session (edit)' : 'Session'),
           actions: [
-            if (_editMode && _hasEdits)
-              IconButton(
-                icon: const Icon(Icons.save),
-                tooltip: 'Save',
-                onPressed: () {
-                  _saveEdit(_editableSession);
-                },
-              ),
-            if (!_editMode)
-              IconButton(
-                icon: const Icon(Icons.edit),
-                tooltip: 'Edit Session',
-                onPressed: _startEdit,
-              ),
+            SessionAppBarActions(
+              editMode: _editMode,
+              hasEdits: _hasEdits,
+              onSave: () => _saveEdit(_editableSession),
+              onEdit: _startEdit,
+              onDelete: () async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder:
+                      (context) => ConfirmDialog(
+                        title: 'Delete this session?',
+                        content:
+                            'Are you sure you want to delete this session? This cannot be undone.',
+                        onConfirm: () => Navigator.of(context).pop(true),
+                        onCancel: () => Navigator.of(context).pop(false),
+                      ),
+                );
+                if (!mounted) return;
+                if (confirm == true) {
+                  final provider = Provider.of<UserProfileProvider>(
+                    context,
+                    listen: false,
+                  );
+                  await provider.removeSessionById(widget.sessionId);
+                  if (!mounted) return;
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Session deleted.')),
+                  );
+                }
+              },
+            ),
           ],
         ),
         body: Column(
@@ -295,38 +300,18 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Row(
-                children: [
-                  Text(
-                    'Session of ',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  InkWell(
-                    onTap: _editMode ? _showDatePickerOnly : null,
-                    child: Text(
-                      _formatSessionDate(_editableSession.ended),
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  InkWell(
-                    onTap: _editMode ? _showTimePickerOnly : null,
-                    child: Text(
-                      _formatSessionTime(_editableSession.ended),
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    _formatDuration(_editableSession.duration),
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ],
+              child: SessionHeaderRow(
+                sessionLabel: 'Session of',
+                dateString: _formatSessionDate(_editableSession.ended),
+                timeString: _formatSessionTime(_editableSession.ended),
+                durationString: _formatDuration(_editableSession.duration),
+                editMode: _editMode,
+                onShowDatePicker: _editMode ? _showDatePickerOnly : null,
+                onShowTimePicker: _editMode ? _showTimePickerOnly : null,
               ),
             ),
-            // Instrument selection chips (with left padding, no text below)
             Padding(
-              padding: const EdgeInsets.only(left: 8.0),
+              padding: const EdgeInsets.only(left: 16.0),
               child: Builder(
                 builder: (context) {
                   final profile =
@@ -365,7 +350,15 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
                 session: _editableSession,
                 editMode: _editMode,
                 onSave: _saveEdit,
-                onSessionChanged: _onSessionChanged,
+                onSessionChanged: (updatedSession) {
+                  setState(() {
+                    _editableSession = updatedSession;
+                  });
+                },
+                sessionDateTimeString:
+                    _formatSessionDate(_editableSession.ended) +
+                    ' ' +
+                    _formatSessionTime(_editableSession.ended),
               ),
             ),
           ],

@@ -6,18 +6,72 @@ import '../providers/user_profile_provider.dart';
 // import '../widgets/session_summary_widget.dart';
 import '../widgets/session_2lines_widget.dart';
 import 'session_review_screen.dart';
+import '../widgets/add_manual_session_button.dart';
+import '../models/session.dart';
 
-class SessionLogScreen extends StatelessWidget {
+class SessionLogScreen extends StatefulWidget {
   const SessionLogScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final profileProvider = Provider.of<UserProfileProvider>(context);
-    final sessionsMap = profileProvider.profile?.sessions ?? {};
-    // The session ID is the timestamp in SECONDS, not milliseconds
-    final sessionEntries = sessionsMap.entries.toList();
-    sessionEntries.sort((a, b) => int.parse(b.key).compareTo(int.parse(a.key)));
+  State<SessionLogScreen> createState() => _SessionLogScreenState();
+}
 
+class _SessionLogScreenState extends State<SessionLogScreen> {
+  static const int _pageSize =
+      100; // Load 100 sessions per page for cache, show 10-15 per screen
+  final List<MapEntry<String, Session>> _loadedSessions = [];
+  bool _isLoading = false;
+  bool _hasMore = true;
+  String? _lastLoadedId;
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+    _loadNextPage();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadNextPage() async {
+    if (_isLoading || !_hasMore) return;
+    setState(() => _isLoading = true);
+    final provider = context.read<UserProfileProvider>();
+    final entries = await provider.loadSessionsPage(
+      pageSize: _pageSize,
+      startAfterId: _lastLoadedId,
+    );
+    if (entries.isEmpty) {
+      setState(() {
+        _hasMore = false;
+        _isLoading = false;
+      });
+      return;
+    }
+    setState(() {
+      _loadedSessions.addAll(entries);
+      _lastLoadedId = entries.isNotEmpty ? entries.last.key : _lastLoadedId;
+      _isLoading = false;
+      // If less than page size, no more data
+      if (entries.length < _pageSize) _hasMore = false;
+    });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadNextPage();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Session Log'),
@@ -30,40 +84,10 @@ class SessionLogScreen extends StatelessWidget {
               ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: 'Add manual session',
-            onPressed: () async {
-              // Pick date
-              final now = DateTime.now();
-              final pickedDate = await showDatePicker(
-                context: context,
-                initialDate: now,
-                firstDate: DateTime(now.year - 1),
-                lastDate: now,
-              );
-              if (pickedDate == null) return;
-              // Pick time
-              final pickedTime = await showTimePicker(
-                context: context,
-                initialTime: TimeOfDay.fromDateTime(now),
-                builder: (context, child) => MediaQuery(
-                  data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-                  child: child!,
-                ),
-              );
-              if (pickedTime == null) return;
-              final sessionDateTime = DateTime(
-                pickedDate.year,
-                pickedDate.month,
-                pickedDate.day,
-                pickedTime.hour,
-                pickedTime.minute,
-              );
+          AddManualSessionButton(
+            onManualSessionCreated: (sessionDateTime) {
               final sessionId = sessionDateTime.millisecondsSinceEpoch ~/ 1000;
-              if (!context.mounted) return;
-              Navigator.push(
-                context,
+              Navigator.of(context).push(
                 MaterialPageRoute(
                   builder:
                       (_) => SessionReviewScreen(
@@ -80,36 +104,53 @@ class SessionLogScreen extends StatelessWidget {
       ),
       drawer: const MainDrawer(),
       body:
-          sessionEntries.isEmpty
+          _loadedSessions.isEmpty && !_isLoading
               ? const Center(child: Text('No sessions recorded.'))
-              : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: sessionEntries.length,
-                separatorBuilder: (_, __) => const Divider(height: 16),
-                itemBuilder: (context, index) {
-                  final entry = sessionEntries[index];
-                  final sessionId = entry.key;
-                  final session = entry.value;
-                  return ListTile(
-                    title: Session2LinesWidget(
-                      sessionId: sessionId,
-                      session: session,
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => SessionReviewScreen(
-                                sessionId: sessionId,
-                                session: session,
-                              ),
-                        ),
-                      );
-                    },
-                  );
+              : RefreshIndicator(
+                onRefresh: () async {
+                  setState(() {
+                    _loadedSessions.clear();
+                    _lastLoadedId = null;
+                    _hasMore = true;
+                  });
+                  await _loadNextPage();
                 },
+                child: ListView.separated(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _loadedSessions.length + (_hasMore ? 1 : 0),
+                  separatorBuilder: (_, __) => const Divider(height: 16),
+                  itemBuilder: (context, index) {
+                    if (index >= _loadedSessions.length) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 24),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    final entry = _loadedSessions[index];
+                    final sessionId = entry.key;
+                    final session = entry.value;
+                    return ListTile(
+                      title: Session2LinesWidget(
+                        sessionId: sessionId,
+                        session: session,
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => SessionReviewScreen(
+                                  sessionId: sessionId,
+                                  session: session,
+                                ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
     );
   }

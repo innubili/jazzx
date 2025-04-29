@@ -7,24 +7,20 @@ import '../utils/utils.dart';
 import '../models/song.dart';
 
 class SongPickerSheet extends StatelessWidget {
-  final List<String> excludeTitles;
+  final Set<String> bookmarkedTitles;
 
-  const SongPickerSheet({super.key, required this.excludeTitles});
+  const SongPickerSheet({super.key, required this.bookmarkedTitles});
 
   @override
   Widget build(BuildContext context) {
     final allSongs = Provider.of<JazzStandardsProvider>(context).standards;
-    final excludeSet = excludeTitles.map((e) => e.trim().toLowerCase()).toSet();
-    final filteredSongs = allSongs
-        .where((song) => !excludeSet.contains(song.title.trim().toLowerCase()))
-        .toList();
-
     return FractionallySizedBox(
       heightFactor: 0.60,
       child: SafeArea(
         top: false,
         child: _SongPickerSheetContent(
-          songs: filteredSongs,
+          songs: allSongs,
+          bookmarkedTitles: bookmarkedTitles,
         ),
       ),
     );
@@ -33,7 +29,8 @@ class SongPickerSheet extends StatelessWidget {
 
 class _SongPickerSheetContent extends StatefulWidget {
   final List<Song> songs;
-  const _SongPickerSheetContent({required this.songs});
+  final Set<String> bookmarkedTitles;
+  const _SongPickerSheetContent({required this.songs, required this.bookmarkedTitles});
 
   @override
   State<_SongPickerSheetContent> createState() => _SongPickerSheetContentState();
@@ -91,11 +88,11 @@ class _SongPickerSheetContentState extends State<_SongPickerSheetContent> {
             songs: filtered,
             readOnly: true,
             selectable: true,
+            bookmarkedTitles: widget.bookmarkedTitles,
             onSelected: (song) async {
-              // Add selected song to user songs
               final userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
               userProfileProvider.addSong(song);
-              log.info('✅ Added to user songs: [1m${song.title}[0m');
+              log.info('✅ Added to user songs: \x1b[1m${song.title}\x1b[0m');
               Navigator.pop(context, song.title);
             },
           ),
