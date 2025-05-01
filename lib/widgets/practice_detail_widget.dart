@@ -68,9 +68,71 @@ class PracticeDetailWidget extends StatelessWidget {
           if (category.allowsNote) const SizedBox(height: 16),
 
           if (category.allowsLinks)
-            _LinksField(
-              links: links,
-              onLinksChanged: onLinksChanged,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Links',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                if (links.isEmpty) const Text("No links added"),
+                ...links.map(
+                  (l) => Row(
+                    children: [
+                      const Text("• ", style: TextStyle(fontSize: 18)),
+                      Expanded(child: Text(l, overflow: TextOverflow.ellipsis)),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 20),
+                        tooltip: 'Remove link',
+                        onPressed: () {
+                          final newLinks = List<String>.from(links)..remove(l);
+                          onLinksChanged(newLinks);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final controller = TextEditingController();
+                    final result = await showDialog<String>(
+                      context: context,
+                      builder:
+                          (ctx) => AlertDialog(
+                            title: const Text('Add Link'),
+                            content: TextField(
+                              controller: controller,
+                              decoration: const InputDecoration(
+                                hintText: 'Paste or type link',
+                              ),
+                              autofocus: true,
+                              onSubmitted:
+                                  (value) =>
+                                      Navigator.of(ctx).pop(value.trim()),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed:
+                                    () => Navigator.of(
+                                      ctx,
+                                    ).pop(controller.text.trim()),
+                                child: const Text('Add'),
+                              ),
+                            ],
+                          ),
+                    );
+                    if (result != null && result.isNotEmpty) {
+                      final newLinks = List<String>.from(links)..add(result);
+                      onLinksChanged(newLinks);
+                    }
+                  },
+                  child: const Text("Add Link"),
+                ),
+              ],
             ),
           if (category.allowsLinks) const SizedBox(height: 16),
 
@@ -95,13 +157,18 @@ class PracticeDetailWidget extends StatelessWidget {
                 TextButton(
                   onPressed: () async {
                     final profile = profileProvider.profile;
-                    final userSongTitles = (profile?.songs.keys.toSet() ?? {}).map((e) => e.trim().toLowerCase()).toSet();
+                    final userSongTitles =
+                        (profile?.songs.keys.toSet() ?? {})
+                            .map((e) => e.trim().toLowerCase())
+                            .toSet();
                     final selectedSongTitle =
                         await showModalBottomSheet<String>(
                           context: context,
                           isScrollControlled: true,
                           builder:
-                              (context) => SongPickerSheet(bookmarkedTitles: userSongTitles),
+                              (context) => SongPickerSheet(
+                                bookmarkedTitles: userSongTitles,
+                              ),
                         );
 
                     if (selectedSongTitle == null) return;
@@ -209,33 +276,6 @@ class _NoteTextFieldState extends State<_NoteTextField> {
     return TextField(
       controller: _controller,
       decoration: const InputDecoration(labelText: "Note"),
-    );
-  }
-}
-
-class _LinksField extends StatelessWidget {
-  final List<String> links;
-  final ValueChanged<List<String>> onLinksChanged;
-  const _LinksField({required this.links, required this.onLinksChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = TextEditingController(text: links.join('\n'));
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Links (one per line):'),
-        TextField(
-          controller: controller,
-          minLines: 1,
-          maxLines: 5,
-          decoration: const InputDecoration(hintText: 'Paste or type links here'),
-          onChanged: (value) {
-            final newLinks = value.split('\n').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
-            onLinksChanged(newLinks);
-          },
-        ),
-      ],
     );
   }
 }

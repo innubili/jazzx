@@ -7,6 +7,7 @@ import '../models/preferences.dart';
 import '../models/statistics.dart';
 import '../services/firebase_service.dart';
 import '../utils/utils.dart';
+import '../utils/statistics_utils.dart';
 
 class UserProfileProvider extends ChangeNotifier {
   UserProfile? _profile;
@@ -17,6 +18,7 @@ class UserProfileProvider extends ChangeNotifier {
   String? get userId => _userId;
   Map<String, dynamic> get rawJson => _rawJson;
 
+  /*
   /// Loads the user profile from Firebase
   Future<void> loadUserProfile() async {
     final profile = await FirebaseService().loadUserProfile();
@@ -26,7 +28,7 @@ class UserProfileProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
+*/
   /// Allows manually setting the user profile from raw JSON (optional fallback)
   void setUser({
     required String userId,
@@ -51,6 +53,17 @@ class UserProfileProvider extends ChangeNotifier {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
     });
+    // --- Check if statistics dirty and recalculate if needed ---
+    if (profile.preferences.statisticsDirty) {
+      log.info(
+        '[UserProfileProvider] statisticsDirty flag is TRUE on setUserFromObject. Triggering full statistics recalculation.',
+      );
+      recalculateStatisticsFromAllSessionsAndClearFlag();
+    } else {
+      log.info(
+        '[UserProfileProvider] statisticsDirty flag is FALSE on setUserFromObject. No recalculation needed.',
+      );
+    }
   }
 
   void removeSong(String title) {
@@ -180,17 +193,12 @@ class UserProfileProvider extends ChangeNotifier {
     newSessions[sessionId] = session;
 
     // Debug: Print session to be saved
-    log.info('[UserProfileProvider] Saving session $sessionId: ${session.toJson()}');
-    log.info('[UserProfileProvider] All sessions before save:');
-    newSessions.forEach((k, v) => log.info('  $k: ${v.toJson()}'));
-
+    // log.info('[UserProfileProvider] Saving session $sessionId: ${session.toJson()}');
     // Update lastSessionId if needed
-    String lastSessionId = _profile!.preferences.lastSessionId;
     ProfilePreferences prefsToSave = _profile!.preferences;
-    if (lastSessionId.isEmpty ||
-        int.parse(sessionId) > int.parse(lastSessionId)) {
-      prefsToSave = _profile!.preferences.copyWith(lastSessionId: sessionId);
-      await FirebaseService().savePreferences(prefsToSave);
+    if (prefsToSave.lastSessionId.isEmpty ||
+        int.parse(sessionId) > int.parse(prefsToSave.lastSessionId)) {
+      prefsToSave = prefsToSave.copyWith(lastSessionId: sessionId);
     }
     // Update profile in memory
     _profile = _profile!.copyWith(
@@ -200,9 +208,18 @@ class UserProfileProvider extends ChangeNotifier {
     try {
       // Only persist the single session
       await FirebaseService().saveSingleSession(_userId!, sessionId, session);
-      log.info('[UserProfileProvider] Single session successfully saved to Firebase.');
+      // Mark statistics as dirty
+      prefsToSave = prefsToSave.copyWith(statisticsDirty: true);
+      await FirebaseService().savePreferences(prefsToSave);
+      // Immediately trigger recalculation if dirty
+      if (prefsToSave.statisticsDirty) {
+        log.info('[UserProfileProvider] statisticsDirty flag is TRUE after saveSessionWithId. Triggering full statistics recalculation.');
+        await recalculateStatisticsFromAllSessionsAndClearFlag();
+      }
     } catch (e, st) {
-      log.info('[UserProfileProvider] ERROR saving single session to Firebase: $e\n$st');
+      log.info(
+        '[UserProfileProvider] ERROR saving single session to Firebase: $e\n$st',
+      );
       rethrow;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -245,7 +262,9 @@ class UserProfileProvider extends ChangeNotifier {
       // Update lastSessionId to latest if available
       String? latestId = entries.isNotEmpty ? entries.first.key : null;
       ProfilePreferences prefs = _profile!.preferences;
-      if (latestId != null && (prefs.lastSessionId.isEmpty || int.parse(latestId) > int.parse(prefs.lastSessionId))) {
+      if (latestId != null &&
+          (prefs.lastSessionId.isEmpty ||
+              int.parse(latestId) > int.parse(prefs.lastSessionId))) {
         prefs = prefs.copyWith(lastSessionId: latestId);
       }
       _profile = _profile!.copyWith(sessions: newSessions, preferences: prefs);
@@ -295,7 +314,6 @@ class UserProfileProvider extends ChangeNotifier {
         );
       }
       prefsToSave = prefsToSave.copyWith(lastSessionId: newLast);
-      await FirebaseService().savePreferences(prefsToSave);
     }
     _profile = _profile!.copyWith(
       sessions: newSessions,
@@ -303,13 +321,47 @@ class UserProfileProvider extends ChangeNotifier {
     );
     try {
       await FirebaseService().removeSingleSession(_userId!, sessionId);
-      log.info('[UserProfileProvider] Removed session $sessionId from Firebase.');
+      log.info(
+        '[UserProfileProvider] Removed session $sessionId from Firebase.',
+      );
+      // Mark statistics as dirty
+      prefsToSave = prefsToSave.copyWith(statisticsDirty: true);
+      await FirebaseService().savePreferences(prefsToSave);
+      // Immediately trigger recalculation if dirty
+      if (prefsToSave.statisticsDirty) {
+        log.info('[UserProfileProvider] statisticsDirty flag is TRUE after removeSessionById. Triggering full statistics recalculation.');
+        await recalculateStatisticsFromAllSessionsAndClearFlag();
+      }
     } catch (e, st) {
-      log.info('[UserProfileProvider] ERROR removing session from Firebase: $e\n$st');
+      log.info(
+        '[UserProfileProvider] ERROR removing session from Firebase: $e\n$st',
+      );
       rethrow;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
     });
+  }
+
+  /// Recalculate statistics from all sessions and clear the dirty flag
+  Future<void> recalculateStatisticsFromAllSessionsAndClearFlag() async {
+    if (_profile == null || _userId == null) return;
+    log.info(
+      '[UserProfileProvider] Starting full statistics recalculation from all sessions...',
+    );
+    final sessions = _profile!.sessions.values.toList();
+    final updatedStats = recalculateStatisticsFromSessions(sessions);
+    // Update statistics and clear dirty flag
+    final updatedPrefs = _profile!.preferences.copyWith(statisticsDirty: false);
+    _profile = _profile!.copyWith(
+      statistics: updatedStats,
+      preferences: updatedPrefs,
+    );
+    await FirebaseService().saveStatistics(updatedStats);
+    await FirebaseService().savePreferences(updatedPrefs);
+    log.info(
+      '[UserProfileProvider] Full statistics recalculation complete. statisticsDirty flag reset to FALSE.',
+    );
+    notifyListeners();
   }
 }

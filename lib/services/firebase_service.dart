@@ -8,6 +8,7 @@ import '../models/link.dart';
 import '../models/statistics.dart';
 import '../models/session.dart';
 import '../utils/utils.dart';
+import '../utils/statistics_utils.dart';
 import '../firebase_options.dart';
 
 class FirebaseService {
@@ -131,7 +132,9 @@ class FirebaseService {
           },
       },
     };
-    log.info('[FirebaseService] Writing user profile to Firebase for ${profile.id}...');
+    log.info(
+      '[FirebaseService] Writing user profile to Firebase for ${profile.id}...',
+    );
     log.info('[FirebaseService] Data: $data');
     try {
       await ref.set(data);
@@ -182,11 +185,57 @@ class FirebaseService {
     await ensureInitialized();
     final ref = _db!.ref('users/$userId/sessions/$sessionId');
     final data = session.toJson();
-    log.info('[FirebaseService] Writing single session $sessionId for user $userId...');
-    log.info('[FirebaseService] Data: $data');
+    // Format sessionId (timestamp) to human readable DD-MMM-YYYY HH:SS
+    final ts = int.tryParse(sessionId);
+    String humanReadable = '';
+    if (ts != null) {
+      final dt = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
+      final months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+      final m = months[dt.month - 1];
+      final d = dt.day.toString().padLeft(2, '0');
+      final y = dt.year;
+      final h = dt.hour.toString().padLeft(2, '0');
+      final min = dt.minute.toString().padLeft(2, '0');
+      final s = dt.second.toString().padLeft(2, '0');
+      humanReadable = '$d-$m-$y $h:$min:$s';
+    }
+    log.info(
+      '[FirebaseService] SessionID: $sessionId ($humanReadable) Data: $data',
+    );
     try {
       await ref.set(data);
       log.info('[FirebaseService] Single session write SUCCESS for $sessionId');
+      // --- Incremental stats update after session save ---
+      // Load current stats and preferences
+      final stats = await loadStatistics(userId);
+      final prefs = await getPreferences();
+      if (prefs != null && stats != null) {
+        await addSessionAndUpdateStatsIfNew(
+          userId: userId,
+          sessionId: sessionId,
+          session: session,
+          currentStats: stats,
+          preferences: prefs,
+        );
+      } else {
+        log.warning(
+          '[FirebaseService] Could not update stats incrementally after saving session: stats or preferences missing.',
+        );
+      }
+      // --- End incremental stats update ---
     } catch (e, st) {
       log.info(
         '[FirebaseService] ERROR writing single session $sessionId: $e\n$st',
@@ -209,7 +258,10 @@ class FirebaseService {
 
   /// Loads a page of sessions, ordered by descending sessionId (latest first).
   /// If startAfterId is provided, fetches sessions older than that id.
-  Future<List<MapEntry<String, Session>>> loadSessionsPage({int pageSize = 20, String? startAfterId}) async {
+  Future<List<MapEntry<String, Session>>> loadSessionsPage({
+    int pageSize = 20,
+    String? startAfterId,
+  }) async {
     await ensureInitialized();
     final userKey = sanitizedUserKey;
     if (userKey == null) return [];
@@ -222,11 +274,19 @@ class FirebaseService {
     final snapshot = await query.get();
     if (!snapshot.exists || snapshot.value == null) return [];
     final raw = asStringKeyedMap(snapshot.value);
-    final entries = raw.entries.map((e) => MapEntry(e.key, Session.fromJson(asStringKeyedMap(e.value)))).toList();
+    final entries =
+        raw.entries
+            .map(
+              (e) =>
+                  MapEntry(e.key, Session.fromJson(asStringKeyedMap(e.value))),
+            )
+            .toList();
     // Sort descending (latest first)
     entries.sort((a, b) => b.key.compareTo(a.key));
     // Remove duplicate if paginating
-    if (startAfterId != null && entries.isNotEmpty && entries.first.key == startAfterId) {
+    if (startAfterId != null &&
+        entries.isNotEmpty &&
+        entries.first.key == startAfterId) {
       entries.removeAt(0);
     }
     return entries;
@@ -238,9 +298,13 @@ class FirebaseService {
     final ref = _db!.ref('users/$userId/sessions/$sessionId');
     try {
       await ref.remove();
-      log.info('[FirebaseService] Removed session $sessionId for user $userId.');
+      log.info(
+        '[FirebaseService] Removed session $sessionId for user $userId.',
+      );
     } catch (e, st) {
-      log.warning('[FirebaseService] ERROR removing session $sessionId: $e\n$st');
+      log.warning(
+        '[FirebaseService] ERROR removing session $sessionId: $e\n$st',
+      );
       rethrow;
     }
   }
@@ -248,6 +312,50 @@ class FirebaseService {
   Future<void> signOut() async {
     await ensureInitialized();
     await _auth?.signOut();
+  }
+
+  /// Adds a session and updates statistics incrementally if not already counted, using lastSessionId in preferences.
+  Future<void> addSessionAndUpdateStatsIfNew({
+    required String userId,
+    required String sessionId,
+    required Session session,
+    required Statistics currentStats,
+    required ProfilePreferences preferences,
+  }) async {
+    await ensureInitialized();
+    final lastSessionIdStr = preferences.lastSessionId;
+    final lastSessionId = int.tryParse(lastSessionIdStr) ?? 0;
+    final newSessionId = int.tryParse(sessionId) ?? 0;
+
+    if (newSessionId > lastSessionId) {
+      // Update statistics incrementally
+      final updatedStats = updateStatisticsIncremental(
+        existingStats: currentStats,
+        session: session,
+      );
+      // Save updated statistics
+      await saveStatistics(updatedStats);
+      // Update preferences with new lastSessionId
+      final updatedPrefs = preferences.copyWith(lastSessionId: sessionId);
+      await savePreferences(updatedPrefs);
+      log.info(
+        '[FirebaseService] Incremental stats updated for session $sessionId. lastSessionId updated to $sessionId',
+      );
+    } else {
+      log.info(
+        '[FirebaseService] Session $sessionId already counted (lastSessionId: $lastSessionId). Skipping stats update.',
+      );
+    }
+  }
+
+  /// Loads the user's statistics from Firebase.
+  Future<Statistics?> loadStatistics(String userId) async {
+    await ensureInitialized();
+    final ref = _db!.ref('users/$userId/statistics');
+    final snapshot = await ref.get();
+    if (!snapshot.exists || snapshot.value == null) return null;
+    final data = asStringKeyedMap(snapshot.value);
+    return Statistics.fromJson(data);
   }
 
   // --------------- ⬇️ NEW for Jazz Standards ⬇️ ------------------

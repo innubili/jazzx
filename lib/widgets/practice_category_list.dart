@@ -36,6 +36,12 @@ class PracticeCategoryList extends StatelessWidget {
             .where((cat) => cat != PracticeCategory.warmup)
             .where((category) => (session.categories[category]?.time ?? 0) == 0)
             .toList();
+
+    // Utility to set all songs' time to a given value
+    Map<String, int> setSongsTimeEqual(List<String> songs, int time) {
+      return {for (var s in songs) s: time};
+    }
+
     if (editMode) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,17 +60,65 @@ class PracticeCategoryList extends StatelessWidget {
                 );
               },
               onSongsChanged: (songs) {
-                onSessionChanged(
-                  session.copyWithCategory(
-                    category,
-                    data.copyWith(songs: {for (var s in songs) s: 1}),
-                  ),
-                );
+                if (category == PracticeCategory.repertoire) {
+                  final int totalTime = data.time;
+                  final int numSongs = songs.length;
+                  final int perSong =
+                      numSongs > 0 ? (totalTime ~/ numSongs) : 0;
+                  final songMap = setSongsTimeEqual(songs, perSong);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(songs: songMap),
+                    ),
+                  );
+                } else if (category == PracticeCategory.newsong) {
+                  final int time = data.time;
+                  final songMap = setSongsTimeEqual(songs, time);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(songs: songMap),
+                    ),
+                  );
+                } else {
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(songs: {for (var s in songs) s: 1}),
+                    ),
+                  );
+                }
               },
               onTimeChanged: (time) {
-                onSessionChanged(
-                  session.copyWithCategory(category, data.copyWith(time: time)),
-                );
+                if (category == PracticeCategory.repertoire) {
+                  final songs = data.songs?.keys.toList() ?? [];
+                  final int numSongs = songs.length;
+                  final int perSong = numSongs > 0 ? (time ~/ numSongs) : 0;
+                  final songMap = setSongsTimeEqual(songs, perSong);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(time: time, songs: songMap),
+                    ),
+                  );
+                } else if (category == PracticeCategory.newsong) {
+                  final songs = data.songs?.keys.toList() ?? [];
+                  final songMap = setSongsTimeEqual(songs, time);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(time: time, songs: songMap),
+                    ),
+                  );
+                } else {
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(time: time),
+                    ),
+                  );
+                }
               },
               onLinksChanged: (links) {
                 onSessionChanged(
@@ -92,17 +146,65 @@ class PracticeCategoryList extends StatelessWidget {
                 );
               },
               onSongsChanged: (songs) {
-                onSessionChanged(
-                  session.copyWithCategory(
-                    category,
-                    data.copyWith(songs: {for (var s in songs) s: 1}),
-                  ),
-                );
+                if (category == PracticeCategory.repertoire) {
+                  final int totalTime = data.time;
+                  final int numSongs = songs.length;
+                  final int perSong =
+                      numSongs > 0 ? (totalTime ~/ numSongs) : 0;
+                  final songMap = setSongsTimeEqual(songs, perSong);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(songs: songMap),
+                    ),
+                  );
+                } else if (category == PracticeCategory.newsong) {
+                  final int time = data.time;
+                  final songMap = setSongsTimeEqual(songs, time);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(songs: songMap),
+                    ),
+                  );
+                } else {
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(songs: {for (var s in songs) s: 1}),
+                    ),
+                  );
+                }
               },
               onTimeChanged: (time) {
-                onSessionChanged(
-                  session.copyWithCategory(category, data.copyWith(time: time)),
-                );
+                if (category == PracticeCategory.repertoire) {
+                  final songs = data.songs?.keys.toList() ?? [];
+                  final int numSongs = songs.length;
+                  final int perSong = numSongs > 0 ? (time ~/ numSongs) : 0;
+                  final songMap = setSongsTimeEqual(songs, perSong);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(time: time, songs: songMap),
+                    ),
+                  );
+                } else if (category == PracticeCategory.newsong) {
+                  final songs = data.songs?.keys.toList() ?? [];
+                  final songMap = setSongsTimeEqual(songs, time);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(time: time, songs: songMap),
+                    ),
+                  );
+                } else {
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(time: time),
+                    ),
+                  );
+                }
               },
               onLinksChanged: (links) {
                 onSessionChanged(
@@ -136,17 +238,65 @@ class PracticeCategoryList extends StatelessWidget {
                 );
               },
               onSongsChanged: (songs) {
-                onSessionChanged(
-                  session.copyWithCategory(
-                    category,
-                    data.copyWith(songs: {for (var s in songs) s: 1}),
-                  ),
-                );
+                if (category == PracticeCategory.repertoire) {
+                  final int totalTime = data.time;
+                  final int numSongs = songs.length;
+                  final int perSong =
+                      numSongs > 0 ? (totalTime ~/ numSongs) : 0;
+                  final songMap = setSongsTimeEqual(songs, perSong);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(songs: songMap),
+                    ),
+                  );
+                } else if (category == PracticeCategory.newsong) {
+                  final int time = data.time;
+                  final songMap = setSongsTimeEqual(songs, time);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(songs: songMap),
+                    ),
+                  );
+                } else {
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(songs: {for (var s in songs) s: 1}),
+                    ),
+                  );
+                }
               },
               onTimeChanged: (time) {
-                onSessionChanged(
-                  session.copyWithCategory(category, data.copyWith(time: time)),
-                );
+                if (category == PracticeCategory.repertoire) {
+                  final songs = data.songs?.keys.toList() ?? [];
+                  final int numSongs = songs.length;
+                  final int perSong = numSongs > 0 ? (time ~/ numSongs) : 0;
+                  final songMap = setSongsTimeEqual(songs, perSong);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(time: time, songs: songMap),
+                    ),
+                  );
+                } else if (category == PracticeCategory.newsong) {
+                  final songs = data.songs?.keys.toList() ?? [];
+                  final songMap = setSongsTimeEqual(songs, time);
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(time: time, songs: songMap),
+                    ),
+                  );
+                } else {
+                  onSessionChanged(
+                    session.copyWithCategory(
+                      category,
+                      data.copyWith(time: time),
+                    ),
+                  );
+                }
               },
               onLinksChanged: (links) {
                 onSessionChanged(

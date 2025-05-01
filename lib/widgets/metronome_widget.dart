@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'metronome_controller.dart';
 import '../utils/utils.dart';
+import 'metronome_sound_player.dart';
+import 'metronome_sound_player_factory.dart';
 
 class MetronomeWidget extends StatefulWidget {
   final MetronomeController controller;
@@ -28,7 +29,66 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
 
   final List<DateTime> _tapTimes = [];
 
-  late final AudioPlayer _audioPlayer;
+  late final MetronomeSoundPlayer _soundPlayer;
+
+  Stopwatch? _stopwatch;
+
+  int _countInBeats =
+      4; // Number of silent count-in beats (could match beatsPerMeasure)
+  int _countInTick = 0;
+
+  bool isCountInFlash = false;
+
+  // Set this flag to true to enable count-in, or false to disable it.
+  static const bool enableCountIn = true;
+
+  // --- Time Signature Picklist ---
+  static const List<String> timeSignaturePicklist = [
+    '1/2',
+    '2/2',
+    '3/2',
+    '4/2',
+    '5/2',
+    '6/2',
+    '7/2',
+    '8/2',
+    '9/2',
+    '10/2',
+    '11/2',
+    '12/2',
+    '13/2',
+    '1/4',
+    '2/4',
+    '3/4',
+    '4/4',
+    '5/4',
+    '6/4',
+    '7/4',
+    '8/4',
+    '9/4',
+    '10/4',
+    '11/4',
+    '12/4',
+    '13/4',
+    '3/8',
+    '6/8',
+    '9/8',
+    '12/8',
+    '5/8 (3+2)',
+    '5/8 (2+3)',
+    '7/8 (3+2+2)',
+    '7/8 (2+3+2)',
+    '7/8 (2+2+3)',
+  ];
+
+  // --- Bits Pattern Picklist ---
+  static const List<String> bitsPatternPicklist = [
+    '1/4', // Quarter note
+    '1/8', // Eighth note
+    '1/8 triplet', // Eighth note triplet
+    '1/16', // Sixteenth note
+    // '1/16 triplet', // Sixteenth note triplet
+  ];
 
   @override
   void initState() {
@@ -38,45 +98,92 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
     ); // Attach the widget's state to the controller
     _parseTimeSignature();
     _parseBitsPattern();
-    _audioPlayer = AudioPlayer();
+    _soundPlayer = createMetronomeSoundPlayer();
+    _soundPlayer.init();
+    _stopwatch = Stopwatch();
   }
 
   @override
   void dispose() {
-    _timer?.cancel(); // just cancel the timer here
-    isTick = false; // don't call setState!
+    _timer?.cancel();
+    _stopwatch?.stop();
+    isTick = false;
     widget.controller.detach();
-    _audioPlayer.dispose();
+    _soundPlayer.dispose();
     super.dispose();
   }
-
-  Duration get _interval =>
-      Duration(milliseconds: (60000 / bpm / subdivisionMultiplier).round());
 
   // Public Method to start the metronome
   void startMetronome() {
     _timer?.cancel();
     tickCount = 0;
-    _timer = Timer.periodic(_interval, (timer) {
+    _stopwatch?.reset();
+    _stopwatch?.start();
+    if (enableCountIn) {
+      // Set count-in beats to match the current time signature
+      _countInBeats = beatsPerMeasure;
+      _countInTick = 0;
+      _startCountIn();
+    } else {
+      _scheduleNextTick();
+    }
+  }
+
+  void _startCountIn() {
+    final int tickIntervalMs = (60000 / bpm / subdivisionMultiplier).round();
+    _timer = Timer.periodic(Duration(milliseconds: tickIntervalMs), (timer) {
+      _countInTick++;
+      setState(() {
+        isCountInFlash = true;
+      });
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) setState(() => isCountInFlash = false);
+      });
+      log.info('Metronome count-in: $_countInTick/$_countInBeats');
+      if (_countInTick >= _countInBeats) {
+        timer.cancel();
+        _stopwatch?.reset();
+        _stopwatch?.start();
+        _scheduleNextTick();
+      }
+    });
+  }
+
+  // Schedule the next tick based on absolute elapsed time
+  void _scheduleNextTick() {
+    final int tickIntervalMs = (60000 / bpm / subdivisionMultiplier).round();
+    final int elapsed = _stopwatch?.elapsedMilliseconds ?? 0;
+    final int nextTick = ((elapsed / tickIntervalMs).ceil()) * tickIntervalMs;
+    final int delay = nextTick - elapsed;
+    _timer = Timer(Duration(milliseconds: delay), () {
       setState(() {
         tickCount++;
         isTick = true;
       });
-      _playTick();
-      Future.delayed(Duration(milliseconds: 100), () {
+      // Play tock on bit 1, tick otherwise
+      final bool isDownbeat = ((tickCount - 1) % beatsPerMeasure == 0);
+      _playTick(isDownbeat: isDownbeat);
+      log.info(
+        'Metronome tick at: ${DateTime.now()} (elapsed: ${_stopwatch?.elapsedMilliseconds} ms) [sound: ${isDownbeat ? 'tock' : 'tick'}]',
+      );
+      Future.delayed(const Duration(milliseconds: 100), () {
         if (mounted) setState(() => isTick = false);
       });
+      if (isPlaying) {
+        _scheduleNextTick();
+      }
     });
   }
 
   // Public Method to stop the metronome
   void stopMetronome() {
     _timer?.cancel();
+    _stopwatch?.stop();
     if (mounted) {
       setState(() => isTick = false);
     } else {
       isTick = false;
-      log.warning('⚠️ stopMetronome() called after dispose');
+      log.warning(' stopMetronome() called after dispose');
     }
   }
 
@@ -97,6 +204,8 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
     setState(() {
       timeSignature = signature;
       _parseTimeSignature();
+      // Update count-in beats to match new time signature
+      _countInBeats = beatsPerMeasure;
     });
   }
 
@@ -114,8 +223,11 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
 
   // Private Method to calculate the interval between beats based on BPM
   void _parseTimeSignature() {
-    final parts = timeSignature.split('/');
+    // Support grouped/compound signatures like '5/8 (3+2)'
+    final mainPart = timeSignature.split(' ')[0];
+    final parts = mainPart.split('/');
     beatsPerMeasure = int.tryParse(parts[0]) ?? 4;
+    // Optionally, parse grouping if needed in the future
   }
 
   // Private Method to parse the bits pattern (subdivision)
@@ -127,7 +239,13 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
     } else if (bitsPattern == "1/16") {
       subdivisionMultiplier = 4;
     } else if (bitsPattern.toLowerCase().contains("triplet")) {
-      subdivisionMultiplier = 3;
+      if (bitsPattern.startsWith("1/8")) {
+        subdivisionMultiplier = 3;
+      } else if (bitsPattern.startsWith("1/16")) {
+        subdivisionMultiplier = 6;
+      } else {
+        subdivisionMultiplier = 3; // fallback for any triplet
+      }
     } else {
       subdivisionMultiplier = 1;
     }
@@ -189,17 +307,11 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
   void incrementBpm() => setBpm(bpm + 1);
   void decrementBpm() => setBpm(bpm - 1);
 
-  Future<void> _playTick() async {
-    try {
-      await _audioPlayer.play(AssetSource('sounds/tick.mp3'));
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Metronome tick playback error: $e')),
-        );
-      }
-      debugPrint('Metronome tick playback error: $e');
-    }
+  Future<void> _playTick({
+    double volume = 1.0,
+    required bool isDownbeat,
+  }) async {
+    await _soundPlayer.play(isDownbeat: isDownbeat, volume: volume);
   }
 
   @override
@@ -230,7 +342,7 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
                 tooltip: timeSignature,
                 onPressed:
                     () => _pick(
-                      ["1/2", "2/3", "3/4", "4/4", "5/4", "6/8"],
+                      timeSignaturePicklist,
                       timeSignature,
                       setTimeSignature,
                     ),
@@ -264,11 +376,8 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
                 icon: const Icon(Icons.more_horiz, color: Colors.white),
                 tooltip: bitsPattern,
                 onPressed:
-                    () => _pick(
-                      ["1/4", "1/8", "1/16", "Triplets"],
-                      bitsPattern,
-                      setBitsPattern,
-                    ),
+                    () =>
+                        _pick(bitsPatternPicklist, bitsPattern, setBitsPattern),
               ),
             ],
           ),
@@ -286,14 +395,20 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(beatsPerMeasure, (index) {
-                    final isActive = tickCount % beatsPerMeasure == index;
+                    final isActive =
+                        (index == (tickCount - 1) % beatsPerMeasure);
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 100),
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       width: 40,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: isActive ? Colors.red : Colors.grey.shade600,
+                        color:
+                            isCountInFlash
+                                ? Colors.red
+                                : ((tickCount > 0 && isActive)
+                                    ? Colors.red
+                                    : Colors.grey.shade600),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     );

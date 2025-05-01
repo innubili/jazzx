@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/session.dart';
 import '../widgets/session_review_widget.dart';
-import '../utils/utils.dart';
 import '../providers/user_profile_provider.dart';
 import '../widgets/confirm_dialog.dart';
 import '../widgets/session_date_time_picker.dart';
@@ -89,7 +88,6 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
         ),
       );
     }
-    log.info('[SessionReviewScreen] Saving session: ${updated.toJson()}');
     final profileProvider = Provider.of<UserProfileProvider>(
       context,
       listen: false,
@@ -103,6 +101,7 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
     _originalSession = updated;
   }
 
+  /*
   void _onSessionChanged(Session session) {
     setState(() {
       // Recalculate duration as sum of all category times + warmup
@@ -116,7 +115,7 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
       _editableSession = session.copyWith(duration: total);
     });
   }
-
+*/
   void _showDatePickerOnly() async {
     int ts = _editableSession.ended;
     if (ts == 0 && int.tryParse(widget.sessionId) != null) {
@@ -356,9 +355,7 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
                   });
                 },
                 sessionDateTimeString:
-                    _formatSessionDate(_editableSession.ended) +
-                    ' ' +
-                    _formatSessionTime(_editableSession.ended),
+                    '${_formatSessionDate(_editableSession.ended)} ${_formatSessionTime(_editableSession.ended)}',
               ),
             ),
           ],

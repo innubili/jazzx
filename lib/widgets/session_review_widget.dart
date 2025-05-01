@@ -152,7 +152,7 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
     final isExpanded = _expandedCategory == PracticeCategory.warmup;
     final isEditing = widget.editMode;
     final warmupTime = _editedSession.warmupTime ?? 0;
-    final enabled = warmupTime > 0;
+    //final enabled = warmupTime > 0;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child:

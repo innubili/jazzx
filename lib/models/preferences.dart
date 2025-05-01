@@ -1,7 +1,5 @@
 // ignore_for_file: constant_identifier_names
 
-import '../utils/utils.dart';
-
 /// List of typical jazz instruments for selection in the app.
 const List<String> Instruments = [
   'Piano',
@@ -39,6 +37,7 @@ class ProfilePreferences {
   final bool autoPause;
   final int pauseEvery; // stored in seconds shown in minutes
   final int pauseBreak; // stored in seconds shown in minutes
+  final bool statisticsDirty;
 
   ProfilePreferences({
     required this.darkMode,
@@ -56,35 +55,27 @@ class ProfilePreferences {
     required this.autoPause,
     required this.pauseEvery,
     required this.pauseBreak,
+    this.statisticsDirty = false,
   });
 
   factory ProfilePreferences.fromJson(Map<String, dynamic> json) {
-    final map = asStringKeyedMap(json);
-    List<String> instruments;
-    final instrumentField = map['instrument'] ?? map['instruments'];
-    if (instrumentField is String) {
-      instruments = [instrumentField];
-    } else if (instrumentField is List) {
-      instruments = List<String>.from(instrumentField);
-    } else {
-      instruments = [];
-    }
     return ProfilePreferences(
-      darkMode: map['darkMode'] ?? false,
-      exerciseBpm: map['exerciseBpm'] ?? 100,
-      instruments: instruments,
-      admin: map['admin'] ?? false,
-      pro: map['pro'] ?? false,
-      metronomeEnabled: map['metronomeEnabled'] ?? true,
-      name: map['name'] ?? '',
-      teacher: map['teacher'] ?? '',
-      warmupBpm: map['warmupBpm'] ?? 80,
-      warmupEnabled: map['warmupEnabled'] ?? true,
-      warmupTime: map['warmupTime'] ?? 300,
-      lastSessionId: map['lastSessionId'] ?? '',
-      autoPause: map['autoPause'] ?? false,
-      pauseEvery: map['pauseEveryMinutes'] ?? 20,
-      pauseBreak: map['pauseBreakMinutes'] ?? 4,
+      darkMode: json['darkMode'] ?? false,
+      exerciseBpm: json['exerciseBpm'] ?? 100,
+      instruments: List<String>.from(json['instruments'] ?? []),
+      admin: json['admin'] ?? false,
+      pro: json['pro'] ?? false,
+      metronomeEnabled: json['metronomeEnabled'] ?? true,
+      name: json['name'] ?? '',
+      teacher: json['teacher'] ?? '',
+      warmupBpm: json['warmupBpm'] ?? 80,
+      warmupEnabled: json['warmupEnabled'] ?? true,
+      warmupTime: json['warmupTime'] ?? 300,
+      lastSessionId: json['lastSessionId'] ?? '',
+      autoPause: json['autoPause'] ?? false,
+      pauseEvery: json['pauseEveryMinutes'] ?? 1800,
+      pauseBreak: json['pauseBreakMinutes'] ?? 240,
+      statisticsDirty: json['statisticsDirty'] ?? false,
     );
   }
 
@@ -104,6 +95,7 @@ class ProfilePreferences {
     'autoPause': autoPause,
     'pauseEveryMinutes': pauseEvery,
     'pauseBreakMinutes': pauseBreak,
+    'statisticsDirty': statisticsDirty,
   };
 
   static ProfilePreferences defaultPreferences() {
@@ -123,6 +115,7 @@ class ProfilePreferences {
       autoPause: false,
       pauseEvery: 1800,
       pauseBreak: 240,
+      statisticsDirty: false,
     );
   }
 
@@ -142,6 +135,7 @@ class ProfilePreferences {
     bool? autoPause,
     int? pauseEvery,
     int? pauseBreak,
+    bool? statisticsDirty,
   }) {
     return ProfilePreferences(
       darkMode: darkMode ?? this.darkMode,
@@ -159,6 +153,7 @@ class ProfilePreferences {
       autoPause: autoPause ?? this.autoPause,
       pauseEvery: pauseEvery ?? this.pauseEvery,
       pauseBreak: pauseBreak ?? this.pauseBreak,
+      statisticsDirty: statisticsDirty ?? this.statisticsDirty,
     );
   }
 }

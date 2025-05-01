@@ -66,6 +66,35 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
       ),
     );
 
+    VoidCallback buildOnTap(BuildContext context) {
+      if (editMode && category == PracticeCategory.repertoire) {
+        return () {
+          if ((data.time > 0) && (data.songs == null || data.songs!.isEmpty)) {
+            showDialog(
+              context: context,
+              builder:
+                  (ctx) => AlertDialog(
+                    title: const Text('Select Songs'),
+                    content: const Text(
+                      'Please select at least one song for Repertoire.',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+            );
+            return;
+          }
+          onTap();
+        };
+      } else {
+        return onTap;
+      }
+    }
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child:
@@ -74,7 +103,7 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
                   ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      InkWell(onTap: onTap, child: summaryRow),
+                      InkWell(onTap: buildOnTap(context), child: summaryRow),
                       AnimatedCrossFade(
                         crossFadeState: CrossFadeState.showSecond,
                         duration: const Duration(milliseconds: 200),
@@ -83,7 +112,7 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
                       ),
                     ],
                   )
-                  : InkWell(onTap: onTap, child: summaryRow)
+                  : InkWell(onTap: buildOnTap(context), child: summaryRow)
               : summaryRow,
     );
   }

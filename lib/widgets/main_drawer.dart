@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
-import '../widgets/custom_drawer.dart'; // you already have this
+import '../widgets/custom_drawer.dart';
+import '../providers/user_profile_provider.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<UserProfileProvider>(
+      context,
+      listen: false,
+    );
+    final profile = profileProvider.profile;
+    final bool isAdmin = profile?.preferences.admin ?? false;
     return CustomDrawer(
       items: [
         DrawerItem(
@@ -45,6 +53,12 @@ class MainDrawer extends StatelessWidget {
           icon: Icons.settings,
           onTap: () => _navigate(context, '/settings'),
         ),
+        if (isAdmin)
+          DrawerItem(
+            label: 'Admin',
+            icon: Icons.admin_panel_settings,
+            onTap: () => _navigate(context, '/admin'),
+          ),
         DrawerItem(
           label: 'About',
           icon: Icons.info,

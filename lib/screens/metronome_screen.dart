@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/metronome_widget.dart';
 import '../widgets/metronome_controller.dart';
 import '../widgets/main_drawer.dart'; 
+import '../widgets/tuner_widget.dart';
 
 class MetronomeScreen extends StatefulWidget {
   const MetronomeScreen({super.key});
@@ -48,6 +49,8 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 32),
+            TunerWidget(),
           ],
         ),
       ),

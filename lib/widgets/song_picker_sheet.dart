@@ -30,10 +30,14 @@ class SongPickerSheet extends StatelessWidget {
 class _SongPickerSheetContent extends StatefulWidget {
   final List<Song> songs;
   final Set<String> bookmarkedTitles;
-  const _SongPickerSheetContent({required this.songs, required this.bookmarkedTitles});
+  const _SongPickerSheetContent({
+    required this.songs,
+    required this.bookmarkedTitles,
+  });
 
   @override
-  State<_SongPickerSheetContent> createState() => _SongPickerSheetContentState();
+  State<_SongPickerSheetContent> createState() =>
+      _SongPickerSheetContentState();
 }
 
 class _SongPickerSheetContentState extends State<_SongPickerSheetContent> {
@@ -41,14 +45,15 @@ class _SongPickerSheetContentState extends State<_SongPickerSheetContent> {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _searchQuery.isEmpty
-        ? widget.songs
-        : widget.songs.where((s) {
-            final q = _searchQuery.toLowerCase();
-            return s.title.toLowerCase().contains(q) ||
-                s.songwriters.toLowerCase().contains(q) ||
-                s.summary.toLowerCase().contains(q);
-          }).toList();
+    final filtered =
+        _searchQuery.isEmpty
+            ? widget.songs
+            : widget.songs.where((s) {
+              final q = _searchQuery.toLowerCase();
+              return s.title.toLowerCase().contains(q) ||
+                  s.songwriters.toLowerCase().contains(q) ||
+                  s.summary.toLowerCase().contains(q);
+            }).toList();
     return Column(
       children: [
         const SizedBox(height: 8),
@@ -90,7 +95,10 @@ class _SongPickerSheetContentState extends State<_SongPickerSheetContent> {
             selectable: true,
             bookmarkedTitles: widget.bookmarkedTitles,
             onSelected: (song) async {
-              final userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+              final userProfileProvider = Provider.of<UserProfileProvider>(
+                context,
+                listen: false,
+              );
               userProfileProvider.addSong(song);
               log.info('✅ Added to user songs: \x1b[1m${song.title}\x1b[0m');
               Navigator.pop(context, song.title);

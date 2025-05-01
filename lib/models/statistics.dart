@@ -121,6 +121,12 @@ class MonthlyStats {
         entry.key.toString(): entry.value.toJson(),
     },
   };
+
+  MonthlyStats copy() => MonthlyStats(
+        avgDaily: CategoryStats(values: Map.of(avgDaily.values)),
+        days: days.map((k, v) => MapEntry(k, CategoryStats(values: Map.of(v.values)))),
+        total: CategoryStats(values: Map.of(total.values)),
+      );
 }
 
 class YearlyStats {
@@ -176,6 +182,13 @@ class YearlyStats {
         entry.key.toString(): entry.value.toJson(),
     },
   };
+
+  YearlyStats copy() => YearlyStats(
+        avgDaily: CategoryStats(values: Map.of(avgDaily.values)),
+        avgMonthly: CategoryStats(values: Map.of(avgMonthly.values)),
+        total: CategoryStats(values: Map.of(total.values)),
+        months: months.map((k, v) => MapEntry(k, v.copy())),
+      );
 }
 
 class Statistics {

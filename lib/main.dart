@@ -10,6 +10,7 @@ import 'utils/firebase_web_persistence.dart';
 import 'services/firebase_service.dart';
 import 'providers/user_profile_provider.dart';
 import 'providers/jazz_standards_provider.dart';
+import 'providers/irealpro_provider.dart';
 import 'models/user_profile.dart';
 
 import 'screens/login_screen.dart';
@@ -24,6 +25,7 @@ import 'screens/settings_screen.dart';
 import 'screens/about_screen.dart';
 import 'screens/statistics_screen.dart';
 import 'screens/session_summary_screen.dart';
+import 'screens/admin_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +63,7 @@ class JazzXApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProfileProvider()),
         ChangeNotifierProvider(create: (_) => JazzStandardsProvider()),
+        ChangeNotifierProvider(create: (_) => IRealProProvider()),
       ],
       child: MaterialApp(
         title: 'JazzX (Debug)',
@@ -80,6 +83,7 @@ class JazzXApp extends StatelessWidget {
           '/statistics': (context) => const StatisticsScreen(),
           '/about': (context) => const AboutScreen(),
           '/session_summary': (context) => const SessionSummaryScreen(),
+          '/admin': (context) => const AdminScreen(),
         },
       ),
     );

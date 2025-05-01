@@ -83,7 +83,7 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
         shape: const CircleBorder(),
         onPressed: () async {
           final profile = profileProvider.profile;
-          final excludeTitles = profile?.songs.keys.toList() ?? [];
+          // final excludeTitles = profile?.songs.keys.toList() ?? [];
 
           final selectedSongTitle = await showModalBottomSheet<String>(
             context: context,

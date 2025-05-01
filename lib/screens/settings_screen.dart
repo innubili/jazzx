@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_profile_provider.dart';
-import '../utils/statistics_utils.dart';
-import '../utils/session_utils.dart';
 import '../models/preferences.dart' show ProfilePreferences;
-import '../models/session.dart';
 import '../widgets/main_drawer.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -29,111 +26,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _editedAutoPause = profile.preferences.autoPause;
       }
     });
-  }
-
-  Future<void> _onRecalculateStatistics() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Recalculate Statistics?'),
-            content: const Text(
-              'This will recompute statistics from all saved sessions and update your profile in Firebase. Proceed?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Confirm'),
-              ),
-            ],
-          ),
-    );
-
-    if (!mounted) return;
-    if (confirm == true) {
-      final profileProvider = Provider.of<UserProfileProvider>(
-        context,
-        listen: false,
-      );
-      final profile = profileProvider.profile;
-      if (profile != null) {
-        final sessions = profile.sessions.values.toList();
-        final updatedStats = recalculateStatisticsFromSessions(sessions);
-        await profileProvider.updateStatistics(updatedStats);
-      }
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Statistics recalculated and saved to your profile.'),
-        ),
-      );
-    }
-  }
-
-  Future<void> _onFixSessionDurations() async {
-    final profileProvider = Provider.of<UserProfileProvider>(
-      context,
-      listen: false,
-    );
-    final profile = profileProvider.profile;
-    if (profile == null) return;
-    final sessions = profile.sessions;
-    final wrongs = findSessionsWithWrongDuration(sessions);
-    if (wrongs.isEmpty) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All session durations are correct.')),
-      );
-      return;
-    }
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Fix Session Durations?'),
-            content: Text(
-              'Found ${wrongs.length} session(s) with wrong duration. Update durations in Firebase?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Confirm'),
-              ),
-            ],
-          ),
-    );
-    if (!mounted) return;
-    if (confirm == true) {
-      for (final entry in wrongs.entries) {
-        final sessionId = entry.key;
-        final correctDuration = entry.value;
-        final oldSession = sessions[sessionId]!;
-        final updatedSession = Session(
-          duration: correctDuration,
-          ended: oldSession.ended,
-          instrument: oldSession.instrument,
-          categories: oldSession.categories,
-          warmupTime: oldSession.warmupTime,
-          warmupBpm: oldSession.warmupBpm,
-        );
-        await profileProvider.updateSession(sessionId, updatedSession);
-        if (!mounted) return;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Fixed durations for ${wrongs.length} session(s).'),
-        ),
-      );
-    }
   }
 
   Future<void> _updatePreferences(
@@ -496,17 +388,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(height: 24),
                 const Divider(),
-                TextButton.icon(
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Recalculate Statistics'),
-                  onPressed: _onRecalculateStatistics,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.timer_outlined),
-                  label: const Text('Fix Session Durations'),
-                  onPressed: _onFixSessionDurations,
-                ),
+                // Debugging buttons moved to Admin screen
               ],
             ],
           ),
