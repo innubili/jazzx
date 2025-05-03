@@ -9,7 +9,8 @@ import '../utils/session_utils.dart';
 Future<void> fixFirebaseSessions() async {
   try {
     await FirebaseService().ensureInitialized();
-    final userKey = FirebaseService().sanitizedUserKey;
+    // ignore: invalid_use_of_protected_member
+    final userKey = FirebaseService().currentUserUid;
     if (userKey == null) throw Exception('No current user.');
     final ref = FirebaseService().dbRef('users/$userKey/sessions');
     final snapshot = await ref.get();

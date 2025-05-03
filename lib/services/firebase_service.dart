@@ -24,6 +24,14 @@ class FirebaseService {
   User? get currentUser => _auth?.currentUser;
   bool get isSignedIn => currentUser != null;
 
+  String? get sanitizedUserKey {
+    // DEPRECATED: Use currentUserUid instead
+    final email = currentUser?.email;
+    return email?.replaceAll('.', '_');
+  }
+
+  String? get currentUserUid => currentUser?.uid;
+
   Future<void> initialize() async {
     if (_isInitialized) return;
 
@@ -46,14 +54,9 @@ class FirebaseService {
     }
   }
 
-  String? get sanitizedUserKey {
-    final email = currentUser?.email;
-    return email?.replaceAll('.', '_');
-  }
-
   DatabaseReference? get _preferencesRef =>
-      sanitizedUserKey != null
-          ? _db?.ref('users/$sanitizedUserKey/preferences')
+      currentUserUid != null
+          ? _db?.ref('users/$currentUserUid/preferences')
           : null;
 
   Future<ProfilePreferences?> getPreferences() async {
@@ -80,7 +83,7 @@ class FirebaseService {
 
   Future<UserProfile?> loadUserProfile() async {
     await ensureInitialized();
-    final userKey = sanitizedUserKey;
+    final userKey = currentUserUid;
     if (userKey == null) return null;
 
     final ref = _db!.ref('users/$userKey');
@@ -109,7 +112,7 @@ class FirebaseService {
 
   Future<void> saveUserProfile(UserProfile profile) async {
     await ensureInitialized();
-    final ref = _db!.ref('users/${profile.id}');
+    final ref = _db!.ref('users/${currentUserUid ?? profile.id}');
     final data = {
       'preferences': profile.preferences.toJson(),
       'sessions': {
@@ -133,15 +136,15 @@ class FirebaseService {
       },
     };
     log.info(
-      '[FirebaseService] Writing user profile to Firebase for ${profile.id}...',
+      '[FirebaseService] Writing user profile to Firebase for ${currentUserUid ?? profile.id}...',
     );
     log.info('[FirebaseService] Data: $data');
     try {
       await ref.set(data);
-      log.info('[FirebaseService] Profile write SUCCESS for ${profile.id}');
+      log.info('[FirebaseService] Profile write SUCCESS for ${currentUserUid ?? profile.id}');
     } catch (e, st) {
       log.info(
-        '[FirebaseService] ERROR writing profile for ${profile.id}: $e\n$st',
+        '[FirebaseService] ERROR writing profile for ${currentUserUid ?? profile.id}: $e\n$st',
       );
       rethrow;
     }
@@ -170,9 +173,9 @@ class FirebaseService {
   /// Saves the user's statistics to Firebase under their user profile.
   Future<void> saveStatistics(Statistics stats) async {
     await ensureInitialized();
-    final sanitizedKey = sanitizedUserKey;
-    if (sanitizedKey == null) return;
-    final ref = _db!.ref('users/$sanitizedKey/statistics');
+    final userKey = currentUserUid;
+    if (userKey == null) return;
+    final ref = _db!.ref('users/$userKey/statistics');
     await ref.set(stats.toJson());
   }
 
@@ -247,7 +250,7 @@ class FirebaseService {
   /// Loads only the session with the given sessionId for the current user.
   Future<Session?> loadSingleSession(String sessionId) async {
     await ensureInitialized();
-    final userKey = sanitizedUserKey;
+    final userKey = currentUserUid;
     if (userKey == null) return null;
     final ref = _db!.ref('users/$userKey/sessions/$sessionId');
     final snapshot = await ref.get();
@@ -263,7 +266,7 @@ class FirebaseService {
     String? startAfterId,
   }) async {
     await ensureInitialized();
-    final userKey = sanitizedUserKey;
+    final userKey = currentUserUid;
     if (userKey == null) return [];
     DatabaseReference ref = _db!.ref('users/$userKey/sessions');
     Query query = ref.orderByKey().limitToLast(pageSize);

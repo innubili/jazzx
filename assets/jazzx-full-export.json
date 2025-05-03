@@ -2002,7 +2002,7 @@
     }
   },
   "users": {
-    "rudy_federici@gmail_com": {
+    "ikbIblePISRknyunSuDzafc6ybZ2": {
       "preferences": {
         "admin": true,
         "autoPause": true,
@@ -2011,60 +2011,19 @@
         "instruments": [
           "Guitar"
         ],
-        "lastSessionId": "1745993700",
-        "metronomeEnabled": false,
+        "lastSessionId": "1746192600",
+        "metronomeEnabled": true,
         "name": "Rudy",
-        "pauseBreakMinutes": 240,
-        "pauseEveryMinutes": 60,
+        "pauseDurationTime": 240,
+        "pauseIntervalTime": 60,
         "pro": true,
         "statisticsDirty": false,
         "teacher": "Andy",
-        "warmupBpm": 100,
+        "warmupBpm": 80,
         "warmupEnabled": true,
         "warmupTime": 1200
       },
       "sessions": {
-        "0": {
-          "categories": {
-            "Exercise": {
-              "time": 0
-            },
-            "Fun": {
-              "time": 0
-            },
-            "Gig": {
-              "time": 0
-            },
-            "Lesson": {
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "songs": {
-                "Wave": 1
-              },
-              "time": 9600
-            },
-            "Theory": {
-              "time": 0
-            },
-            "Video": {
-              "time": 0
-            },
-            "Warmup": {
-              "time": 0
-            }
-          },
-          "duration": 10500,
-          "ended": 0,
-          "instrument": "Guitar",
-          "warmup": {
-            "bpm": 0,
-            "time": 900
-          }
-        },
         "1726759800": {
           "categories": {
             "Exercise": {
@@ -2072,35 +2031,12 @@
               "note": "minior scales",
               "time": 2280
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 2400
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 4680,
-          "ended": 1726767030,
+          "ended": 1726764480,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2113,36 +2049,10 @@
               "bpm": 100,
               "note": "",
               "time": 4442
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 4442,
-          "ended": 1727084181,
+          "ended": 1727084101,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2155,36 +2065,10 @@
               "bpm": 100,
               "note": "",
               "time": 3009
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 3009,
-          "ended": 1727169061,
+          "ended": 1727168864,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2198,35 +2082,12 @@
               "note": "Minor",
               "time": 4568
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 1239
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5807,
-          "ended": 1727335789,
+          "ended": 1727334617,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2240,24 +2101,6 @@
               "note": "Minor",
               "time": 1800
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
             "Theory": {
               "note": "solo target notes",
               "time": 5280
@@ -2268,7 +2111,7 @@
             }
           },
           "duration": 9050,
-          "ended": 1727444100,
+          "ended": 1727432150,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2286,23 +2129,11 @@
               "note": "",
               "time": 600
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 1200
             },
             "Repertoire": {
               "time": 1200
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
             },
             "Video": {
               "note": "",
@@ -2310,7 +2141,7 @@
             }
           },
           "duration": 5400,
-          "ended": 1727522622,
+          "ended": 1727522143,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2324,35 +2155,12 @@
               "note": "",
               "time": 4
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 4603
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 4607,
-          "ended": 1727735846,
+          "ended": 1727735700,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2361,40 +2169,15 @@
         },
         "1727811231": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 3629
             },
             "Repertoire": {
               "time": 4682
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 8311,
-          "ended": 1727819671,
+          "ended": 1727819542,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2403,40 +2186,16 @@
         },
         "1727858033": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
             "New Song": {
               "time": 2704
-            },
-            "Repertoire": {
-              "time": 0
             },
             "Theory": {
               "note": "andy",
               "time": 3600
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6304,
-          "ended": 1727865179,
+          "ended": 1727864337,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2454,23 +2213,11 @@
               "note": "",
               "time": 687
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 4893
             },
             "Repertoire": {
               "time": 3626
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
             },
             "Video": {
               "note": "GEORGIA",
@@ -2478,7 +2225,7 @@
             }
           },
           "duration": 10706,
-          "ended": 1727974920,
+          "ended": 1727952086,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2496,31 +2243,15 @@
               "note": "",
               "time": 523
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 6127
             },
             "Repertoire": {
               "time": 4138
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 15844,
-          "ended": 1728062160,
+          "ended": 1728042964,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2538,31 +2269,12 @@
               "note": "gomm over playlist",
               "time": 3833
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 4948
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 12893,
-          "ended": 1728171485,
+          "ended": 1728171397,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2576,35 +2288,12 @@
               "note": "Cool Blues",
               "time": 1494
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 5403
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6897,
-          "ended": 1728236160,
+          "ended": 1728209337,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2613,40 +2302,13 @@
         },
         "1728259200": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
             "Video": {
               "note": "",
               "time": 12600
             }
           },
           "duration": 12600,
-          "ended": 1728950340,
+          "ended": 1728271800,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2664,31 +2326,12 @@
               "note": "",
               "time": 2963
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 4749
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9796,
-          "ended": 1729028644,
+          "ended": 1729028547,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2701,18 +2344,6 @@
               "bpm": 100,
               "note": "Cool Blues",
               "time": 5402
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
             },
             "New Song": {
               "time": 3962
@@ -2737,18 +2368,10 @@
                 "Watermelom Man": 206
               },
               "time": 3300
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 12664,
-          "ended": 1729104120,
+          "ended": 1729103464,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2762,35 +2385,16 @@
               "note": "Cool Blues",
               "time": 4580
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 5989
-            },
-            "Repertoire": {
-              "time": 0
             },
             "Theory": {
               "note": "larsen (link)",
               "time": 900
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 11469,
-          "ended": 1729198380,
+          "ended": 1729170489,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2803,18 +2407,6 @@
               "bpm": 100,
               "note": "Cool Blues",
               "time": 5031
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
             },
             "New Song": {
               "time": 4793
@@ -2839,18 +2431,10 @@
                 "Watermelom Man": 201
               },
               "time": 3229
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 13053,
-          "ended": 1729296480,
+          "ended": 1729251573,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2863,18 +2447,6 @@
               "bpm": 100,
               "note": "Cool Blues",
               "time": 2880
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
             },
             "New Song": {
               "time": 3480
@@ -2899,18 +2471,10 @@
                 "Watermelom Man": 195
               },
               "time": 3121
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9481,
-          "ended": 1729383750,
+          "ended": 1729381095,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2923,18 +2487,6 @@
               "bpm": 100,
               "note": "Cool Blues",
               "time": 3241
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
             },
             "New Song": {
               "time": 3961
@@ -2960,17 +2512,13 @@
               },
               "time": 4801
             },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
             "Video": {
               "note": "ANDY, JENS",
               "time": 1920
             }
           },
           "duration": 13923,
-          "ended": 1729383750,
+          "ended": 1729469537,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -2984,35 +2532,12 @@
               "note": "Cool Blues",
               "time": 900
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 900
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 1800,
-          "ended": 1729499378,
+          "ended": 1729501170,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3026,35 +2551,12 @@
               "note": "Cool Blues",
               "time": 2083
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 3024
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5107,
-          "ended": 1729591033,
+          "ended": 1729591019,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3068,35 +2570,13 @@
               "note": "",
               "time": 660
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
             "Theory": {
               "note": "",
               "time": 3600
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 4260,
-          "ended": 1729765979,
+          "ended": 1729679514,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3110,35 +2590,12 @@
               "note": "Cool Blues",
               "time": 1439
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 4588
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6027,
-          "ended": 1729741136,
+          "ended": 1729741002,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3156,31 +2613,12 @@
               "note": "",
               "time": 2845
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 6333
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 11282,
-          "ended": 1729897620,
+          "ended": 1729851002,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3189,23 +2627,6 @@
         },
         "1729941388": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 2952
             },
@@ -3229,18 +2650,10 @@
                 "Watermelom Man": 228
               },
               "time": 3656
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6608,
-          "ended": 1729948001,
+          "ended": 1729947996,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3249,23 +2662,6 @@
         },
         "1730016000": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 3600
             },
@@ -3290,17 +2686,13 @@
               },
               "time": 3600
             },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
             "Video": {
               "note": "",
               "time": 1800
             }
           },
           "duration": 9000,
-          "ended": 1730113200,
+          "ended": 1730025000,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3314,35 +2706,12 @@
               "note": "Add",
               "time": 2331
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 3603
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5934,
-          "ended": 1730111526,
+          "ended": 1730115877,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3356,35 +2725,12 @@
               "note": "Cool Blues",
               "time": 1800
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 1504
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "chrd mldy",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 3304,
-          "ended": 1730286323,
+          "ended": 1730199583,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3398,35 +2744,16 @@
               "note": "Cool Blues",
               "time": 5427
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
             "New Song": {
               "time": 6601
-            },
-            "Repertoire": {
-              "time": 0
             },
             "Theory": {
               "note": "andy lesson",
               "time": 3600
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 15628,
-          "ended": 1730299560,
+          "ended": 1730286028,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3439,36 +2766,10 @@
               "bpm": 100,
               "note": "Cool Blues",
               "time": 2776
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 2776,
-          "ended": 1730363139,
+          "ended": 1730363134,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3477,40 +2778,12 @@
         },
         "1730455219": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "Cool Blues",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 1800
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 1800,
-          "ended": 1730460339,
+          "ended": 1730457019,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3524,35 +2797,15 @@
               "note": "Cool Blues",
               "time": 1800
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 3600
             },
             "Repertoire": {
               "time": 3600
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9000,
-          "ended": 1730546739,
+          "ended": 1730514600,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3566,35 +2819,15 @@
               "note": "Cool Blues",
               "time": 3603
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 2159
             },
             "Repertoire": {
               "time": 4760
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 10522,
-          "ended": 1730640600,
+          "ended": 1730638342,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3608,35 +2841,12 @@
               "note": "Cool Blues",
               "time": 1666
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 4539
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6205,
-          "ended": 1730819100,
+          "ended": 1730801485,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3645,28 +2855,8 @@
         },
         "1730871300": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
             "New Song": {
               "time": 5504
-            },
-            "Repertoire": {
-              "time": 0
             },
             "Theory": {
               "note": "andy lesson",
@@ -3678,7 +2868,7 @@
             }
           },
           "duration": 9978,
-          "ended": 1730889035,
+          "ended": 1730881278,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3687,23 +2877,6 @@
         },
         "1730965200": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 10138
             },
@@ -3713,14 +2886,10 @@
             "Theory": {
               "note": "entered otr in irealpro",
               "time": 1379
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 15677,
-          "ended": 1731008427,
+          "ended": 1730980877,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3734,27 +2903,11 @@
               "note": "Cool Blues",
               "time": 963
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
             "New Song": {
               "time": 6167
             },
             "Repertoire": {
               "time": 4011
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
             },
             "Video": {
               "note": "ANDY, TROMPET",
@@ -3762,7 +2915,7 @@
             }
           },
           "duration": 14743,
-          "ended": 1731064212,
+          "ended": 1731067684,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3771,23 +2924,6 @@
         },
         "1731144840": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 4
             },
@@ -3811,18 +2947,10 @@
                 "Watermelom Man": 317
               },
               "time": 5087
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5091,
-          "ended": 1731187518,
+          "ended": 1731149931,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3836,35 +2964,12 @@
               "note": "B",
               "time": 3960
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 5263
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9223,
-          "ended": 1731236338,
+          "ended": 1731236301,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3878,35 +2983,12 @@
               "note": "",
               "time": 1343
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 4086
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5429,
-          "ended": 1731370253,
+          "ended": 1731370211,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3920,35 +3002,16 @@
               "note": "",
               "time": 1134
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
             "New Song": {
               "time": 7112
-            },
-            "Repertoire": {
-              "time": 0
             },
             "Theory": {
               "note": "andy lesson",
               "time": 4630
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 12876,
-          "ended": 1731498579,
+          "ended": 1731498472,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -3962,35 +3025,12 @@
               "note": "Over The Rainbow",
               "time": 3706
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 7200
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 10906,
-          "ended": 1731574623,
+          "ended": 1731581819,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4004,27 +3044,8 @@
               "note": "Ort",
               "time": 1774
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 4244
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
             },
             "Video": {
               "note": "",
@@ -4032,7 +3053,7 @@
             }
           },
           "duration": 7345,
-          "ended": 1731662274,
+          "ended": 1731661977,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4046,35 +3067,12 @@
               "note": "Over The Rainbow",
               "time": 3267
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 5509
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 8776,
-          "ended": 1731879886,
+          "ended": 1731879918,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4088,35 +3086,12 @@
               "note": "Over The Rainbow",
               "time": 7863
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 4477
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 12340,
-          "ended": 1732028692,
+          "ended": 1732012960,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4130,35 +3105,16 @@
               "note": "Over The Rainbow",
               "time": 4619
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
             "New Song": {
               "time": 1359
-            },
-            "Repertoire": {
-              "time": 0
             },
             "Theory": {
               "note": "andy lesson",
               "time": 3638
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9616,
-          "ended": 1732099550,
+          "ended": 1732094968,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4171,21 +3127,6 @@
               "bpm": 100,
               "note": "Statix",
               "time": 3646
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
             },
             "Repertoire": {
               "songs": {
@@ -4208,17 +3149,13 @@
               },
               "time": 5645
             },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
             "Video": {
               "note": "CHNG",
               "time": 1076
             }
           },
           "duration": 10367,
-          "ended": 1732184579,
+          "ended": 1732182866,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4232,35 +3169,12 @@
               "note": "Static",
               "time": 3461
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 4749
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 8210,
-          "ended": 1732297740,
+          "ended": 1732267310,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4274,35 +3188,15 @@
               "note": "Blue Bossa",
               "time": 2125
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 746
             },
             "Repertoire": {
               "time": 900
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 3771,
-          "ended": 1732350893,
+          "ended": 1732350103,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4316,35 +3210,15 @@
               "note": "Blue Bossa",
               "time": 2106
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 2572
             },
             "Repertoire": {
               "time": 4602
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9280,
-          "ended": 1732531506,
+          "ended": 1732531429,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4358,35 +3232,15 @@
               "note": "Blue Bossa",
               "time": 3994
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 2580
             },
             "Repertoire": {
               "time": 2702
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9276,
-          "ended": 1732618461,
+          "ended": 1732618650,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4400,35 +3254,13 @@
               "note": "F",
               "time": 5312
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
             "Theory": {
               "note": "andy lesson",
               "time": 3601
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 8913,
-          "ended": 1732704212,
+          "ended": 1732704177,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4446,31 +3278,13 @@
               "note": "",
               "time": 94
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
             "Theory": {
               "note": "arpg dgrms x: arpg c-f",
               "time": 3581
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6240,
-          "ended": 1732786857,
+          "ended": 1732786744,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4479,40 +3293,13 @@
         },
         "1732928400": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
             "Video": {
               "note": "STEPHAN",
               "time": 3600
             }
           },
           "duration": 3600,
-          "ended": 1732928400,
+          "ended": 1732932000,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4525,36 +3312,10 @@
               "bpm": 100,
               "note": "Arpg",
               "time": 9130
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9130,
-          "ended": 1733224128,
+          "ended": 1733220901,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4571,17 +3332,6 @@
             "Fun": {
               "note": "jingle bell rock",
               "time": 3900
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
             },
             "Repertoire": {
               "songs": {
@@ -4607,14 +3357,10 @@
             "Theory": {
               "note": "andy lesson",
               "time": 3602
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 14772,
-          "ended": 1733311400,
+          "ended": 1733288772,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4628,35 +3374,15 @@
               "note": "Arpg",
               "time": 2839
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 2700
             },
             "Repertoire": {
               "time": 3600
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9139,
-          "ended": 1733401819,
+          "ended": 1733402043,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4674,31 +3400,12 @@
               "note": "gig w roland",
               "time": 13800
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 1200
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 18232,
-          "ended": 1733477037,
+          "ended": 1733488383,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4711,21 +3418,6 @@
               "bpm": 100,
               "note": "Watermelom Man",
               "time": 4667
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
             },
             "Repertoire": {
               "songs": {
@@ -4751,14 +3443,10 @@
             "Theory": {
               "note": "andy lesson",
               "time": 3600
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 14567,
-          "ended": 1733993000,
+          "ended": 1733893367,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4771,36 +3459,10 @@
               "bpm": 100,
               "note": "Watermelom Man",
               "time": 8239
-            },
-            "Fun": {
-              "note": "xmas",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 8239,
-          "ended": 1734020537,
+          "ended": 1734001219,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4817,14 +3479,6 @@
             "Fun": {
               "note": "xmas",
               "time": 900
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
             },
             "New Song": {
               "time": 1380
@@ -4850,17 +3504,13 @@
               },
               "time": 9120
             },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
             "Video": {
               "note": "Larsen-Kessels",
               "time": 1888
             }
           },
           "duration": 16444,
-          "ended": 1734082412,
+          "ended": 1734092785,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4877,14 +3527,6 @@
             "Fun": {
               "note": "idle moments (green) etc",
               "time": 1109
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
             },
             "New Song": {
               "time": 4536
@@ -4904,14 +3546,10 @@
             "Theory": {
               "note": "various blues",
               "time": 3601
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 12572,
-          "ended": 1734208200,
+          "ended": 1734181592,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4925,35 +3563,12 @@
               "note": "Cool Blues",
               "time": 5604
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 2647
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 8251,
-          "ended": 1734265348,
+          "ended": 1734265328,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -4966,36 +3581,10 @@
               "bpm": 100,
               "note": "Cool Blues",
               "time": 4068
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 4068,
-          "ended": 1734343045,
+          "ended": 1734343029,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5008,36 +3597,10 @@
               "bpm": 100,
               "note": "Cool Blues",
               "time": 4500
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 4500,
-          "ended": 1734430536,
+          "ended": 1734434106,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5055,14 +3618,6 @@
               "note": "testing the new emperor",
               "time": 2721
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
             "New Song": {
               "time": 986
             },
@@ -5072,14 +3627,10 @@
             "Theory": {
               "note": "andy lesson",
               "time": 3815
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 17972,
-          "ended": 1734563709,
+          "ended": 1734527372,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5092,18 +3643,6 @@
               "bpm": 100,
               "note": "Cool Blues",
               "time": 3421
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
             },
             "New Song": {
               "time": 1800
@@ -5128,18 +3667,10 @@
                 "Watermelom Man": 254
               },
               "time": 4078
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9299,
-          "ended": 1734708202,
+          "ended": 1734628899,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5148,32 +3679,12 @@
         },
         "1734742800": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
             "Fun": {
               "note": "",
               "time": 1805
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 3720
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
             },
             "Video": {
               "note": "Georgia On My Mind",
@@ -5181,7 +3692,7 @@
             }
           },
           "duration": 13025,
-          "ended": 1734782709,
+          "ended": 1734755825,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5190,32 +3701,9 @@
         },
         "1734829200": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
             "Fun": {
               "note": "cb solos",
               "time": 3169
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
             },
             "Video": {
               "note": "Cool Blues",
@@ -5223,7 +3711,7 @@
             }
           },
           "duration": 3469,
-          "ended": 1734865788,
+          "ended": 1734832669,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5232,26 +3720,6 @@
         },
         "1734915600": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "All Of Me": 386,
@@ -5272,18 +3740,10 @@
                 "Watermelom Man": 386
               },
               "time": 6180
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6180,
-          "ended": 1734915600,
+          "ended": 1734921780,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5296,36 +3756,10 @@
               "bpm": 100,
               "note": "Cool Blues",
               "time": 3900
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 3900,
-          "ended": 1735261200,
+          "ended": 1735265100,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5339,35 +3773,12 @@
               "note": "C",
               "time": 1155
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 4519
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5674,
-          "ended": 1735546500,
+          "ended": 1735546469,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5376,26 +3787,6 @@
         },
         "1735779600": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "All Of Me": 341,
@@ -5416,18 +3807,10 @@
                 "Watermelom Man": 341
               },
               "time": 5460
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5460,
-          "ended": 1735779600,
+          "ended": 1735785060,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5436,26 +3819,6 @@
         },
         "1735952400": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "All Of Me": 337,
@@ -5476,18 +3839,10 @@
                 "Watermelom Man": 337
               },
               "time": 5400
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5400,
-          "ended": 1735952400,
+          "ended": 1735957800,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5496,26 +3851,6 @@
         },
         "1736038800": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "All Of Me": 341,
@@ -5536,18 +3871,10 @@
                 "Watermelom Man": 341
               },
               "time": 5460
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5460,
-          "ended": 1736038800,
+          "ended": 1736044260,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5556,26 +3883,6 @@
         },
         "1736125200": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "All Of Me": 337,
@@ -5596,18 +3903,10 @@
                 "Watermelom Man": 337
               },
               "time": 5400
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5400,
-          "ended": 1736125200,
+          "ended": 1736130600,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5625,31 +3924,16 @@
               "note": "impr",
               "time": 2194
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
             "New Song": {
               "time": 1200
-            },
-            "Repertoire": {
-              "time": 0
             },
             "Theory": {
               "note": "andy lesson",
               "time": 3606
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 8728,
-          "ended": 1736298000,
+          "ended": 1736306728,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5666,32 +3950,10 @@
             "Fun": {
               "note": "",
               "time": 8569
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 12032,
-          "ended": 1736434894,
+          "ended": 1736421572,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5709,31 +3971,12 @@
               "note": "gb10 need a setup",
               "time": 3900
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 3278
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 13717,
-          "ended": 1736755966,
+          "ended": 1736657317,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5746,36 +3989,10 @@
               "bpm": 100,
               "note": "All The Things You Are",
               "time": 4694
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 4694,
-          "ended": 1736760758,
+          "ended": 1736760717,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5789,35 +4006,13 @@
               "note": "All The Things You Are",
               "time": 2002
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
             "Theory": {
               "note": "keys ireal (scales)",
               "time": 2718
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 4720,
-          "ended": 1736841410,
+          "ended": 1736821120,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5830,36 +4025,10 @@
               "bpm": 100,
               "note": "All The Things You Are",
               "time": 3682
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 3682,
-          "ended": 1736989200,
+          "ended": 1736992882,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5872,36 +4041,10 @@
               "bpm": 100,
               "note": "All The Things You Are",
               "time": 6323
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6323,
-          "ended": 1737156219,
+          "ended": 1737156200,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5915,35 +4058,12 @@
               "note": "All The Things You Are",
               "time": 5734
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 3933
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9667,
-          "ended": 1737203639,
+          "ended": 1737203569,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5956,36 +4076,10 @@
               "bpm": 100,
               "note": "All The Things You Are",
               "time": 4566
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 4566,
-          "ended": 1737293542,
+          "ended": 1737293521,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -5998,36 +4092,10 @@
               "bpm": 100,
               "note": "All The Things You Are",
               "time": 3692
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 3692,
-          "ended": 1737393790,
+          "ended": 1737393689,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6040,21 +4108,6 @@
               "bpm": 100,
               "note": "All The Things You Are",
               "time": 2760
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
             },
             "Repertoire": {
               "songs": {
@@ -6080,14 +4133,10 @@
             "Theory": {
               "note": "andy lesson",
               "time": 3660
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 8940,
-          "ended": 1737507600,
+          "ended": 1737516540,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6105,31 +4154,15 @@
               "note": "",
               "time": 900
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 600
             },
             "Repertoire": {
               "time": 12557
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 17079,
-          "ended": 1737629744,
+          "ended": 1737611079,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6142,36 +4175,10 @@
               "bpm": 100,
               "note": "Blue",
               "time": 6540
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6540,
-          "ended": 1738285200,
+          "ended": 1738291740,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6184,36 +4191,10 @@
               "bpm": 100,
               "note": "Blue",
               "time": 7500
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 7500,
-          "ended": 1738371600,
+          "ended": 1738379100,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6227,35 +4208,12 @@
               "note": "Blue Monk",
               "time": 2893
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 6252
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9145,
-          "ended": 1738502187,
+          "ended": 1738502162,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6268,36 +4226,10 @@
               "bpm": 100,
               "note": "Blue Monk",
               "time": 7784
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 7784,
-          "ended": 1738610332,
+          "ended": 1738552184,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6311,35 +4243,12 @@
               "note": "Blue Monk",
               "time": 6347
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 3900
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 10247,
-          "ended": 1738664514,
+          "ended": 1738641047,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6352,21 +4261,6 @@
               "bpm": 100,
               "note": "Blue Monk",
               "time": 6273
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
             },
             "Repertoire": {
               "songs": {
@@ -6392,14 +4286,10 @@
             "Theory": {
               "note": "andy lesson",
               "time": 3597
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 14670,
-          "ended": 1738751566,
+          "ended": 1738731870,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6408,26 +4298,6 @@
         },
         "1738803600": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "All Of Me": 225,
@@ -6448,18 +4318,10 @@
                 "Watermelom Man": 225
               },
               "time": 3600
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 3600,
-          "ended": 1738803600,
+          "ended": 1738807200,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6476,32 +4338,10 @@
             "Fun": {
               "note": "attya comp",
               "time": 113
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 1740,
-          "ended": 1738926289,
+          "ended": 1738919674,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6514,36 +4354,10 @@
               "bpm": 100,
               "note": "Blue Monk",
               "time": 4454
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 4454,
-          "ended": 1739185008,
+          "ended": 1739184977,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6556,36 +4370,10 @@
               "bpm": 100,
               "note": "Blue Monk",
               "time": 6143
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6143,
-          "ended": 1739270050,
+          "ended": 1739269988,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6599,35 +4387,13 @@
               "note": "Blue Monk",
               "time": 4810
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
             "Theory": {
               "note": "andy lesson",
               "time": 3600
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 8410,
-          "ended": 1739357244,
+          "ended": 1739357239,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6636,25 +4402,9 @@
         },
         "1739494800": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
             "Fun": {
               "note": "4h gig with roland",
               "time": 14460
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
             },
             "Repertoire": {
               "songs": {
@@ -6676,18 +4426,10 @@
                 "Watermelom Man": 168
               },
               "time": 2700
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 17160,
-          "ended": 1739494800,
+          "ended": 1739511960,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6701,35 +4443,12 @@
               "note": "Blue Bossa",
               "time": 4024
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 2730
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6754,
-          "ended": 1739788169,
+          "ended": 1739789670,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6742,36 +4461,10 @@
               "bpm": 100,
               "note": "Blue Monk",
               "time": 5617
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5617,
-          "ended": 1739871135,
+          "ended": 1739871116,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6785,35 +4478,12 @@
               "note": "Blue Bossa",
               "time": 7017
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 2760
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9777,
-          "ended": 1739926800,
+          "ended": 1739936577,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6827,35 +4497,13 @@
               "note": "",
               "time": 1878
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
             "Theory": {
               "note": "andy lesson",
               "time": 3600
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5478,
-          "ended": 1740043184,
+          "ended": 1740046752,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6868,21 +4516,6 @@
               "bpm": 100,
               "note": "All The Things You Are",
               "time": 5423
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
             },
             "Repertoire": {
               "songs": {
@@ -6904,18 +4537,10 @@
                 "Watermelom Man": 548
               },
               "time": 8771
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 14194,
-          "ended": 1740468077,
+          "ended": 1740372994,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6928,36 +4553,10 @@
               "bpm": 100,
               "note": "All The Things You Are",
               "time": 5378
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5378,
-          "ended": 1740473541,
+          "ended": 1740473523,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -6971,35 +4570,16 @@
               "note": "",
               "time": 6350
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 34
             },
             "Theory": {
               "note": "andy lesson",
               "time": 3600
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9984,
-          "ended": 1740588643,
+          "ended": 1740541584,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7008,40 +4588,13 @@
         },
         "1740618000": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
             "Video": {
               "note": "Blue Monk",
               "time": 2700
             }
           },
           "duration": 2700,
-          "ended": 1740618000,
+          "ended": 1740620700,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7055,21 +4608,6 @@
               "note": "All The Things You Are",
               "time": 7200
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "All Of Me": 495,
@@ -7077,18 +4615,10 @@
                 "Bistro Fada": 495
               },
               "time": 1487
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 8687,
-          "ended": 1740830150,
+          "ended": 1740829367,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7102,35 +4632,12 @@
               "note": "All The Things You Are",
               "time": 5248
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 2721
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 7969,
-          "ended": 1740943204,
+          "ended": 1740943198,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7143,36 +4650,10 @@
               "bpm": 100,
               "note": "Honeysuckle Rose",
               "time": 1200
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 1200,
-          "ended": 1741050000,
+          "ended": 1741051200,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7185,36 +4666,10 @@
               "bpm": 100,
               "note": "Honeysuckle Rose",
               "time": 6147
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6147,
-          "ended": 1741164434,
+          "ended": 1741164281,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7223,26 +4678,6 @@
         },
         "1741222800": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "All Of Me": 225,
@@ -7263,18 +4698,10 @@
                 "Watermelom Man": 225
               },
               "time": 3600
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 3600,
-          "ended": 1741222800,
+          "ended": 1741226400,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7283,26 +4710,6 @@
         },
         "1741395600": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "All Of Me": 225,
@@ -7323,18 +4730,10 @@
                 "Watermelom Man": 225
               },
               "time": 3600
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 3600,
-          "ended": 1741395600,
+          "ended": 1741399200,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7352,31 +4751,12 @@
               "note": "wup) x: attya >3rds<",
               "time": 1200
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 3720
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 8876,
-          "ended": 1741482000,
+          "ended": 1741490876,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7394,31 +4774,12 @@
               "note": "wup) x: attya >3rds<+video",
               "time": 1200
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 3900
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 11907,
-          "ended": 1741598722,
+          "ended": 1741603787,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7427,40 +4788,12 @@
         },
         "1741682584": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "wup) n:hr+bl",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
             "New Song": {
               "time": 5656
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6856,
-          "ended": 1741688283,
+          "ended": 1741689440,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7474,35 +4807,13 @@
               "note": "Wup",
               "time": 5368
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
             "Theory": {
               "note": "andy lesson",
               "time": 3653
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9021,
-          "ended": 1741775512,
+          "ended": 1741775350,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7511,25 +4822,9 @@
         },
         "1741827600": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
             "Fun": {
               "note": "gig w- roland",
               "time": 8100
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
             },
             "Repertoire": {
               "songs": {
@@ -7551,18 +4846,10 @@
                 "Watermelom Man": 243
               },
               "time": 3900
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 12000,
-          "ended": 1741827600,
+          "ended": 1741839600,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7579,32 +4866,10 @@
             "Fun": {
               "note": "wup)",
               "time": 1200
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 7853,
-          "ended": 1741950620,
+          "ended": 1741952975,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7622,31 +4887,12 @@
               "note": "wup)",
               "time": 1200
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 7848
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 17491,
-          "ended": 1742039303,
+          "ended": 1742017891,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7663,32 +4909,10 @@
             "Fun": {
               "note": "wup)",
               "time": 1200
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5954,
-          "ended": 1742123723,
+          "ended": 1742126109,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7706,31 +4930,12 @@
               "note": "wup) x: attya (3rds+video)",
               "time": 5340
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 3180
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 13380,
-          "ended": 1742259600,
+          "ended": 1742272980,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7748,31 +4953,16 @@
               "note": "wup)x: bl",
               "time": 1200
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "Andy",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 1800
             },
             "Theory": {
               "note": "andy lesson r: bb blues",
               "time": 3602
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 13308,
-          "ended": 1742382985,
+          "ended": 1742384031,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7789,32 +4979,10 @@
             "Fun": {
               "note": "arpeggios",
               "time": 1080
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 5979,
-          "ended": 1742461109,
+          "ended": 1742461513,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7832,31 +5000,12 @@
               "note": "arpeggios",
               "time": 1200
             },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "time": 7800
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 13739,
-          "ended": 1742659800,
+          "ended": 1742554624,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7873,32 +5022,10 @@
             "Fun": {
               "note": "wup)x: bl",
               "time": 900
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 6000,
-          "ended": 1742605200,
+          "ended": 1742611200,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7915,32 +5042,10 @@
             "Fun": {
               "note": "wup)x: bl",
               "time": 900
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 7800,
-          "ended": 1742691600,
+          "ended": 1742699400,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7957,32 +5062,10 @@
             "Fun": {
               "note": "arpeggios",
               "time": 1200
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 11400,
-          "ended": 1742820929,
+          "ended": 1742789400,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -7995,36 +5078,10 @@
               "bpm": 100,
               "note": "Beautiful Love",
               "time": 7800
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 7800,
-          "ended": 1743210000,
+          "ended": 1743217800,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -8041,110 +5098,10 @@
             "Fun": {
               "note": "",
               "time": 11280
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "songs": {
-                "All Of Me": 0,
-                "All The Things You Are": 0,
-                "Autumn Leaves": 0,
-                "Beautiful Love": 0,
-                "Bistro Fada": 0,
-                "Black Orpheus": 0,
-                "Blue Bossa": 0,
-                "Blue Monk": 0,
-                "Cool Blues": 0,
-                "Fly Me To The Moon": 0,
-                "Georgia On My Mind": 0,
-                "Honeysuckle Rose": 0,
-                "Misty": 0,
-                "Over The Rainbow": 0,
-                "Petite Fleur": 0,
-                "Watermelom Man": 0
-              },
-              "time": 0
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 13243,
-          "ended": 1743409602,
-          "instrument": "guitar",
-          "warmup": {
-            "bpm": 80,
-            "time": 0
-          }
-        },
-        "1743725645": {
-          "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "Gig with Roland",
-              "time": 7
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "songs": {
-                "All of me": 0,
-                "All the things you are": 0,
-                "Autumn Leaves": 0,
-                "Beautiful love": 0,
-                "Bistro Fada": 0,
-                "Black Orpheus": 0,
-                "Blue Monk": 0,
-                "Blue bossa": 0,
-                "Cool Blues": 0,
-                "Fly me to the moon": 0,
-                "Georgia on my mind": 0,
-                "Honeysuckle rose": 0,
-                "Misty": 0,
-                "Over the rainbow": 0,
-                "Petite fleur": 0,
-                "Watermelon man": 0
-              },
-              "time": 2
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
-            }
-          },
-          "duration": 9,
-          "ended": 1743725770,
+          "ended": 1743420879,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -8153,25 +5110,9 @@
         },
         "1743775515": {
           "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
             "Gig": {
               "note": "Gig with Roland",
               "time": 7500
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
             },
             "Repertoire": {
               "songs": {
@@ -8193,109 +5134,14 @@
                 "Watermelon man": 142
               },
               "time": 2280
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9780,
-          "ended": 1743783012,
+          "ended": 1743785295,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
             "time": 0
-          }
-        },
-        "1743812045": {
-          "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "",
-              "time": 0
-            },
-            "Fun": {
-              "note": "",
-              "time": 7
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 2
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
-            }
-          },
-          "duration": 9,
-          "ended": 1743812170,
-          "instrument": "guitar",
-          "warmup": {
-            "bpm": 80,
-            "time": 0
-          }
-        },
-        "1743878824": {
-          "categories": {
-            "Exercise": {
-              "bpm": 100,
-              "note": "minors scales",
-              "time": 970
-            },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "songs": {
-                "Black Orpheus": 7474
-              },
-              "time": 7474
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
-            }
-          },
-          "duration": 9644,
-          "ended": 1743887330,
-          "instrument": "guitar",
-          "warmup": {
-            "bpm": 80,
-            "time": 1200
           }
         },
         "1743887330": {
@@ -8305,38 +5151,15 @@
               "note": "minors scales",
               "time": 970
             },
-            "Fun": {
-              "note": "",
-              "time": 0
-            },
-            "Gig": {
-              "note": "",
-              "time": 0
-            },
-            "Lesson": {
-              "note": "",
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "Black Orpheus": 7500
               },
               "time": 7500
-            },
-            "Theory": {
-              "note": "",
-              "time": 0
-            },
-            "Video": {
-              "note": "",
-              "time": 0
             }
           },
           "duration": 9670,
-          "ended": 1743887330,
+          "ended": 1743897000,
           "instrument": "guitar",
           "warmup": {
             "bpm": 80,
@@ -8349,18 +5172,6 @@
               "note": "minor scales",
               "time": 2700
             },
-            "Fun": {
-              "time": 0
-            },
-            "Gig": {
-              "time": 0
-            },
-            "Lesson": {
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "All The Things You Are": 1071,
@@ -8372,19 +5183,10 @@
                 "Watermelom Man": 1071
               },
               "time": 7500
-            },
-            "Theory": {
-              "time": 0
-            },
-            "Video": {
-              "time": 0
-            },
-            "Warmup": {
-              "time": 0
             }
           },
           "duration": 10800,
-          "ended": 1744263000,
+          "ended": 1744273800,
           "instrument": "Guitar",
           "warmup": {
             "bpm": 0,
@@ -8397,33 +5199,12 @@
               "note": "minor scales",
               "time": 3900
             },
-            "Fun": {
-              "time": 0
-            },
-            "Gig": {
-              "time": 0
-            },
             "Lesson": {
               "time": 3600
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "time": 0
-            },
-            "Video": {
-              "time": 0
-            },
-            "Warmup": {
-              "time": 0
             }
           },
           "duration": 7500,
-          "ended": 1744266600,
+          "ended": 1744274100,
           "instrument": "Guitar",
           "warmup": {
             "bpm": 0,
@@ -8432,39 +5213,15 @@
         },
         "1745824500": {
           "categories": {
-            "Exercise": {
-              "time": 0
-            },
-            "Fun": {
-              "time": 0
-            },
-            "Gig": {
-              "time": 0
-            },
-            "Lesson": {
-              "time": 0
-            },
             "New Song": {
               "songs": {
                 "Wave": 9600
               },
               "time": 9600
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "time": 0
-            },
-            "Video": {
-              "time": 0
-            },
-            "Warmup": {
-              "time": 0
             }
           },
           "duration": 10500,
-          "ended": 1745824500,
+          "ended": 1745835000,
           "instrument": "Guitar",
           "warmup": {
             "bpm": 0,
@@ -8473,39 +5230,15 @@
         },
         "1745859600": {
           "categories": {
-            "Exercise": {
-              "time": 0
-            },
-            "Fun": {
-              "time": 0
-            },
-            "Gig": {
-              "time": 0
-            },
-            "Lesson": {
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
             "Repertoire": {
               "songs": {
                 "Wave": 1
               },
               "time": 2700
-            },
-            "Theory": {
-              "time": 0
-            },
-            "Video": {
-              "time": 0
-            },
-            "Warmup": {
-              "time": 0
             }
           },
           "duration": 2700,
-          "ended": 1745859600,
+          "ended": 1745862300,
           "instrument": "Guitar",
           "warmup": {
             "bpm": 0,
@@ -8516,34 +5249,10 @@
           "categories": {
             "Exercise": {
               "time": 2100
-            },
-            "Fun": {
-              "time": 0
-            },
-            "Gig": {
-              "time": 0
-            },
-            "Lesson": {
-              "time": 0
-            },
-            "New Song": {
-              "time": 0
-            },
-            "Repertoire": {
-              "time": 0
-            },
-            "Theory": {
-              "time": 0
-            },
-            "Video": {
-              "time": 0
-            },
-            "Warmup": {
-              "time": 0
             }
           },
           "duration": 2700,
-          "ended": 1745912340,
+          "ended": 1745915040,
           "instrument": "Guitar",
           "warmup": {
             "bpm": 0,
@@ -8552,21 +5261,9 @@
         },
         "1745993700": {
           "categories": {
-            "Exercise": {
-              "time": 0
-            },
-            "Fun": {
-              "time": 0
-            },
-            "Gig": {
-              "time": 0
-            },
             "Lesson": {
               "note": "wave bossa pattern + melody",
               "time": 3600
-            },
-            "New Song": {
-              "time": 0
             },
             "Repertoire": {
               "links": [
@@ -8576,19 +5273,27 @@
                 "Wave": 4500
               },
               "time": 4500
-            },
-            "Theory": {
-              "time": 0
-            },
-            "Video": {
-              "time": 0
-            },
-            "Warmup": {
-              "time": 0
             }
           },
           "duration": 8700,
-          "ended": 1745993700,
+          "ended": 1746002400,
+          "instrument": "Guitar",
+          "warmup": {
+            "bpm": 0,
+            "time": 600
+          }
+        },
+        "1746192600": {
+          "categories": {
+            "New Song": {
+              "songs": {
+                "Wave": 2700
+              },
+              "time": 2700
+            }
+          },
+          "duration": 3300,
+          "ended": 1746195900,
           "instrument": "Guitar",
           "warmup": {
             "bpm": 0,
@@ -8915,37 +5620,34 @@
       },
       "statistics": {
         "avgDaily": {
-          "exercise": 475,
+          "exercise": 479,
           "fun": 130,
           "gig": 10,
           "lesson": 10,
-          "new song": 97,
-          "repertoire": 287,
+          "new song": 101,
+          "repertoire": 286,
           "theory": 78,
-          "video": 25,
-          "warmup": 0
+          "video": 25
         },
         "avgMonthly": {
-          "exercise": 14440,
-          "fun": 3952,
+          "exercise": 14554,
+          "fun": 3951,
           "gig": 313,
           "lesson": 300,
-          "new song": 2945,
-          "repertoire": 8719,
+          "new song": 3058,
+          "repertoire": 8708,
           "theory": 2378,
-          "video": 766,
-          "warmup": 0
+          "video": 766
         },
         "avgYearly": {
-          "exercise": 173285,
-          "fun": 47420,
-          "gig": 3753,
+          "exercise": 174653,
+          "fun": 47417,
+          "gig": 3750,
           "lesson": 3600,
-          "new song": 35340,
-          "repertoire": 104630,
+          "new song": 36690,
+          "repertoire": 104491,
           "theory": 28537,
-          "video": 9195,
-          "warmup": 0
+          "video": 9195
         },
         "songSeconds": {
           "All Of Me": 6545,
@@ -8956,7 +5658,7 @@
           "Beautiful Love": 6810,
           "Beautiful love": 142,
           "Bistro Fada": 6687,
-          "Black Orpheus": 22237,
+          "Black Orpheus": 14763,
           "Blue Bossa": 7121,
           "Blue Monk": 5881,
           "Blue bossa": 142,
@@ -8974,54 +5676,63 @@
           "Petite fleur": 142,
           "Watermelom Man": 6810,
           "Watermelon man": 142,
-          "Wave": 14101
+          "Wave": 16801
         },
         "total": {
-          "exercise": 346570,
-          "fun": 94841,
-          "gig": 7507,
+          "exercise": 349306,
+          "fun": 94834,
+          "gig": 7500,
           "lesson": 7200,
-          "new song": 70680,
-          "repertoire": 209261,
+          "new song": 73380,
+          "repertoire": 208983,
           "theory": 57074,
-          "video": 18391,
-          "warmup": 0
+          "video": 18391
         },
         "years": {
           "2024": {
             "avgDaily": {
-              "exercise": 1679,
+              "exercise": 1741,
               "fun": 458,
               "gig": 0,
               "lesson": 0,
               "new song": 767,
-              "repertoire": 1030,
+              "repertoire": 1150,
               "theory": 424,
               "video": 262
             },
             "avgMonthly": {
-              "exercise": 50362,
+              "exercise": 52215,
               "fun": 13749,
               "gig": 0,
               "lesson": 0,
               "new song": 23002,
-              "repertoire": 30906,
+              "repertoire": 34506,
               "theory": 12719,
               "video": 7846
             },
             "months": {
               "11": {
                 "avgDaily": {
-                  "exercise": 3394,
-                  "fun": 8,
+                  "exercise": 3418,
+                  "fun": 7,
                   "gig": 0,
                   "lesson": 0,
-                  "new song": 2186,
-                  "repertoire": 1154,
-                  "theory": 902,
-                  "video": 500
+                  "new song": 2018,
+                  "repertoire": 1619,
+                  "theory": 832,
+                  "video": 462
                 },
                 "days": {
+                  "14": {
+                    "exercise": 3706,
+                    "fun": 0,
+                    "gig": 0,
+                    "lesson": 0,
+                    "new song": 0,
+                    "repertoire": 7200,
+                    "theory": 0,
+                    "video": 0
+                  },
                   "15": {
                     "exercise": 1774,
                     "fun": 0,
@@ -9144,26 +5855,26 @@
                   }
                 },
                 "total": {
-                  "exercise": 40732,
+                  "exercise": 44438,
                   "fun": 94,
                   "gig": 0,
                   "lesson": 0,
                   "new song": 26236,
-                  "repertoire": 13849,
+                  "repertoire": 21049,
                   "theory": 10820,
                   "video": 6003
                 }
               },
               "12": {
                 "avgDaily": {
-                  "exercise": 3529,
-                  "fun": 1612,
+                  "exercise": 3333,
+                  "fun": 1522,
                   "gig": 0,
                   "lesson": 0,
-                  "new song": 1163,
-                  "repertoire": 2821,
-                  "theory": 860,
-                  "video": 570
+                  "new song": 1098,
+                  "repertoire": 2665,
+                  "theory": 812,
+                  "video": 538
                 },
                 "days": [
                   null,
@@ -9213,15 +5924,24 @@
                   null,
                   null,
                   null,
-                  null,
                   {
-                    "exercise": 12906,
+                    "exercise": 4667,
                     "fun": 0,
                     "gig": 0,
                     "lesson": 0,
                     "new song": 0,
                     "repertoire": 6300,
                     "theory": 3600,
+                    "video": 0
+                  },
+                  {
+                    "exercise": 8239,
+                    "fun": 0,
+                    "gig": 0,
+                    "lesson": 0,
+                    "new song": 0,
+                    "repertoire": 0,
+                    "theory": 0,
                     "video": 0
                   },
                   {
@@ -9274,7 +5994,6 @@
                     "theory": 0,
                     "video": 0
                   },
-                  null,
                   {
                     "exercise": 3065,
                     "fun": 2721,
@@ -9295,6 +6014,7 @@
                     "theory": 0,
                     "video": 0
                   },
+                  null,
                   {
                     "exercise": 0,
                     "fun": 1805,
@@ -9364,54 +6084,54 @@
               }
             },
             "total": {
-              "exercise": 100724,
+              "exercise": 104430,
               "fun": 27498,
               "gig": 0,
               "lesson": 0,
               "new song": 46004,
-              "repertoire": 61812,
+              "repertoire": 69012,
               "theory": 25438,
               "video": 15691
             }
           },
           "2025": {
             "avgDaily": {
-              "exercise": 2049,
-              "fun": 561,
-              "gig": 63,
-              "lesson": 60,
-              "new song": 206,
-              "repertoire": 1229,
-              "theory": 264,
-              "video": 23,
-              "warmup": 0
+              "exercise": 1633,
+              "fun": 449,
+              "gig": 50,
+              "lesson": 48,
+              "new song": 183,
+              "repertoire": 933,
+              "theory": 211,
+              "video": 18
             },
             "avgMonthly": {
-              "exercise": 61462,
-              "fun": 16836,
-              "gig": 1877,
-              "lesson": 1800,
-              "new song": 6169,
-              "repertoire": 36862,
-              "theory": 7909,
-              "video": 675,
-              "warmup": 0
+              "exercise": 48975,
+              "fun": 13467,
+              "gig": 1500,
+              "lesson": 1440,
+              "new song": 5475,
+              "repertoire": 27994,
+              "theory": 6327,
+              "video": 540
             },
             "months": [
               null,
               {
                 "avgDaily": {
-                  "exercise": 3650,
-                  "fun": 1038,
+                  "exercise": 3422,
+                  "fun": 973,
                   "gig": 0,
                   "lesson": 0,
-                  "new song": 120,
-                  "repertoire": 2934,
-                  "theory": 666,
+                  "new song": 113,
+                  "repertoire": 2751,
+                  "theory": 624,
                   "video": 0
                 },
-                "days": {
-                  "2": {
+                "days": [
+                  null,
+                  null,
+                  {
                     "exercise": 0,
                     "fun": 0,
                     "gig": 0,
@@ -9421,7 +6141,8 @@
                     "theory": 0,
                     "video": 0
                   },
-                  "4": {
+                  null,
+                  {
                     "exercise": 0,
                     "fun": 0,
                     "gig": 0,
@@ -9431,7 +6152,7 @@
                     "theory": 0,
                     "video": 0
                   },
-                  "5": {
+                  {
                     "exercise": 0,
                     "fun": 0,
                     "gig": 0,
@@ -9441,7 +6162,7 @@
                     "theory": 0,
                     "video": 0
                   },
-                  "6": {
+                  {
                     "exercise": 0,
                     "fun": 0,
                     "gig": 0,
@@ -9451,7 +6172,8 @@
                     "theory": 0,
                     "video": 0
                   },
-                  "8": {
+                  null,
+                  {
                     "exercise": 1728,
                     "fun": 2194,
                     "gig": 0,
@@ -9461,7 +6183,7 @@
                     "theory": 3606,
                     "video": 0
                   },
-                  "9": {
+                  {
                     "exercise": 3463,
                     "fun": 8569,
                     "gig": 0,
@@ -9471,8 +6193,10 @@
                     "theory": 0,
                     "video": 0
                   },
-                  "13": {
-                    "exercise": 11233,
+                  null,
+                  null,
+                  {
+                    "exercise": 6539,
                     "fun": 3900,
                     "gig": 0,
                     "lesson": 0,
@@ -9481,7 +6205,17 @@
                     "theory": 0,
                     "video": 0
                   },
-                  "14": {
+                  {
+                    "exercise": 4694,
+                    "fun": 0,
+                    "gig": 0,
+                    "lesson": 0,
+                    "new song": 0,
+                    "repertoire": 0,
+                    "theory": 0,
+                    "video": 0
+                  },
+                  {
                     "exercise": 2002,
                     "fun": 0,
                     "gig": 0,
@@ -9491,7 +6225,8 @@
                     "theory": 2718,
                     "video": 0
                   },
-                  "16": {
+                  null,
+                  {
                     "exercise": 3682,
                     "fun": 0,
                     "gig": 0,
@@ -9501,7 +6236,8 @@
                     "theory": 0,
                     "video": 0
                   },
-                  "18": {
+                  null,
+                  {
                     "exercise": 12057,
                     "fun": 0,
                     "gig": 0,
@@ -9511,7 +6247,7 @@
                     "theory": 0,
                     "video": 0
                   },
-                  "19": {
+                  {
                     "exercise": 4566,
                     "fun": 0,
                     "gig": 0,
@@ -9521,7 +6257,7 @@
                     "theory": 0,
                     "video": 0
                   },
-                  "20": {
+                  {
                     "exercise": 3692,
                     "fun": 0,
                     "gig": 0,
@@ -9531,7 +6267,8 @@
                     "theory": 0,
                     "video": 0
                   },
-                  "22": {
+                  null,
+                  {
                     "exercise": 2760,
                     "fun": 0,
                     "gig": 0,
@@ -9541,7 +6278,7 @@
                     "theory": 3660,
                     "video": 0
                   },
-                  "23": {
+                  {
                     "exercise": 3022,
                     "fun": 900,
                     "gig": 0,
@@ -9551,7 +6288,14 @@
                     "theory": 0,
                     "video": 0
                   },
-                  "31": {
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  {
                     "exercise": 6540,
                     "fun": 0,
                     "gig": 0,
@@ -9561,7 +6305,7 @@
                     "theory": 0,
                     "video": 0
                   }
-                },
+                ],
                 "total": {
                   "exercise": 54745,
                   "fun": 15563,
@@ -9575,14 +6319,14 @@
               },
               {
                 "avgDaily": {
-                  "exercise": 4640,
-                  "fun": 810,
+                  "exercise": 4396,
+                  "fun": 767,
                   "gig": 0,
                   "lesson": 0,
                   "new song": 0,
-                  "repertoire": 1975,
-                  "theory": 800,
-                  "video": 150
+                  "repertoire": 1871,
+                  "theory": 758,
+                  "video": 142
                 },
                 "days": [
                   null,
@@ -9744,14 +6488,23 @@
                   null,
                   null,
                   null,
-                  null,
                   {
-                    "exercise": 10801,
+                    "exercise": 5423,
                     "fun": 0,
                     "gig": 0,
                     "lesson": 0,
                     "new song": 0,
                     "repertoire": 8771,
+                    "theory": 0,
+                    "video": 0
+                  },
+                  {
+                    "exercise": 5378,
+                    "fun": 0,
+                    "gig": 0,
+                    "lesson": 0,
+                    "new song": 0,
+                    "repertoire": 0,
                     "theory": 0,
                     "video": 0
                   },
@@ -9789,13 +6542,13 @@
               },
               {
                 "avgDaily": {
-                  "exercise": 4407,
-                  "fun": 1691,
+                  "exercise": 4215,
+                  "fun": 1617,
                   "gig": 0,
                   "lesson": 0,
-                  "new song": 603,
-                  "repertoire": 1633,
-                  "theory": 330,
+                  "new song": 577,
+                  "repertoire": 1562,
+                  "theory": 315,
                   "video": 0
                 },
                 "days": [
@@ -9973,14 +6726,23 @@
                     "theory": 0,
                     "video": 0
                   },
-                  null,
                   {
-                    "exercise": 7439,
-                    "fun": 2100,
+                    "exercise": 3539,
+                    "fun": 1200,
                     "gig": 0,
                     "lesson": 0,
                     "new song": 0,
                     "repertoire": 7800,
+                    "theory": 0,
+                    "video": 0
+                  },
+                  {
+                    "exercise": 3900,
+                    "fun": 900,
+                    "gig": 0,
+                    "lesson": 0,
+                    "new song": 0,
+                    "repertoire": 0,
                     "theory": 0,
                     "video": 0
                   },
@@ -10043,34 +6805,33 @@
               },
               {
                 "avgDaily": {
-                  "exercise": 1773,
-                  "fun": 1,
-                  "gig": 1251,
+                  "exercise": 1612,
+                  "fun": 0,
+                  "gig": 1250,
                   "lesson": 1200,
                   "new song": 1600,
-                  "repertoire": 5326,
+                  "repertoire": 4080,
                   "theory": 0,
-                  "video": 0,
-                  "warmup": 0
+                  "video": 0
                 },
                 "days": {
                   "4": {
                     "exercise": 0,
                     "fun": 0,
-                    "gig": 7507,
+                    "gig": 7500,
                     "lesson": 0,
                     "new song": 0,
-                    "repertoire": 2282,
+                    "repertoire": 2280,
                     "theory": 0,
                     "video": 0
                   },
-                  "5": {
-                    "exercise": 1940,
-                    "fun": 7,
+                  "6": {
+                    "exercise": 970,
+                    "fun": 0,
                     "gig": 0,
                     "lesson": 0,
                     "new song": 0,
-                    "repertoire": 14976,
+                    "repertoire": 7500,
                     "theory": 0,
                     "video": 0
                   },
@@ -10082,8 +6843,7 @@
                     "new song": 0,
                     "repertoire": 7500,
                     "theory": 0,
-                    "video": 0,
-                    "warmup": 0
+                    "video": 0
                   },
                   "28": {
                     "exercise": 0,
@@ -10093,8 +6853,7 @@
                     "new song": 9600,
                     "repertoire": 2700,
                     "theory": 0,
-                    "video": 0,
-                    "warmup": 0
+                    "video": 0
                   },
                   "29": {
                     "exercise": 2100,
@@ -10104,8 +6863,7 @@
                     "new song": 0,
                     "repertoire": 0,
                     "theory": 0,
-                    "video": 0,
-                    "warmup": 0
+                    "video": 0
                   },
                   "30": {
                     "exercise": 0,
@@ -10115,33 +6873,64 @@
                     "new song": 0,
                     "repertoire": 4500,
                     "theory": 0,
-                    "video": 0,
-                    "warmup": 0
+                    "video": 0
                   }
                 },
                 "total": {
-                  "exercise": 10640,
-                  "fun": 7,
-                  "gig": 7507,
+                  "exercise": 9670,
+                  "fun": 0,
+                  "gig": 7500,
                   "lesson": 7200,
                   "new song": 9600,
-                  "repertoire": 31958,
+                  "repertoire": 24480,
                   "theory": 0,
-                  "video": 0,
-                  "warmup": 0
+                  "video": 0
+                }
+              },
+              {
+                "avgDaily": {
+                  "exercise": 0,
+                  "fun": 0,
+                  "gig": 0,
+                  "lesson": 0,
+                  "new song": 2700,
+                  "repertoire": 0,
+                  "theory": 0,
+                  "video": 0
+                },
+                "days": {
+                  "2": {
+                    "exercise": 0,
+                    "fun": 0,
+                    "gig": 0,
+                    "lesson": 0,
+                    "new song": 2700,
+                    "repertoire": 0,
+                    "theory": 0,
+                    "video": 0
+                  }
+                },
+                "total": {
+                  "exercise": 0,
+                  "fun": 0,
+                  "gig": 0,
+                  "lesson": 0,
+                  "new song": 2700,
+                  "repertoire": 0,
+                  "theory": 0,
+                  "video": 0
                 }
               }
             ],
             "total": {
-              "exercise": 245846,
-              "fun": 67343,
-              "gig": 7507,
+              "exercise": 244876,
+              "fun": 67336,
+              "gig": 7500,
               "lesson": 7200,
-              "new song": 24676,
-              "repertoire": 147449,
+              "new song": 27376,
+              "repertoire": 139971,
               "theory": 31636,
-              "video": 2700,
-              "warmup": 0
+              "video": 2700
             }
           }
         }
