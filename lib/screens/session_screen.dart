@@ -641,7 +641,10 @@ class _SessionScreenState extends State<SessionScreen> {
                 children: [
                   // Header
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     child: _buildHeader(title, isTimerEnabled),
                   ),
                   // Main Content Area
@@ -649,87 +652,155 @@ class _SessionScreenState extends State<SessionScreen> {
                     child: Center(
                       child: Card(
                         elevation: 4,
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(20),
-                          child: _activeMode != null
-                              ? PracticeDetailWidget(
-                                  category: _activeMode!,
-                                  time: sessionData.categories[_activeMode!]?.time ?? 0,
-                                  note: sessionData.categories[_activeMode!]?.note ?? '',
-                                  songs: sessionData.categories[_activeMode!]?.songs?.keys.toList() ?? [],
-                                  links: sessionData.categories[_activeMode!]?.links ?? [],
-                                  onTimeChanged: (val) {
-                                    final cat = sessionData.categories[_activeMode!] ?? SessionCategory(time: 0);
-                                    setState(() {
-                                      sessionData = sessionData.copyWithCategory(
-                                        _activeMode!,
-                                        cat.copyWith(time: val),
-                                      );
-                                    });
-                                  },
-                                  onNoteChanged: (val) {
-                                    final cat = sessionData.categories[_activeMode!] ?? SessionCategory(time: 0);
-                                    setState(() {
-                                      sessionData = sessionData.copyWithCategory(
-                                        _activeMode!,
-                                        cat.copyWith(note: val),
-                                      );
-                                    });
-                                  },
-                                  onSongsChanged: (songs) {
-                                    final cat = sessionData.categories[_activeMode!] ?? SessionCategory(time: 0);
-                                    setState(() {
-                                      sessionData = sessionData.copyWithCategory(
-                                        _activeMode!,
-                                        cat.copyWith(
-                                          songs: {for (var s in songs) s: 1},
-                                        ),
-                                      );
-                                    });
-                                  },
-                                  onLinksChanged: (links) {
-                                    final cat = sessionData.categories[_activeMode!] ?? SessionCategory(time: 0);
-                                    setState(() {
-                                      sessionData = sessionData.copyWithCategory(
-                                        _activeMode!,
-                                        cat.copyWith(links: links),
-                                      );
-                                    });
-                                  },
-                                )
-                              : Center(
-                                  child: Text(
-                                    'Select a practice mode to begin',
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey),
+                          child:
+                              _activeMode != null
+                                  ? PracticeDetailWidget(
+                                    category: _activeMode!,
+                                    time:
+                                        sessionData
+                                            .categories[_activeMode!]
+                                            ?.time ??
+                                        0,
+                                    note:
+                                        sessionData
+                                            .categories[_activeMode!]
+                                            ?.note ??
+                                        '',
+                                    songs:
+                                        sessionData
+                                            .categories[_activeMode!]
+                                            ?.songs
+                                            ?.keys
+                                            .toList() ??
+                                        [],
+                                    links:
+                                        sessionData
+                                            .categories[_activeMode!]
+                                            ?.links ??
+                                        [],
+                                    onTimeChanged: (val) {
+                                      final cat =
+                                          sessionData
+                                              .categories[_activeMode!] ??
+                                          SessionCategory(time: 0);
+                                      setState(() {
+                                        sessionData = sessionData
+                                            .copyWithCategory(
+                                              _activeMode!,
+                                              cat.copyWith(time: val),
+                                            );
+                                      });
+                                    },
+                                    onNoteChanged: (val) {
+                                      final cat =
+                                          sessionData
+                                              .categories[_activeMode!] ??
+                                          SessionCategory(time: 0);
+                                      setState(() {
+                                        sessionData = sessionData
+                                            .copyWithCategory(
+                                              _activeMode!,
+                                              cat.copyWith(note: val),
+                                            );
+                                      });
+                                    },
+                                    onSongsChanged: (songs) {
+                                      final cat =
+                                          sessionData
+                                              .categories[_activeMode!] ??
+                                          SessionCategory(time: 0);
+                                      setState(() {
+                                        sessionData = sessionData
+                                            .copyWithCategory(
+                                              _activeMode!,
+                                              cat.copyWith(
+                                                songs: {
+                                                  for (var s in songs) s: 1,
+                                                },
+                                              ),
+                                            );
+                                      });
+                                    },
+                                    onLinksChanged: (links) {
+                                      final cat =
+                                          sessionData
+                                              .categories[_activeMode!] ??
+                                          SessionCategory(time: 0);
+                                      setState(() {
+                                        sessionData = sessionData
+                                            .copyWithCategory(
+                                              _activeMode!,
+                                              cat.copyWith(links: links),
+                                            );
+                                      });
+                                    },
+                                  )
+                                  : Center(
+                                    child: Text(
+                                      'Select a practice mode to begin',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(color: Colors.grey),
+                                    ),
                                   ),
-                                ),
                         ),
                       ),
                     ),
                   ),
                   // Action Buttons
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
-                    child: Card(
-                      elevation: 8,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                        child: PracticeModeButtonsWidget(
-                          activeMode: _activeMode?.name,
-                          queuedMode: _queuedMode?.name,
-                          onModeSelected: (mode) {
-                            final category = mode.tryToPracticeCategory();
-                            if (category != null) _startPractice(category);
-                          },
-                        ),
-                      ),
+                    padding: const EdgeInsets.only(
+                      bottom: 16,
+                      left: 16,
+                      right: 16,
+                    ),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final mediaQuery = MediaQuery.of(context);
+                        final isTablet = mediaQuery.size.shortestSide >= 600;
+
+                        // --- PORTRAIT ---
+                        final crossAxisCount = isTablet ? 8 : 4;
+                        final cardHeight = isTablet
+                            ? mediaQuery.size.height * 0.125 // 1/8 for tablet
+                            : mediaQuery.size.height * 0.25; // 1/4 for phone
+                        return Card(
+                          elevation: 8,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 8,
+                            ),
+                            child: SizedBox(
+                              height: cardHeight,
+                              width: double.infinity,
+                              child: PracticeModeButtonsWidget(
+                                activeMode: _activeMode?.name,
+                                queuedMode: _queuedMode?.name,
+                                onModeSelected: (mode) {
+                                  final category = mode.tryToPracticeCategory();
+                                  if (category != null)
+                                    _startPractice(category);
+                                },
+                                crossAxisCount: crossAxisCount,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -744,20 +815,40 @@ class _SessionScreenState extends State<SessionScreen> {
                   Card(
                     elevation: 8,
                     margin: const EdgeInsets.all(16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: SizedBox(
-                      width: isLargeScreen ? 250 : 180,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
-                        child: PracticeModeButtonsWidget(
-                          activeMode: _activeMode?.name,
-                          queuedMode: _queuedMode?.name,
-                          onModeSelected: (mode) {
-                            final category = mode.tryToPracticeCategory();
-                            if (category != null) _startPractice(category);
-                          },
-                        ),
-                      ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final mediaQuery = MediaQuery.of(context);
+                        final isTablet = mediaQuery.size.shortestSide >= 600;
+
+                        // --- LANDSCAPE ---
+                        final crossAxisCount = isTablet ? 1 : 2;
+                        final cardWidth = isTablet
+                            ? mediaQuery.size.width * 0.125 // 1/8 for tablet
+                            : mediaQuery.size.width * 0.20; // 1/5 for phone
+                        return SizedBox(
+                          width: cardWidth,
+                          height: double.infinity,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 24,
+                              horizontal: 8,
+                            ),
+                            child: PracticeModeButtonsWidget(
+                              activeMode: _activeMode?.name,
+                              queuedMode: _queuedMode?.name,
+                              onModeSelected: (mode) {
+                                final category = mode.tryToPracticeCategory();
+                                if (category != null)
+                                  _startPractice(category);
+                              },
+                              crossAxisCount: crossAxisCount,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   // Main Content
@@ -765,71 +856,118 @@ class _SessionScreenState extends State<SessionScreen> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                           child: _buildHeader(title, isTimerEnabled),
                         ),
                         Expanded(
                           child: Center(
                             child: Card(
                               elevation: 4,
-                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(20),
-                                child: _activeMode != null
-                                    ? PracticeDetailWidget(
-                                        category: _activeMode!,
-                                        time: sessionData.categories[_activeMode!]?.time ?? 0,
-                                        note: sessionData.categories[_activeMode!]?.note ?? '',
-                                        songs: sessionData.categories[_activeMode!]?.songs?.keys.toList() ?? [],
-                                        links: sessionData.categories[_activeMode!]?.links ?? [],
-                                        onTimeChanged: (val) {
-                                          final cat = sessionData.categories[_activeMode!] ?? SessionCategory(time: 0);
-                                          setState(() {
-                                            sessionData = sessionData.copyWithCategory(
-                                              _activeMode!,
-                                              cat.copyWith(time: val),
-                                            );
-                                          });
-                                        },
-                                        onNoteChanged: (val) {
-                                          final cat = sessionData.categories[_activeMode!] ?? SessionCategory(time: 0);
-                                          setState(() {
-                                            sessionData = sessionData.copyWithCategory(
-                                              _activeMode!,
-                                              cat.copyWith(note: val),
-                                            );
-                                          });
-                                        },
-                                        onSongsChanged: (songs) {
-                                          final cat = sessionData.categories[_activeMode!] ?? SessionCategory(time: 0);
-                                          setState(() {
-                                            sessionData = sessionData.copyWithCategory(
-                                              _activeMode!,
-                                              cat.copyWith(
-                                                songs: {for (var s in songs) s: 1},
-                                              ),
-                                            );
-                                          });
-                                        },
-                                        onLinksChanged: (links) {
-                                          final cat = sessionData.categories[_activeMode!] ?? SessionCategory(time: 0);
-                                          setState(() {
-                                            sessionData = sessionData.copyWithCategory(
-                                              _activeMode!,
-                                              cat.copyWith(links: links),
-                                            );
-                                          });
-                                        },
-                                      )
-                                    : Center(
-                                        child: Text(
-                                          'Select a practice mode to begin',
-                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey),
+                                child:
+                                    _activeMode != null
+                                        ? PracticeDetailWidget(
+                                          category: _activeMode!,
+                                          time:
+                                              sessionData
+                                                  .categories[_activeMode!]
+                                                  ?.time ??
+                                              0,
+                                          note:
+                                              sessionData
+                                                  .categories[_activeMode!]
+                                                  ?.note ??
+                                              '',
+                                          songs:
+                                              sessionData
+                                                  .categories[_activeMode!]
+                                                  ?.songs
+                                                  ?.keys
+                                                  .toList() ??
+                                              [],
+                                          links:
+                                              sessionData
+                                                  .categories[_activeMode!]
+                                                  ?.links ??
+                                              [],
+                                          onTimeChanged: (val) {
+                                            final cat =
+                                                sessionData
+                                                    .categories[_activeMode!] ??
+                                                SessionCategory(time: 0);
+                                            setState(() {
+                                              sessionData = sessionData
+                                                  .copyWithCategory(
+                                                    _activeMode!,
+                                                    cat.copyWith(time: val),
+                                                  );
+                                            });
+                                          },
+                                          onNoteChanged: (val) {
+                                            final cat =
+                                                sessionData
+                                                    .categories[_activeMode!] ??
+                                                SessionCategory(time: 0);
+                                            setState(() {
+                                              sessionData = sessionData
+                                                  .copyWithCategory(
+                                                    _activeMode!,
+                                                    cat.copyWith(note: val),
+                                                  );
+                                            });
+                                          },
+                                          onSongsChanged: (songs) {
+                                            final cat =
+                                                sessionData
+                                                    .categories[_activeMode!] ??
+                                                SessionCategory(time: 0);
+                                            setState(() {
+                                              sessionData = sessionData
+                                                  .copyWithCategory(
+                                                    _activeMode!,
+                                                    cat.copyWith(
+                                                      songs: {
+                                                        for (var s in songs)
+                                                          s: 1,
+                                                      },
+                                                    ),
+                                                  );
+                                            });
+                                          },
+                                          onLinksChanged: (links) {
+                                            final cat =
+                                                sessionData
+                                                    .categories[_activeMode!] ??
+                                                SessionCategory(time: 0);
+                                            setState(() {
+                                              sessionData = sessionData
+                                                  .copyWithCategory(
+                                                    _activeMode!,
+                                                    cat.copyWith(links: links),
+                                                  );
+                                            });
+                                          },
+                                        )
+                                        : Center(
+                                          child: Text(
+                                            'Select a practice mode to begin',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium
+                                                ?.copyWith(color: Colors.grey),
+                                          ),
                                         ),
-                                      ),
                               ),
                             ),
                           ),
