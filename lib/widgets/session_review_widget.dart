@@ -16,6 +16,7 @@ class SessionReviewWidget extends StatefulWidget {
   final bool editMode;
   final String? sessionDateTimeString;
   final void Function(Session session)? onSessionChanged;
+  final bool editRecordedSession;
 
   const SessionReviewWidget({
     super.key,
@@ -28,6 +29,7 @@ class SessionReviewWidget extends StatefulWidget {
     this.editMode = false,
     this.sessionDateTimeString,
     this.onSessionChanged,
+    this.editRecordedSession = false,
   });
 
   @override
@@ -37,10 +39,11 @@ class SessionReviewWidget extends StatefulWidget {
 class _SessionReviewWidgetState extends State<SessionReviewWidget> {
   late Session _editedSession;
   PracticeCategory? _expandedCategory;
+  bool _warmupExpanded = false;
 
   void _updateSession(Session newSession) {
     final updatedDuration =
-        (newSession.warmupTime ?? 0) +
+        (newSession.warmup?.time ?? 0) +
         newSession.categories.values.fold(0, (sum, cat) => sum + (cat.time));
     setState(() {
       _editedSession = newSession.copyWith(duration: updatedDuration.toInt());
@@ -56,6 +59,7 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final disableDateTimeEdit = widget.editRecordedSession;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -67,6 +71,25 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
             const SizedBox(height: 8),
             // Warmup as a category card/editor at the top with expand/collapse
             _buildWarmupExpandableCard(),
+            SessionHeaderRow(
+              sessionLabel: 'Session',
+              dateString: _formatSessionDate(_editedSession.ended),
+              timeString: _formatSessionTime(_editedSession.ended),
+              durationString: _formatDuration(_editedSession.duration),
+              editMode: widget.editMode && !disableDateTimeEdit,
+              onShowDatePicker:
+                  disableDateTimeEdit
+                      ? null
+                      : () {
+                        // your date picker logic
+                      },
+              onShowTimePicker:
+                  disableDateTimeEdit
+                      ? null
+                      : () {
+                        // your time picker logic
+                      },
+            ),
             const Divider(thickness: 1, height: 32),
             PracticeCategoryList(
               session: _editedSession,
@@ -78,6 +101,8 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
                   _expandedCategory = _expandedCategory == cat ? null : cat;
                 });
               },
+              editRecordedSession: widget.editRecordedSession,
+              manualEntry: widget.editMode && !widget.editRecordedSession,
             ),
             const SizedBox(height: 16),
           ],
@@ -90,6 +115,36 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
     final hours = seconds ~/ 3600;
     final minutes = (seconds % 3600) ~/ 60;
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+  }
+
+  String _formatSessionDate(int ended) {
+    int ts = ended;
+    final dt = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
+    return '${dt.day.toString().padLeft(2, '0')}-${_monthName(dt.month)}-${dt.year}';
+  }
+
+  String _formatSessionTime(int ended) {
+    int ts = ended;
+    final dt = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
+    return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+  }
+
+  String _monthName(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return months[month - 1];
   }
 
   Widget _buildAddCategoryChips() {
@@ -143,16 +198,12 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
         return Colors.amber;
       case PracticeCategory.fun:
         return Colors.pink;
-      case PracticeCategory.warmup:
-        return Colors.deepOrange;
     }
   }
 
   Widget _buildWarmupExpandableCard() {
-    final isExpanded = _expandedCategory == PracticeCategory.warmup;
     final isEditing = widget.editMode;
-    final warmupTime = _editedSession.warmupTime ?? 0;
-    //final enabled = warmupTime > 0;
+    final warmupTime = _editedSession.warmup?.time ?? 0;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child:
@@ -160,13 +211,12 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
               ? InkWell(
                 onTap: () {
                   setState(() {
-                    _expandedCategory =
-                        isExpanded ? null : PracticeCategory.warmup;
+                    _warmupExpanded = !_warmupExpanded;
                   });
                 },
                 child: AnimatedCrossFade(
                   crossFadeState:
-                      isExpanded
+                      _warmupExpanded
                           ? CrossFadeState.showSecond
                           : CrossFadeState.showFirst,
                   duration: const Duration(milliseconds: 200),
@@ -175,7 +225,7 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
                     child: Row(
                       children: [
                         Icon(
-                          PracticeCategoryUtils.icons[PracticeCategory.warmup],
+                          Icons.local_fire_department,
                           color: Colors.deepOrange,
                         ),
                         const SizedBox(width: 8),
@@ -191,78 +241,14 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
                       ],
                     ),
                   ),
-                  secondChild: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      children: [
-                        Icon(
-                          PracticeCategoryUtils.icons[PracticeCategory.warmup],
-                          color: Colors.deepOrange,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Warmup',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove),
-                              onPressed:
-                                  warmupTime > 0
-                                      ? () {
-                                        final newTime = (warmupTime - 300)
-                                            .clamp(0, 1800);
-                                        _updateSession(
-                                          _editedSession.copyWith(
-                                            warmupTime: newTime,
-                                          ),
-                                        );
-                                      }
-                                      : null,
-                            ),
-                            Text(
-                              '${(warmupTime ~/ 60).clamp(0, 30)} min',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.add),
-                              onPressed:
-                                  warmupTime < 1800
-                                      ? () {
-                                        final newTime = (warmupTime + 300)
-                                            .clamp(0, 1800);
-                                        _updateSession(
-                                          _editedSession.copyWith(
-                                            warmupTime: newTime,
-                                          ),
-                                        );
-                                      }
-                                      : null,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _formatDuration(warmupTime),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
+                  secondChild: _buildWarmupEditor(),
                 ),
               )
               : Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Row(
                   children: [
-                    Icon(
-                      PracticeCategoryUtils.icons[PracticeCategory.warmup],
-                      color: Colors.deepOrange,
-                    ),
+                    Icon(Icons.local_fire_department, color: Colors.deepOrange),
                     const SizedBox(width: 8),
                     Text(
                       'Warmup',
@@ -276,6 +262,71 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
                   ],
                 ),
               ),
+    );
+  }
+
+  Widget _buildWarmupEditor() {
+    final warmupTime = _editedSession.warmup?.time ?? 0;
+    if (widget.editRecordedSession) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        child: Row(
+          children: [
+            const Icon(Icons.local_fire_department, color: Colors.deepOrange),
+            const SizedBox(width: 8),
+            const Text('Warmup', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Spacer(),
+            Text(
+              '${(warmupTime ~/ 60).clamp(0, 30)} min',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      child: Row(
+        children: [
+          const Icon(Icons.local_fire_department, color: Colors.deepOrange),
+          const SizedBox(width: 8),
+          const Text('Warmup', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Spacer(),
+          // Time adjuster
+          IconButton(
+            icon: const Icon(Icons.remove),
+            onPressed:
+                warmupTime >= 300
+                    ? () {
+                      final newTime = (warmupTime - 300).clamp(0, 1800);
+                      _updateSession(
+                        _editedSession.copyWith(
+                          warmup: (_editedSession.warmup ??
+                                  Warmup(time: 0, bpm: 0))
+                              .copyWith(time: newTime),
+                        ),
+                      );
+                    }
+                    : null,
+          ),
+          Text(
+            '${(warmupTime ~/ 60).clamp(0, 30)} min',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              final newTime = (warmupTime + 300).clamp(0, 1800);
+              _updateSession(
+                _editedSession.copyWith(
+                  warmup: (_editedSession.warmup ?? Warmup(time: 0, bpm: 0))
+                      .copyWith(time: newTime),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

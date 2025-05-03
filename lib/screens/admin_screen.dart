@@ -5,6 +5,8 @@ import '../models/session.dart';
 import '../providers/user_profile_provider.dart';
 import '../utils/session_utils.dart';
 import '../utils/statistics_utils.dart';
+import '../utils/fix_firebase_data.dart';
+import '../utils/utils.dart';
 import '../widgets/main_drawer.dart';
 
 class AdminScreen extends StatelessWidget {
@@ -96,8 +98,7 @@ class AdminScreen extends StatelessWidget {
         ended: oldSession.ended,
         instrument: oldSession.instrument,
         categories: oldSession.categories,
-        warmupTime: oldSession.warmupTime,
-        warmupBpm: oldSession.warmupBpm,
+        warmup: oldSession.warmup,
       );
       await profileProvider.updateSession(sessionId, updatedSession);
       if (!context.mounted) return;
@@ -106,6 +107,37 @@ class AdminScreen extends StatelessWidget {
       SnackBar(
         content: Text('Fixed durations for ${wrongs.length} session(s).'),
       ),
+    );
+  }
+
+  Future<void> _onFixFirebaseSessions(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Fix Firebase Sessions?'),
+        content: const Text(
+          'This will scan all sessions in Firebase and remove any invalid categories (e.g., warmup). Proceed?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    try {
+      await fixFirebaseSessions();
+    } catch (e, st) {
+      log.severe('[AdminScreen] Error running fixFirebaseSessions: $e\n$st');
+    }
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Firebase sessions fixed.')),
     );
   }
 
@@ -147,6 +179,11 @@ class AdminScreen extends StatelessWidget {
                 textStyle: const TextStyle(fontSize: 16),
               ),
               onPressed: () => _onFixSessionDurations(context),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () => _onFixFirebaseSessions(context),
+              child: const Text('Fix Firebase Sessions'),
             ),
           ],
         ),

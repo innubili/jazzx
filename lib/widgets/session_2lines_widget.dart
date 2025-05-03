@@ -22,7 +22,8 @@ class Session2LinesWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final catTimes = session.categories.entries.toList();
-    final warmupTime = session.warmupTime ?? 0;
+    final warmupTime = session.warmup?.time ?? 0;
+    final warmupBpm = session.warmup?.bpm ?? 0;
     final hasWarmup = warmupTime > 0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,10 +49,8 @@ class Session2LinesWidget extends StatelessWidget {
           children: [
             if (hasWarmup)
               Chip(
-                avatar: Icon(
-                  PracticeCategoryUtils.icons[PracticeCategory.warmup],
-                ),
-                label: Text(_formatDuration(warmupTime)),
+                avatar: Icon(Icons.local_fire_department, color: Colors.deepOrange),
+                label: Text('${_formatDuration(warmupTime)} • $warmupBpm bpm'),
               ),
             ...catTimes
                 .where((e) => e.value.time > 0)

@@ -13,6 +13,7 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
   final ValueChanged<List<String>> onSongsChanged;
   final ValueChanged<int> onTimeChanged;
   final ValueChanged<List<String>> onLinksChanged;
+  final bool editRecordedSession;
 
   const PracticeCategoryExpandableCard({
     super.key,
@@ -25,11 +26,12 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
     required this.onSongsChanged,
     required this.onTimeChanged,
     required this.onLinksChanged,
+    this.editRecordedSession = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final summaryRow = Padding(
+    final topBar = Padding(
       padding: const EdgeInsets.all(12.0),
       child: Row(
         children: [
@@ -43,10 +45,31 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const Spacer(),
-          Text(
-            _formatDuration(data.time),
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          if (editMode && isExpanded && !editRecordedSession) ...[
+            IconButton(
+              icon: const Icon(Icons.remove),
+              onPressed:
+                  data.time >= 300
+                      ? () => onTimeChanged((data.time - 300).clamp(0, 28800))
+                      : null,
+            ),
+            Text(
+              _formatDurationHHmm(data.time),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed:
+                  data.time < 28800
+                      ? () => onTimeChanged((data.time + 300).clamp(0, 28800))
+                      : null,
+            ),
+          ] else ...[
+            Text(
+              _formatDuration(data.time),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
         ],
       ),
     );
@@ -57,11 +80,11 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
         category: category,
         note: data.note ?? '',
         songs: data.songs?.keys.toList() ?? [],
-        time: data.time,
         links: data.links ?? [],
         onNoteChanged: onNoteChanged,
         onSongsChanged: onSongsChanged,
-        onTimeChanged: onTimeChanged,
+        time: data.time,
+        onTimeChanged: (_) {},
         onLinksChanged: onLinksChanged,
       ),
     );
@@ -69,7 +92,10 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
     VoidCallback buildOnTap(BuildContext context) {
       if (editMode && category == PracticeCategory.repertoire) {
         return () {
-          if ((data.time > 0) && (data.songs == null || data.songs!.isEmpty)) {
+          // Only show alert if user is trying to add or save songs, not just expand
+          if ((data.time > 0) &&
+              (data.songs == null || data.songs!.isEmpty) &&
+              !isExpanded) {
             showDialog(
               context: context,
               builder:
@@ -103,7 +129,7 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
                   ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      InkWell(onTap: buildOnTap(context), child: summaryRow),
+                      InkWell(onTap: buildOnTap(context), child: topBar),
                       AnimatedCrossFade(
                         crossFadeState: CrossFadeState.showSecond,
                         duration: const Duration(milliseconds: 200),
@@ -112,8 +138,8 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
                       ),
                     ],
                   )
-                  : InkWell(onTap: buildOnTap(context), child: summaryRow)
-              : summaryRow,
+                  : InkWell(onTap: buildOnTap(context), child: topBar)
+              : topBar,
     );
   }
 
@@ -121,6 +147,14 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
     final hours = seconds ~/ 3600;
     final minutes = (seconds % 3600) ~/ 60;
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+  }
+
+  String _formatDurationHHmm(int seconds) {
+    final h = seconds ~/ 3600;
+    final m = (seconds % 3600) ~/ 60;
+    return h > 0
+        ? '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}'
+        : '00:${m.toString().padLeft(2, '0')}';
   }
 
   Color _categoryColor(PracticeCategory category) {
@@ -141,8 +175,6 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
         return Colors.amber;
       case PracticeCategory.fun:
         return Colors.pink;
-      case PracticeCategory.warmup:
-        return Colors.deepOrange;
     }
   }
 }

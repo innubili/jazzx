@@ -6,7 +6,6 @@ import '../providers/jazz_standards_provider.dart';
 import 'song_line_widget.dart';
 import 'song_picker_sheet.dart';
 import 'multi_song_picker_sheet.dart';
-import 'time_picker_wheel.dart';
 
 class PracticeDetailWidget extends StatelessWidget {
   final PracticeCategory category;
@@ -52,21 +51,91 @@ class PracticeDetailWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Text('Time:'),
-              const SizedBox(width: 8),
-              TimePickerDropdown(
-                initialSeconds: time,
-                onChanged: onTimeChanged,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
+          // Removed time adjustment row for reuse in session screen
           if (category.allowsNote)
             _NoteTextField(note: note, onNoteChanged: onNoteChanged),
           if (category.allowsNote) const SizedBox(height: 16),
 
+          // Song Picker for newsong
+          if (category == PracticeCategory.newsong && category.allowsSongs)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (selectedSong != null)
+                  SongLineWidget(
+                    song: selectedSong,
+                    onIconPressed: (type) {
+                      debugPrint(
+                        "Pressed icon for $type on ${selectedSong.title}",
+                      );
+                      // _TODO: Handle actual action (e.g. launch link)
+                    },
+                  )
+                else
+                  const Text("No song selected"),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () async {
+                    final profile = profileProvider.profile;
+                    final userSongTitles =
+                        (profile?.songs.keys.toSet() ?? {})
+                            .map((e) => e.trim().toLowerCase())
+                            .toSet();
+                    final selectedSongTitle =
+                        await showModalBottomSheet<String>(
+                          context: context,
+                          isScrollControlled: true,
+                          builder:
+                              (context) => SongPickerSheet(
+                                bookmarkedTitles: userSongTitles,
+                              ),
+                        );
+                    if (selectedSongTitle != null &&
+                        selectedSongTitle.isNotEmpty) {
+                      onSongsChanged([selectedSongTitle]);
+                    }
+                  },
+                  child: const Text("Choose Song"),
+                ),
+              ],
+            ),
+          if (category == PracticeCategory.newsong && category.allowsSongs)
+            const SizedBox(height: 16),
+
+          // Repertoire Multi Song Picker
+          if (category == PracticeCategory.repertoire && category.allowsSongs)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Repertoire Songs",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                if (songs.isEmpty) const Text("No songs selected"),
+                ...songs.map((s) => Text("• $s")),
+                TextButton(
+                  onPressed: () async {
+                    final selectedTitles =
+                        await showModalBottomSheet<List<String>>(
+                          context: context,
+                          isScrollControlled: true,
+                          builder:
+                              (context) => MultiSongPickerSheet(
+                                initialSelection: songs,
+                                onSongsSelected:
+                                    (selected) =>
+                                        Navigator.pop(context, selected),
+                              ),
+                        );
+
+                    if (selectedTitles != null) {
+                      onSongsChanged(selectedTitles);
+                    }
+                  },
+                  child: const Text("Select Songs"),
+                ),
+              ],
+            ),
           if (category.allowsLinks)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,94 +204,6 @@ class PracticeDetailWidget extends StatelessWidget {
               ],
             ),
           if (category.allowsLinks) const SizedBox(height: 16),
-
-          // Song Picker for newsong
-          if (category == PracticeCategory.newsong && category.allowsSongs)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (selectedSong != null)
-                  SongLineWidget(
-                    song: selectedSong,
-                    onIconPressed: (type) {
-                      debugPrint(
-                        "Pressed icon for $type on ${selectedSong.title}",
-                      );
-                      // _TODO: Handle actual action (e.g. launch link)
-                    },
-                  )
-                else
-                  const Text("No song selected"),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () async {
-                    final profile = profileProvider.profile;
-                    final userSongTitles =
-                        (profile?.songs.keys.toSet() ?? {})
-                            .map((e) => e.trim().toLowerCase())
-                            .toSet();
-                    final selectedSongTitle =
-                        await showModalBottomSheet<String>(
-                          context: context,
-                          isScrollControlled: true,
-                          builder:
-                              (context) => SongPickerSheet(
-                                bookmarkedTitles: userSongTitles,
-                              ),
-                        );
-
-                    if (selectedSongTitle == null) return;
-
-                    final isNotInUserSongs =
-                        profile?.songs.containsKey(selectedSongTitle) == false;
-
-                    if (isNotInUserSongs) {
-                      final selected = standards.firstWhere(
-                        (s) => s.title == selectedSongTitle,
-                      );
-                      profileProvider.addSong(selected.copyWith());
-                    }
-
-                    onSongsChanged([selectedSongTitle]);
-                  },
-                  child: const Text("Choose Song"),
-                ),
-              ],
-            ),
-          // Repertoire Multi Song Picker
-          if (category == PracticeCategory.repertoire && category.allowsSongs)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Repertoire Songs",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                if (songs.isEmpty) const Text("No songs selected"),
-                ...songs.map((s) => Text("• $s")),
-                TextButton(
-                  onPressed: () async {
-                    final selectedTitles =
-                        await showModalBottomSheet<List<String>>(
-                          context: context,
-                          isScrollControlled: true,
-                          builder:
-                              (context) => MultiSongPickerSheet(
-                                initialSelection: songs,
-                                onSongsSelected:
-                                    (selected) =>
-                                        Navigator.pop(context, selected),
-                              ),
-                        );
-
-                    if (selectedTitles != null) {
-                      onSongsChanged(selectedTitles);
-                    }
-                  },
-                  child: const Text("Select Songs"),
-                ),
-              ],
-            ),
         ],
       ),
     );

@@ -11,7 +11,6 @@ enum PracticeCategory {
   video,
   gig,
   fun,
-  warmup, // Added warmup category
 }
 
 extension PracticeCategoryExtension on PracticeCategory {
@@ -33,8 +32,6 @@ extension PracticeCategoryExtension on PracticeCategory {
         return 'Gig';
       case PracticeCategory.fun:
         return 'Fun';
-      case PracticeCategory.warmup:
-        return 'Warmup'; // Added warmup name
     }
   }
 
@@ -49,7 +46,6 @@ extension PracticeCategoryExtension on PracticeCategory {
       case PracticeCategory.theory:
       case PracticeCategory.video:
       case PracticeCategory.gig:
-      case PracticeCategory.warmup:
         return false;
     }
   }
@@ -72,11 +68,8 @@ extension PracticeCategoryExtension on PracticeCategory {
         return PracticeCategory.gig;
       case 'fun':
         return PracticeCategory.fun;
-      case 'warmup':
-        return PracticeCategory.warmup; // Added warmup fromName
       default:
-        if (name == 'practice') return null; // used in statitstics
-        throw ArgumentError('Invalid practice category name: \$name');
+        return null;
     }
   }
 }
@@ -97,7 +90,6 @@ class PracticeCategoryUtils {
     PracticeCategory.video: Icons.ondemand_video,
     PracticeCategory.gig: Icons.event,
     PracticeCategory.fun: Icons.sentiment_satisfied,
-    PracticeCategory.warmup: Icons.local_fire_department, // Added warmup icon
   };
 }
 
@@ -140,10 +132,12 @@ const Map<PracticeCategory, CategoryFieldSchema> practiceCategorySchema = {
     allowsLinks: true,
   ),
   PracticeCategory.newsong: CategoryFieldSchema(
+    allowsNote: true,
     allowsSongs: true,
     allowsLinks: true,
   ),
   PracticeCategory.repertoire: CategoryFieldSchema(
+    allowsNote: true,
     allowsSongs: true,
     allowsLinks: true,
   ),
@@ -167,7 +161,6 @@ const Map<PracticeCategory, CategoryFieldSchema> practiceCategorySchema = {
     allowsNote: true,
     allowsLinks: true,
   ),
-  PracticeCategory.warmup: CategoryFieldSchema(allowsBpm: true),
 };
 
 /// Extension with utility methods for category schema queries.
@@ -177,12 +170,16 @@ extension PracticeCategorySchemaExtension on PracticeCategory {
 
   /// Returns true if this category allows note.
   bool get allowsNote => schema.allowsNote;
+
   /// Returns true if this category allows bpm.
   bool get allowsBpm => schema.allowsBpm;
+
   /// Returns true if this category allows songs.
   bool get allowsSongs => schema.allowsSongs;
+
   /// Returns true if this category allows links.
   bool get allowsLinks => schema.allowsLinks;
+
   /// Returns true if any field is allowed.
   bool get allowsAny => schema.allowsAny;
 }

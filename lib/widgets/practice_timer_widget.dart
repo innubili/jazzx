@@ -20,6 +20,8 @@ class PracticeTimerWidget extends StatefulWidget {
   final void Function(int elapsedSeconds)? onStopped;
   final VoidCallback? onCountComplete;
   final VoidCallback? onSessionDone;
+  final VoidCallback? onPause;
+  final VoidCallback? onResume;
   final Widget? leftButton;
   final bool enabled;
 
@@ -30,6 +32,8 @@ class PracticeTimerWidget extends StatefulWidget {
     this.onStopped,
     this.onCountComplete,
     this.onSessionDone,
+    this.onPause,
+    this.onResume,
     this.leftButton,
     this.enabled = true,
   });
@@ -122,11 +126,13 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final seconds = _elapsed.inSeconds;
-    final display =
-        _isCounting
-            ? Duration(seconds: (_startFrom - seconds).clamp(0, _startFrom))
-            : _elapsed;
+    // --- PATCH: Accept and use external accumulatedTime if provided ---
+    final inherited = PracticeTimerInherited.of(context);
+    final externalAccumulated = inherited?.accumulatedTime;
+    final seconds = _elapsed.inSeconds + (externalAccumulated ?? 0);
+    final display = _isCounting
+        ? Duration(seconds: (_startFrom - seconds).clamp(0, _startFrom))
+        : Duration(seconds: seconds);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -153,11 +159,17 @@ class _PracticeTimerWidgetState extends State<PracticeTimerWidget> {
                 onPressed:
                     widget.enabled
                         ? (_isRunning
-                            ? () => widget.controller.stop?.call()
-                            : () => widget.controller.startCount?.call(
-                              startFrom: widget.controller.getElapsedSeconds(),
-                              countDown: false,
-                            ))
+                            ? () {
+                                widget.controller.stop?.call();
+                                if (widget.onPause != null) widget.onPause!();
+                              }
+                            : () {
+                                widget.controller.startCount?.call(
+                                  startFrom: widget.controller.getElapsedSeconds(),
+                                  countDown: false,
+                                );
+                                if (widget.onResume != null) widget.onResume!();
+                              })
                         : null,
                 shape: const CircleBorder(),
                 fillColor: Theme.of(context).colorScheme.secondaryContainer,
@@ -207,4 +219,23 @@ class Ticker {
 
   void stop() => _running = false;
   void dispose() => stop();
+}
+
+class PracticeTimerInherited extends InheritedWidget {
+  final int accumulatedTime;
+
+  const PracticeTimerInherited({
+    super.key,
+    required super.child,
+    required this.accumulatedTime,
+  });
+
+  static PracticeTimerInherited? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<PracticeTimerInherited>();
+  }
+
+  @override
+  bool updateShouldNotify(PracticeTimerInherited oldWidget) {
+    return accumulatedTime != oldWidget.accumulatedTime;
+  }
 }

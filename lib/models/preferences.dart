@@ -34,9 +34,11 @@ class ProfilePreferences {
   final bool warmupEnabled;
   final int warmupTime; // stored in seconds shown in minutes
   final String lastSessionId;
-  final bool autoPause;
-  final int pauseEvery; // stored in seconds shown in minutes
-  final int pauseBreak; // stored in seconds shown in minutes
+  final bool autoPause; // auto pause feature enabled
+  // Pause interval between breaks during practice (in seconds)
+  final int pauseIntervalTime;
+  // Duration of each break during practice (in seconds)
+  final int pauseDurationTime;
   final bool statisticsDirty;
 
   ProfilePreferences({
@@ -53,8 +55,8 @@ class ProfilePreferences {
     required this.warmupTime,
     required this.lastSessionId,
     required this.autoPause,
-    required this.pauseEvery,
-    required this.pauseBreak,
+    required this.pauseIntervalTime,
+    required this.pauseDurationTime,
     this.statisticsDirty = false,
   });
 
@@ -73,8 +75,8 @@ class ProfilePreferences {
       warmupTime: json['warmupTime'] ?? 300,
       lastSessionId: json['lastSessionId'] ?? '',
       autoPause: json['autoPause'] ?? false,
-      pauseEvery: json['pauseEveryMinutes'] ?? 1800,
-      pauseBreak: json['pauseBreakMinutes'] ?? 240,
+      pauseIntervalTime: json['pauseIntervalTime'] ?? 1800,
+      pauseDurationTime: json['pauseDurationTime'] ?? 240,
       statisticsDirty: json['statisticsDirty'] ?? false,
     );
   }
@@ -93,8 +95,8 @@ class ProfilePreferences {
     'warmupTime': warmupTime,
     'lastSessionId': lastSessionId,
     'autoPause': autoPause,
-    'pauseEveryMinutes': pauseEvery,
-    'pauseBreakMinutes': pauseBreak,
+    'pauseIntervalTime': pauseIntervalTime,
+    'pauseDurationTime': pauseDurationTime,
     'statisticsDirty': statisticsDirty,
   };
 
@@ -113,8 +115,8 @@ class ProfilePreferences {
       warmupTime: 300,
       lastSessionId: '',
       autoPause: false,
-      pauseEvery: 1800,
-      pauseBreak: 240,
+      pauseIntervalTime: 1800,
+      pauseDurationTime: 240,
       statisticsDirty: false,
     );
   }
@@ -133,8 +135,8 @@ class ProfilePreferences {
     int? warmupTime,
     String? lastSessionId,
     bool? autoPause,
-    int? pauseEvery,
-    int? pauseBreak,
+    int? pauseIntervalTime,
+    int? pauseDurationTime,
     bool? statisticsDirty,
   }) {
     return ProfilePreferences(
@@ -151,8 +153,8 @@ class ProfilePreferences {
       warmupTime: warmupTime ?? this.warmupTime,
       lastSessionId: lastSessionId ?? this.lastSessionId,
       autoPause: autoPause ?? this.autoPause,
-      pauseEvery: pauseEvery ?? this.pauseEvery,
-      pauseBreak: pauseBreak ?? this.pauseBreak,
+      pauseIntervalTime: pauseIntervalTime ?? this.pauseIntervalTime,
+      pauseDurationTime: pauseDurationTime ?? this.pauseDurationTime,
       statisticsDirty: statisticsDirty ?? this.statisticsDirty,
     );
   }

@@ -55,8 +55,23 @@ int recalculateSessionDuration(Session session) {
     0,
     (prev, cat) => prev + (cat.time),
   );
-  final warmup = session.warmupTime ?? 0;
+  final warmup = session.warmup?.time ?? 0;
   return categorySum + warmup;
+}
+
+/// Ensures duration and ended are recalculated before saving/updating a session.
+Session recalculateSessionFields(Session session, {DateTime? manualEnded}) {
+  final duration = recalculateSessionDuration(session);
+  // If a manual ended time is provided, use it; otherwise, use the session's ended if valid, else now
+  int ended;
+  if (manualEnded != null) {
+    ended = manualEnded.millisecondsSinceEpoch ~/ 1000;
+  } else if (session.ended > 1000000000) {
+    ended = session.ended;
+  } else {
+    ended = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  }
+  return session.copyWith(duration: duration, ended: ended);
 }
 
 /// Returns a map of sessionId to correct duration for sessions whose durations are wrong.

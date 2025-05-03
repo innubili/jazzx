@@ -335,9 +335,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: TextFormField(
                     textAlign: TextAlign.right,
                     initialValue:
-                        (profile.preferences.pauseEvery ~/ 60).toString(),
+                        (profile.preferences.pauseIntervalTime ~/ 60)
+                            .toString(),
                     decoration: const InputDecoration(
-                      labelText: 'Pause Every (min)',
+                      labelText: 'Pause Interval (min)',
                     ),
                     keyboardType: TextInputType.number,
                     enabled: _editedAutoPause ?? profile.preferences.autoPause,
@@ -349,10 +350,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         profile.preferences,
                         update:
                             (prefs) => prefs.copyWith(
-                              pauseEvery:
+                              pauseIntervalTime:
                                   int.tryParse(val) != null
                                       ? int.tryParse(val)! * 60
-                                      : prefs.pauseEvery,
+                                      : prefs.pauseIntervalTime,
                             ),
                       );
                     },
@@ -363,9 +364,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: TextFormField(
                     textAlign: TextAlign.right,
                     initialValue:
-                        (profile.preferences.pauseBreak ~/ 60).toString(),
+                        (profile.preferences.pauseDurationTime ~/ 60)
+                            .toString(),
                     decoration: const InputDecoration(
-                      labelText: 'Pause Break (min)',
+                      labelText: 'Pause Duration (min)',
                     ),
                     keyboardType: TextInputType.number,
                     enabled: _editedAutoPause ?? profile.preferences.autoPause,
@@ -377,10 +379,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         profile.preferences,
                         update:
                             (prefs) => prefs.copyWith(
-                              pauseBreak:
+                              pauseDurationTime:
                                   int.tryParse(val) != null
                                       ? int.tryParse(val)! * 60
-                                      : prefs.pauseBreak,
+                                      : prefs.pauseDurationTime,
                             ),
                       );
                     },

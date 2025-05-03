@@ -36,9 +36,9 @@ dependencies:
   google_sign_in_web: ^0.12.4+4  
   twitter_login: ^4.1.0
   # flutter_sound: ^9.2.13
-  js: ^0.6.7
-  pitch_detector_dart: ^0.0.7
-  web: ^0.5.1
+  # js: ^0.6.7
+  # pitch_detector_dart: ^0.0.7
+  # web: ^0.5.1
 
 dev_dependencies:
   flutter_test:

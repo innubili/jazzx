@@ -3,9 +3,9 @@ import 'practice_category.dart';
 import '../utils/session_utils.dart';
 
 class SessionCategory {
-  final int time;
-  final String? note;
-  final int? bpm;
+  final int time; // in seconds
+  final String? note; // text
+  final int? bpm; // beats per minute
   final Map<String, int>? songs;
   final List<String>? links;
 
@@ -65,60 +65,77 @@ extension SessionCategoryCopyWith on SessionCategory {
   }
 }
 
+class Warmup {
+  final int time;
+  final int bpm;
+
+  Warmup({required this.time, required this.bpm});
+
+  factory Warmup.fromJson(Map<String, dynamic> json) =>
+      Warmup(time: json['time'] ?? 0, bpm: json['bpm'] ?? 0);
+
+  Map<String, dynamic> toJson() => {'time': time, 'bpm': bpm};
+
+  Warmup copyWith({int? time, int? bpm}) {
+    return Warmup(time: time ?? this.time, bpm: bpm ?? this.bpm);
+  }
+}
+
 class Session {
-  final int duration;
-  final int ended;
+  final int duration; // in seconds
+  final int ended; // timestamp
   final String instrument;
   final Map<PracticeCategory, SessionCategory> categories;
-  final int? warmupTime;
-  final int? warmupBpm;
+  final Warmup? warmup;
 
   Session({
     required this.duration,
     required this.ended,
     required this.instrument,
     required this.categories,
-    this.warmupTime,
-    this.warmupBpm,
+    this.warmup,
   });
 
   factory Session.fromJson(Map<String, dynamic> json) {
     final safeJson = asStringKeyedMap(json);
-    final warmup = asStringKeyedMap(safeJson['warmup']);
+    final warmupJson = asStringKeyedMap(safeJson['warmup']);
     final catRaw = asStringKeyedMap(safeJson['categories']);
-
     final catMap = <PracticeCategory, SessionCategory>{};
-    for (final entry in catRaw.entries) {
-      final cat = entry.key.tryToPracticeCategory();
-      if (cat != null && entry.value is Map) {
-        catMap[cat] = SessionCategory.fromJson(
-          Map<String, dynamic>.from(entry.value),
-        );
+    if (catRaw.isNotEmpty) {
+      for (final entry in catRaw.entries) {
+        final cat = PracticeCategoryExtension.fromName(entry.key);
+        if (cat != null) {
+          // Defensive: always convert to Map<String, dynamic>
+          final valueMap = asStringKeyedMap(entry.value);
+          catMap[cat] = SessionCategory.fromJson(valueMap);
+        }
       }
     }
-
+    // Ensure all categories are present, missing ones get time=0
+    for (final cat in PracticeCategory.values) {
+      catMap.putIfAbsent(cat, () => SessionCategory(time: 0));
+    }
     return Session(
       duration: safeJson['duration'] ?? 0,
       ended: safeJson['ended'] ?? 0,
       instrument: safeJson['instrument'] ?? '',
       categories: catMap,
-      warmupTime: warmup['time'],
-      warmupBpm: warmup['bpm'],
+      warmup: warmupJson.isNotEmpty ? Warmup.fromJson(warmupJson) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> json = {
+    return {
       'duration': duration,
       'ended': ended,
       'instrument': instrument,
       'categories': {
         for (final entry in categories.entries)
-          entry.key.name: entry.value.toJson(),
+          if (entry.value.time > 0)
+            entry.key.name: entry.value.toJson(),
       },
-      'warmup': {'time': warmupTime ?? 0, 'bpm': warmupBpm ?? 0},
+      'warmup': warmup?.toJson() ?? {'time': 0, 'bpm': 0},
     };
-    return json;
   }
 
   Session copyWith({
@@ -126,16 +143,14 @@ class Session {
     int? ended,
     String? instrument,
     Map<PracticeCategory, SessionCategory>? categories,
-    int? warmupTime,
-    int? warmupBpm,
+    Warmup? warmup,
   }) {
     return Session(
       duration: duration ?? this.duration,
       ended: ended ?? this.ended,
       instrument: instrument ?? this.instrument,
       categories: categories ?? this.categories,
-      warmupTime: warmupTime ?? this.warmupTime,
-      warmupBpm: warmupBpm ?? this.warmupBpm,
+      warmup: warmup ?? this.warmup,
     );
   }
 
@@ -149,8 +164,7 @@ class Session {
       ended: ended,
       instrument: instrument,
       categories: newCategories,
-      warmupTime: warmupTime,
-      warmupBpm: warmupBpm,
+      warmup: warmup,
     );
   }
 
@@ -158,8 +172,7 @@ class Session {
     duration: 0,
     ended: 0,
     instrument: instrument,
-    warmupTime: 0,
-    warmupBpm: 0,
+    warmup: null,
     categories: {
       for (final cat in PracticeCategory.values) cat: SessionCategory(time: 0),
     },
@@ -167,5 +180,5 @@ class Session {
 
   @override
   String toString() =>
-      'Session\n\t$instrument\n\twup:(${intSecondsToHHmm(warmupTime ?? 0)})\n\tcategories:\n\t${categories.map((k, v) => MapEntry(k.name, v))})';
+      'Session\n\t$instrument\n\twup:(${intSecondsToHHmm(warmup?.time ?? 0)})\n\tcategories:\n\t${categories.map((k, v) => MapEntry(k.name, v))})';
 }

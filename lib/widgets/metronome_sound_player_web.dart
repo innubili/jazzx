@@ -28,7 +28,7 @@ class MetronomeSoundPlayerImpl implements MetronomeSoundPlayer {
         g.connect(ctx.destination);
         var now = ctx.currentTime;
         o.start(now);
-        o.stop(now + ${duration} / 1000.0);
+        o.stop(now + $duration / 1000.0);
       })();
       """,
     ]);

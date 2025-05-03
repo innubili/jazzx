@@ -252,6 +252,13 @@ class _SongWidgetState extends State<SongWidget> {
                     ),
                   ),
         ),
+        if (widget.readOnly && widget.selectable && !_expanded) ...[
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: 'Select this song',
+            onPressed: widget.onSelected,
+          ),
+        ],
         if (!_editMode && !widget.readOnly) ...[
           IconButton(
             icon: const Icon(Icons.edit),
@@ -318,6 +325,12 @@ class _SongWidgetState extends State<SongWidget> {
             icon: const Icon(Icons.expand_less),
             tooltip: 'Collapse',
             onPressed: () => setState(() => _expanded = false),
+          ),
+        ] else if (widget.readOnly && widget.selectable && _expanded) ...[
+          TextButton.icon(
+            icon: const Icon(Icons.add),
+            label: const Text('Select this song'),
+            onPressed: widget.onSelected,
           ),
         ],
       ],

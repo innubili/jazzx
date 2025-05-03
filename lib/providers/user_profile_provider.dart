@@ -154,6 +154,8 @@ class UserProfileProvider extends ChangeNotifier {
   // Save only the user's preferences to Firebase (partial update)
   Future<void> saveUserPreferences(ProfilePreferences prefs) async {
     if (_profile == null || _userId == null) return;
+    // Log preferences being saved in a user-friendly format
+    log.info('SAVE PREFERENCES:\n${prettyPrintJson(prefs.toJson())}');
     _profile = _profile!.copyWith(preferences: prefs);
     await FirebaseService().savePreferences(prefs);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -213,7 +215,9 @@ class UserProfileProvider extends ChangeNotifier {
       await FirebaseService().savePreferences(prefsToSave);
       // Immediately trigger recalculation if dirty
       if (prefsToSave.statisticsDirty) {
-        log.info('[UserProfileProvider] statisticsDirty flag is TRUE after saveSessionWithId. Triggering full statistics recalculation.');
+        log.info(
+          '[UserProfileProvider] statisticsDirty flag is TRUE after saveSessionWithId. Triggering full statistics recalculation.',
+        );
         await recalculateStatisticsFromAllSessionsAndClearFlag();
       }
     } catch (e, st) {
@@ -329,7 +333,9 @@ class UserProfileProvider extends ChangeNotifier {
       await FirebaseService().savePreferences(prefsToSave);
       // Immediately trigger recalculation if dirty
       if (prefsToSave.statisticsDirty) {
-        log.info('[UserProfileProvider] statisticsDirty flag is TRUE after removeSessionById. Triggering full statistics recalculation.');
+        log.info(
+          '[UserProfileProvider] statisticsDirty flag is TRUE after removeSessionById. Triggering full statistics recalculation.',
+        );
         await recalculateStatisticsFromAllSessionsAndClearFlag();
       }
     } catch (e, st) {

@@ -6,12 +6,15 @@ import '../providers/user_profile_provider.dart';
 import '../widgets/confirm_dialog.dart';
 import '../widgets/session_date_time_picker.dart';
 import '../widgets/session_app_bar_actions.dart';
+import '../utils/session_utils.dart';
+import '../utils/utils.dart';
 
 class SessionReviewScreen extends StatefulWidget {
   final String sessionId;
   final Session? session;
   final bool manualEntry;
   final DateTime? initialDateTime;
+  final bool editRecordedSession;
 
   const SessionReviewScreen({
     super.key,
@@ -19,6 +22,7 @@ class SessionReviewScreen extends StatefulWidget {
     this.session,
     this.manualEntry = false,
     this.initialDateTime,
+    this.editRecordedSession = false,
   });
 
   @override
@@ -33,9 +37,17 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
   @override
   void initState() {
     super.initState();
+    log.info(
+      '[SessionReviewScreen] Opened with sessionId: '
+      '\u001b[35m${widget.sessionId}\u001b[0m, initialDateTime: ${widget.initialDateTime}, session: '
+      '${widget.session?.toJson()}',
+    );
     if (widget.session != null) {
       _editableSession = widget.session!;
       _originalSession = widget.session!;
+      if (widget.editRecordedSession) {
+        _editMode = true;
+      }
     } else if (widget.manualEntry && widget.initialDateTime != null) {
       final profile =
           Provider.of<UserProfileProvider>(context, listen: false).profile;
@@ -68,32 +80,20 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
     setState(() {
       _editMode = false;
     });
-    // Validate ended before saving
-    int fixedEnded = updated.ended;
-    if (fixedEnded == 0) {
-      // Use initialDateTime if available, else now
-      if (widget.initialDateTime != null) {
-        fixedEnded = widget.initialDateTime!.millisecondsSinceEpoch ~/ 1000;
-      } else {
-        fixedEnded = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      }
-      updated = updated.copyWith(ended: fixedEnded);
-      // Optional: show a warning to the user
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Session date/time was missing. Using current date/time.',
-          ),
-        ),
-      );
-    }
+    // Ensure duration and ended are recalculated before saving
+    updated = recalculateSessionFields(
+      updated,
+      manualEnded: widget.initialDateTime,
+    );
     final profileProvider = Provider.of<UserProfileProvider>(
       context,
       listen: false,
     );
     final sessionId = updated.ended.toString();
     await profileProvider.saveSessionWithId(sessionId, updated);
+    log.info(
+      '[FirebaseService] SessionID: $sessionId (${sessionIdToReadableString(sessionId)}) Data:\n${prettyPrintJson(updated.toJson())}',
+    );
     if (!mounted) return;
     ScaffoldMessenger.of(
       context,
@@ -260,6 +260,12 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
           ),
           title: Text(_editMode ? 'Session (edit)' : 'Session'),
           actions: [
+            if (_editMode || widget.editRecordedSession)
+              IconButton(
+                icon: const Icon(Icons.save),
+                tooltip: 'Save',
+                onPressed: () => _saveEdit(_editableSession),
+              ),
             SessionAppBarActions(
               editMode: _editMode,
               hasEdits: _hasEdits,
@@ -347,7 +353,7 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
               child: SessionReviewWidget(
                 sessionId: widget.sessionId,
                 session: _editableSession,
-                editMode: _editMode,
+                editMode: _editMode || widget.editRecordedSession,
                 onSave: _saveEdit,
                 onSessionChanged: (updatedSession) {
                   setState(() {
@@ -356,6 +362,7 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
                 },
                 sessionDateTimeString:
                     '${_formatSessionDate(_editableSession.ended)} ${_formatSessionTime(_editableSession.ended)}',
+                editRecordedSession: widget.editRecordedSession,
               ),
             ),
           ],

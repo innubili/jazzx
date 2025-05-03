@@ -139,7 +139,7 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
       Future.delayed(const Duration(milliseconds: 100), () {
         if (mounted) setState(() => isCountInFlash = false);
       });
-      log.info('Metronome count-in: $_countInTick/$_countInBeats');
+      //log.info('Metronome count-in: $_countInTick/$_countInBeats');
       if (_countInTick >= _countInBeats) {
         timer.cancel();
         _stopwatch?.reset();
@@ -163,9 +163,9 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
       // Play tock on bit 1, tick otherwise
       final bool isDownbeat = ((tickCount - 1) % beatsPerMeasure == 0);
       _playTick(isDownbeat: isDownbeat);
-      log.info(
-        'Metronome tick at: ${DateTime.now()} (elapsed: ${_stopwatch?.elapsedMilliseconds} ms) [sound: ${isDownbeat ? 'tock' : 'tick'}]',
-      );
+      //log.info(
+      //  'Metronome tick at: ${DateTime.now()} (elapsed: ${_stopwatch?.elapsedMilliseconds} ms) [sound: ${isDownbeat ? 'tock' : 'tick'}]',
+      // );
       Future.delayed(const Duration(milliseconds: 100), () {
         if (mounted) setState(() => isTick = false);
       });

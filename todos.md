@@ -4,4 +4,5 @@
 - [ ] add file picker
 - [ ] add automatic pause
 - [ ] complete session screen
-- [ ] improve tuner widget
+- [ ] improve the commented out tuner widget
+- [ ] fix entering data during sesion (time is shown in session secreen)

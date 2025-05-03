@@ -41,7 +41,23 @@ class _SongPickerSheetContent extends StatefulWidget {
 }
 
 class _SongPickerSheetContentState extends State<_SongPickerSheetContent> {
+  final FocusNode _searchFocusNode = FocusNode();
   String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // Autofocus the search field after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _searchFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +96,7 @@ class _SongPickerSheetContentState extends State<_SongPickerSheetContent> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: TextField(
+            focusNode: _searchFocusNode,
             decoration: const InputDecoration(
               hintText: 'Search a jazz standard...',
               border: OutlineInputBorder(),

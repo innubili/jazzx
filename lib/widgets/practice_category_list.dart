@@ -9,6 +9,8 @@ class PracticeCategoryList extends StatelessWidget {
   final PracticeCategory? expandedCategory;
   final ValueChanged<Session> onSessionChanged;
   final ValueChanged<PracticeCategory> onExpand;
+  final bool editRecordedSession;
+  final bool manualEntry;
 
   const PracticeCategoryList({
     super.key,
@@ -17,13 +19,14 @@ class PracticeCategoryList extends StatelessWidget {
     required this.onSessionChanged,
     required this.expandedCategory,
     required this.onExpand,
+    this.editRecordedSession = false,
+    this.manualEntry = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final categoriesWithTime =
         PracticeCategory.values
-            .where((cat) => cat != PracticeCategory.warmup)
             .where((category) => (session.categories[category]?.time ?? 0) > 0)
             .toList()
           ..sort(
@@ -33,7 +36,6 @@ class PracticeCategoryList extends StatelessWidget {
           );
     final categoriesWithoutTime =
         PracticeCategory.values
-            .where((cat) => cat != PracticeCategory.warmup)
             .where((category) => (session.categories[category]?.time ?? 0) == 0)
             .toList();
 
@@ -42,7 +44,7 @@ class PracticeCategoryList extends StatelessWidget {
       return {for (var s in songs) s: time};
     }
 
-    if (editMode) {
+    if (manualEntry) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -128,6 +130,7 @@ class PracticeCategoryList extends StatelessWidget {
                   ),
                 );
               },
+              editRecordedSession: editRecordedSession,
             );
           }),
           if (categoriesWithTime.isNotEmpty && categoriesWithoutTime.isNotEmpty)
@@ -214,17 +217,17 @@ class PracticeCategoryList extends StatelessWidget {
                   ),
                 );
               },
+              editRecordedSession: editRecordedSession,
             );
           }),
         ],
       );
-    } else {
-      // View mode: only show categories with time > 0, sorted
-      final sortedCategories = categoriesWithTime;
+    } else if (editRecordedSession) {
+      // Only show categories with time > 0
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ...sortedCategories.map((category) {
+          ...categoriesWithTime.map((category) {
             final data = session.categories[category]!;
             return PracticeCategoryExpandableCard(
               category: category,
@@ -306,10 +309,13 @@ class PracticeCategoryList extends StatelessWidget {
                   ),
                 );
               },
+              editRecordedSession: editRecordedSession,
             );
           }),
         ],
       );
     }
+    // Default fallback
+    return const SizedBox.shrink();
   }
 }

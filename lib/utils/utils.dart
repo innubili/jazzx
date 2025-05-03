@@ -83,3 +83,34 @@ Map<String, dynamic> normalizeMapOrList(dynamic input, {String context = '?'}) {
     return {};
   }
 }
+
+/// Converts a JSON-serializable object (Map or List) into a user-readable string for logging.
+/// Fields are indexed and indented for clarity, printed inline as 'field: value'.
+String prettyPrintJson(dynamic json, {int indent = 1}) {
+  final StringBuffer sb = StringBuffer();
+  final String tab = '\t' * indent;
+  if (json is Map) {
+    int idx = 0;
+    for (var entry in json.entries) {
+      if (entry.value is Map || entry.value is List) {
+        sb.writeln('$tab[$idx] ${entry.key}:');
+        sb.write(prettyPrintJson(entry.value, indent: indent + 1));
+      } else {
+        sb.writeln('$tab[$idx] ${entry.key}: ${entry.value}');
+      }
+      idx++;
+    }
+  } else if (json is List) {
+    for (int i = 0; i < json.length; i++) {
+      if (json[i] is Map || json[i] is List) {
+        sb.writeln('$tab[$i]:');
+        sb.write(prettyPrintJson(json[i], indent: indent + 1));
+      } else {
+        sb.writeln('$tab[$i]: ${json[i]}');
+      }
+    }
+  } else {
+    sb.writeln('$tab$json');
+  }
+  return sb.toString();
+}

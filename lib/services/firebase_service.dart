@@ -358,6 +358,12 @@ class FirebaseService {
     return Statistics.fromJson(data);
   }
 
+  /// Returns a DatabaseReference for the given path.
+  DatabaseReference dbRef(String path) {
+    if (_db == null) throw Exception('Firebase not initialized');
+    return _db!.ref(path);
+  }
+
   // --------------- ⬇️ NEW for Jazz Standards ⬇️ ------------------
 
   DatabaseReference get _jazzStandardsRef => _db!.ref('jazz_standards');

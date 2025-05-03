@@ -154,7 +154,8 @@ Statistics updateStatisticsIncremental({
     final songs = entry.value.songs;
     if (songs != null) {
       for (final songEntry in songs.entries) {
-        songSeconds[songEntry.key] = (songSeconds[songEntry.key] ?? 0) + songEntry.value;
+        songSeconds[songEntry.key] =
+            (songSeconds[songEntry.key] ?? 0) + songEntry.value;
       }
     }
   }
@@ -163,8 +164,13 @@ Statistics updateStatisticsIncremental({
   final yearStats = (years[y]?.copy() ?? YearlyStats.empty());
   final months = yearStats.months.map((k, v) => MapEntry(k, v.copy()));
   final monthStats = (months[m]?.copy() ?? MonthlyStats.empty());
-  final days = monthStats.days.map((k, v) => MapEntry(k, CategoryStats(values: Map.of(v.values))));
-  final dayStats = days[d] != null ? CategoryStats(values: Map.of(days[d]!.values)) : CategoryStats.empty();
+  final days = monthStats.days.map(
+    (k, v) => MapEntry(k, CategoryStats(values: Map.of(v.values))),
+  );
+  final dayStats =
+      days[d] != null
+          ? CategoryStats(values: Map.of(days[d]!.values))
+          : CategoryStats.empty();
 
   // Update day
   for (var entry in session.categories.entries) {
@@ -197,7 +203,8 @@ Statistics updateStatisticsIncremental({
   final monthlyTotals = <PracticeCategory, int>{};
   for (var monthEntry in months.values) {
     for (var cat in monthEntry.total.values.keys) {
-      monthlyTotals[cat] = (monthlyTotals[cat] ?? 0) + monthEntry.total.values[cat]!;
+      monthlyTotals[cat] =
+          (monthlyTotals[cat] ?? 0) + monthEntry.total.values[cat]!;
     }
   }
   final totalMonths = months.length;
@@ -220,7 +227,8 @@ Statistics updateStatisticsIncremental({
   final categoryTotalsPerYear = <PracticeCategory, int>{};
   for (var yearEntry in years.values) {
     for (var cat in yearEntry.total.values.keys) {
-      categoryTotalsPerYear[cat] = (categoryTotalsPerYear[cat] ?? 0) + yearEntry.total.values[cat]!;
+      categoryTotalsPerYear[cat] =
+          (categoryTotalsPerYear[cat] ?? 0) + yearEntry.total.values[cat]!;
     }
   }
   final avgYearlyByCategory = <PracticeCategory, int>{};
