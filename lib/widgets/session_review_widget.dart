@@ -71,25 +71,41 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
             const SizedBox(height: 8),
             // Warmup as a category card/editor at the top with expand/collapse
             _buildWarmupExpandableCard(),
-            SessionHeaderRow(
-              sessionLabel: 'Session',
-              dateString: _formatSessionDate(_editedSession.ended),
-              timeString: _formatSessionTime(_editedSession.ended),
-              durationString: _formatDuration(_editedSession.duration),
-              editMode: widget.editMode && !disableDateTimeEdit,
-              onShowDatePicker:
-                  disableDateTimeEdit
-                      ? null
-                      : () {
-                        // your date picker logic
-                      },
-              onShowTimePicker:
-                  disableDateTimeEdit
-                      ? null
-                      : () {
-                        // your time picker logic
-                      },
-            ),
+            // Show PracticeCategories with time > 0 (collapsed, styled like edit mode)
+            if (!widget.editMode)
+              ..._editedSession.categories.entries
+                  .where((entry) => entry.value.time > 0)
+                  .map(
+                    (entry) => Card(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              PracticeCategoryUtils.icons[entry.key],
+                              color: _categoryColor(entry.key),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              entry.key.name.capitalize(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              _formatDuration(entry.value.time),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
             const Divider(thickness: 1, height: 32),
             PracticeCategoryList(
               session: _editedSession,

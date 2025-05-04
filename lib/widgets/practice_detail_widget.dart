@@ -48,163 +48,165 @@ class PracticeDetailWidget extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Removed time adjustment row for reuse in session screen
-          if (category.allowsNote)
-            _NoteTextField(note: note, onNoteChanged: onNoteChanged),
-          if (category.allowsNote) const SizedBox(height: 16),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Removed time adjustment row for reuse in session screen
+            if (category.allowsNote)
+              _NoteTextField(note: note, onNoteChanged: onNoteChanged),
+            if (category.allowsNote) const SizedBox(height: 16),
 
-          // Song Picker for newsong
-          if (category == PracticeCategory.newsong && category.allowsSongs)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (selectedSong != null)
-                  SongLineWidget(
-                    song: selectedSong,
-                    onIconPressed: (type) {
-                      debugPrint(
-                        "Pressed icon for $type on ${selectedSong.title}",
+            // Song Picker for newsong
+            if (category == PracticeCategory.newsong && category.allowsSongs)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (selectedSong != null)
+                    SongLineWidget(
+                      song: selectedSong,
+                      onIconPressed: (type) {
+                        debugPrint(
+                          "Pressed icon for $type on ${selectedSong.title}",
+                        );
+                        // _TODO: Handle actual action (e.g. launch link)
+                      },
+                    )
+                  else
+                    const Text("No song selected"),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () async {
+                      final profile = profileProvider.profile;
+                      final userSongTitles =
+                          (profile?.songs.keys.toSet() ?? {})
+                              .map((e) => e.trim().toLowerCase())
+                              .toSet();
+                      final selectedSongTitle =
+                          await showModalBottomSheet<String>(
+                        context: context,
+                        isScrollControlled: true,
+                        builder:
+                            (context) => SongPickerSheet(
+                          bookmarkedTitles: userSongTitles,
+                        ),
                       );
-                      // _TODO: Handle actual action (e.g. launch link)
+                      if (selectedSongTitle != null &&
+                          selectedSongTitle.isNotEmpty) {
+                        onSongsChanged([selectedSongTitle]);
+                      }
                     },
-                  )
-                else
-                  const Text("No song selected"),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () async {
-                    final profile = profileProvider.profile;
-                    final userSongTitles =
-                        (profile?.songs.keys.toSet() ?? {})
-                            .map((e) => e.trim().toLowerCase())
-                            .toSet();
-                    final selectedSongTitle =
-                        await showModalBottomSheet<String>(
-                          context: context,
-                          isScrollControlled: true,
-                          builder:
-                              (context) => SongPickerSheet(
-                                bookmarkedTitles: userSongTitles,
-                              ),
-                        );
-                    if (selectedSongTitle != null &&
-                        selectedSongTitle.isNotEmpty) {
-                      onSongsChanged([selectedSongTitle]);
-                    }
-                  },
-                  child: const Text("Choose Song"),
-                ),
-              ],
-            ),
-          if (category == PracticeCategory.newsong && category.allowsSongs)
-            const SizedBox(height: 16),
-
-          // Repertoire Multi Song Picker
-          if (category == PracticeCategory.repertoire && category.allowsSongs)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Repertoire Songs",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                if (songs.isEmpty) const Text("No songs selected"),
-                ...songs.map((s) => Text("• $s")),
-                TextButton(
-                  onPressed: () async {
-                    final selectedTitles =
-                        await showModalBottomSheet<List<String>>(
-                          context: context,
-                          isScrollControlled: true,
-                          builder:
-                              (context) => MultiSongPickerSheet(
-                                initialSelection: songs,
-                                onSongsSelected:
-                                    (selected) =>
-                                        Navigator.pop(context, selected),
-                              ),
-                        );
-
-                    if (selectedTitles != null) {
-                      onSongsChanged(selectedTitles);
-                    }
-                  },
-                  child: const Text("Select Songs"),
-                ),
-              ],
-            ),
-          if (category.allowsLinks)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Links',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                if (links.isEmpty) const Text("No links added"),
-                ...links.map(
-                  (l) => Row(
-                    children: [
-                      const Text("• ", style: TextStyle(fontSize: 18)),
-                      Expanded(child: Text(l, overflow: TextOverflow.ellipsis)),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 20),
-                        tooltip: 'Remove link',
-                        onPressed: () {
-                          final newLinks = List<String>.from(links)..remove(l);
-                          onLinksChanged(newLinks);
-                        },
-                      ),
-                    ],
+                    child: const Text("Choose Song"),
                   ),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    final controller = TextEditingController();
-                    final result = await showDialog<String>(
-                      context: context,
-                      builder:
-                          (ctx) => AlertDialog(
-                            title: const Text('Add Link'),
-                            content: TextField(
-                              controller: controller,
-                              decoration: const InputDecoration(
-                                hintText: 'Paste or type link',
-                              ),
-                              autofocus: true,
-                              onSubmitted:
-                                  (value) =>
-                                      Navigator.of(ctx).pop(value.trim()),
+                ],
+              ),
+            if (category == PracticeCategory.newsong && category.allowsSongs)
+              const SizedBox(height: 16),
+
+            // Repertoire Multi Song Picker
+            if (category == PracticeCategory.repertoire && category.allowsSongs)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Repertoire Songs",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  if (songs.isEmpty) const Text("No songs selected"),
+                  ...songs.map((s) => Text("• $s")),
+                  TextButton(
+                    onPressed: () async {
+                      final selectedTitles =
+                          await showModalBottomSheet<List<String>>(
+                        context: context,
+                        isScrollControlled: true,
+                        builder:
+                            (context) => MultiSongPickerSheet(
+                          initialSelection: songs,
+                          onSongsSelected:
+                              (selected) =>
+                                  Navigator.pop(context, selected),
+                        ),
+                      );
+
+                      if (selectedTitles != null) {
+                        onSongsChanged(selectedTitles);
+                      }
+                    },
+                    child: const Text("Select Songs"),
+                  ),
+                ],
+              ),
+            if (category.allowsLinks)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Links',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  if (links.isEmpty) const Text("No links added"),
+                  ...links.map(
+                    (l) => Row(
+                      children: [
+                        const Text("• ", style: TextStyle(fontSize: 18)),
+                        Expanded(child: Text(l, overflow: TextOverflow.ellipsis)),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, size: 20),
+                          tooltip: 'Remove link',
+                          onPressed: () {
+                            final newLinks = List<String>.from(links)..remove(l);
+                            onLinksChanged(newLinks);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      final controller = TextEditingController();
+                      final result = await showDialog<String>(
+                        context: context,
+                        builder:
+                            (ctx) => AlertDialog(
+                          title: const Text('Add Link'),
+                          content: TextField(
+                            controller: controller,
+                            decoration: const InputDecoration(
+                              hintText: 'Paste or type link',
                             ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(ctx).pop(),
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed:
-                                    () => Navigator.of(
-                                      ctx,
-                                    ).pop(controller.text.trim()),
-                                child: const Text('Add'),
-                              ),
-                            ],
+                            autofocus: true,
+                            onSubmitted:
+                                (value) =>
+                                    Navigator.of(ctx).pop(value.trim()),
                           ),
-                    );
-                    if (result != null && result.isNotEmpty) {
-                      final newLinks = List<String>.from(links)..add(result);
-                      onLinksChanged(newLinks);
-                    }
-                  },
-                  child: const Text("Add Link"),
-                ),
-              ],
-            ),
-          if (category.allowsLinks) const SizedBox(height: 16),
-        ],
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(ctx).pop(),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed:
+                                  () => Navigator.of(
+                                        ctx,
+                                      ).pop(controller.text.trim()),
+                              child: const Text('Add'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (result != null && result.isNotEmpty) {
+                        final newLinks = List<String>.from(links)..add(result);
+                        onLinksChanged(newLinks);
+                      }
+                    },
+                    child: const Text("Add Link"),
+                  ),
+                ],
+              ),
+            if (category.allowsLinks) const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }

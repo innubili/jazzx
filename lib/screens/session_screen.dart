@@ -654,13 +654,16 @@ class _SessionScreenState extends State<SessionScreen> {
                         elevation: 4,
                         margin: const EdgeInsets.symmetric(
                           horizontal: 16,
-                          vertical: 8,
+                          vertical: 4, // Reduced from 8
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8, // Reduced from 20
+                            horizontal: 16, // Reduced from 20
+                          ),
                           child:
                               _activeMode != null
                                   ? PracticeDetailWidget(
@@ -760,7 +763,7 @@ class _SessionScreenState extends State<SessionScreen> {
                   // Action Buttons
                   Padding(
                     padding: const EdgeInsets.only(
-                      bottom: 16,
+                      bottom: 6, // Reduced from 16
                       left: 16,
                       right: 16,
                     ),
@@ -771,19 +774,26 @@ class _SessionScreenState extends State<SessionScreen> {
 
                         // --- PORTRAIT ---
                         final crossAxisCount = isTablet ? 8 : 4;
-                        final cardHeight = isTablet
-                            ? mediaQuery.size.height * 0.125 // 1/8 for tablet
-                            : mediaQuery.size.height * 0.25; // 1/4 for phone
+                        final cardHeight =
+                            isTablet
+                                ? mediaQuery.size.height *
+                                    0.10 // 1/10 for tablet
+                                : mediaQuery.size.height *
+                                    0.20; // 1/5 for phone
                         return Card(
-                          elevation: 8,
+                          elevation: 0, // No elevation for flat appearance
+                          shadowColor: Colors.transparent, // No shadow
+                          color:
+                              Theme.of(
+                                context,
+                              ).scaffoldBackgroundColor, // Match background color
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 8,
-                            ),
+                            padding:
+                                EdgeInsets
+                                    .zero, // Inner padding set to 0 for Action Buttons Card
                             child: SizedBox(
                               height: cardHeight,
                               width: double.infinity,
@@ -825,9 +835,11 @@ class _SessionScreenState extends State<SessionScreen> {
 
                         // --- LANDSCAPE ---
                         final crossAxisCount = isTablet ? 1 : 2;
-                        final cardWidth = isTablet
-                            ? mediaQuery.size.width * 0.125 // 1/8 for tablet
-                            : mediaQuery.size.width * 0.20; // 1/5 for phone
+                        final cardWidth =
+                            isTablet
+                                ? mediaQuery.size.width *
+                                    0.125 // 1/8 for tablet
+                                : mediaQuery.size.width * 0.20; // 1/5 for phone
                         return SizedBox(
                           width: cardWidth,
                           height: double.infinity,
@@ -841,8 +853,7 @@ class _SessionScreenState extends State<SessionScreen> {
                               queuedMode: _queuedMode?.name,
                               onModeSelected: (mode) {
                                 final category = mode.tryToPracticeCategory();
-                                if (category != null)
-                                  _startPractice(category);
+                                if (category != null) _startPractice(category);
                               },
                               crossAxisCount: crossAxisCount,
                             ),
@@ -868,13 +879,16 @@ class _SessionScreenState extends State<SessionScreen> {
                               elevation: 4,
                               margin: const EdgeInsets.symmetric(
                                 horizontal: 16,
-                                vertical: 8,
+                                vertical: 4, // Reduced from 8
                               ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.all(20),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8, // Reduced from 20
+                                  horizontal: 16, // Reduced from 20
+                                ),
                                 child:
                                     _activeMode != null
                                         ? PracticeDetailWidget(
