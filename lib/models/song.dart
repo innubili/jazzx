@@ -102,7 +102,7 @@ class Song {
       final linkMap = asStringKeyedMap(entry.value);
       parsedLinks.add(
         Link.fromJson({
-          'link': entry.key,
+          'link': desanitizeLinkKey(entry.key),
           'key': linkMap['key'] ?? '',
           'kind': linkMap['kind'] ?? '',
           'name': linkMap['name'] ?? '',

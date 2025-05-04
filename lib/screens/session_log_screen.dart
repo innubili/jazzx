@@ -136,17 +136,24 @@ class _SessionLogScreenState extends State<SessionLogScreen> {
                         session: session,
                       ),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder:
                                 (_) => SessionReviewScreen(
-                                  sessionId: sessionId,
-                                  session: session,
-                                ),
+                              sessionId: sessionId,
+                              session: session,
+                            ),
                           ),
                         );
+                        // Refresh session list after returning
+                        setState(() {
+                          _loadedSessions.clear();
+                          _lastLoadedId = null;
+                          _hasMore = true;
+                        });
+                        await _loadNextPage();
                       },
                     );
                   },

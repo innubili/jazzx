@@ -141,7 +141,9 @@ class FirebaseService {
     log.info('[FirebaseService] Data: $data');
     try {
       await ref.set(data);
-      log.info('[FirebaseService] Profile write SUCCESS for ${currentUserUid ?? profile.id}');
+      log.info(
+        '[FirebaseService] Profile write SUCCESS for ${currentUserUid ?? profile.id}',
+      );
     } catch (e, st) {
       log.info(
         '[FirebaseService] ERROR writing profile for ${currentUserUid ?? profile.id}: $e\n$st',
@@ -167,7 +169,30 @@ class FirebaseService {
   ) async {
     await ensureInitialized();
     final ref = _db!.ref('users/$userId/songs/$songTitle/links');
-    await ref.set([for (var link in links) link.toJson()]);
+    // Save as a map, keyed by sanitized link URL, to match existing Firebase structure
+    final linksMap = {
+      for (var link in links) sanitizeLinkKey(link.link): link.toJson(),
+    };
+    log.info('[saveSongLinks] Saving links for $songTitle: ${links.length} links. Links data:\n' + prettyPrintJson(linksMap));
+    await ref.set(linksMap);
+  }
+
+  /// Save a single song (all fields) to Firebase
+  Future<void> saveSong(String userId, Song song) async {
+    await ensureInitialized();
+    final ref = _db!.ref('users/$userId/songs/${song.title}');
+    // If the song has links, save them as a map with sanitized keys
+    final songData = song.toJson();
+    if (songData['links'] is Map) {
+      final origLinks = songData['links'] as Map;
+      final sanitizedLinks = {
+        for (var entry in origLinks.entries)
+          sanitizeLinkKey(entry.key): entry.value,
+      };
+      songData['links'] = sanitizedLinks;
+    }
+    log.info('[saveSong] Saving song to Firebase: $userId/${song.title}\n' + prettyPrintJson(songData));
+    await ref.set(songData);
   }
 
   /// Saves the user's statistics to Firebase under their user profile.

@@ -25,18 +25,13 @@ void setupLogging() {
 }
 
 String sanitizeLinkKey(String url) {
-  return Uri.encodeFull(
-    url,
-  ).replaceAll('.', '_').replaceAll('#', ' sharp').replaceAll('/', ' over ');
+  // Percent-encode, then replace '.' with '_' to make the key Firebase-safe
+  return Uri.encodeComponent(url).replaceAll('.', '_');
 }
 
 String desanitizeLinkKey(String key) {
-  return Uri.decodeFull(
-    key
-        .replaceAll('_', '.')
-        .replaceAll(' sharp', '#')
-        .replaceAll(' over ', '/'),
-  );
+  // Revert '_' to '.', then decode
+  return Uri.decodeComponent(key.replaceAll('_', '.'));
 }
 
 Map<String, dynamic> asStringKeyedMap(Object? value) {

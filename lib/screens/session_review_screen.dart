@@ -260,15 +260,10 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
           ),
           title: Text(_editMode ? 'Session (edit)' : 'Session'),
           actions: [
-            if (_editMode || widget.editRecordedSession)
-              IconButton(
-                icon: const Icon(Icons.save),
-                tooltip: 'Save',
-                onPressed: () => _saveEdit(_editableSession),
-              ),
             SessionAppBarActions(
-              editMode: _editMode,
+              editMode: _editMode || widget.editRecordedSession,
               hasEdits: _hasEdits,
+              editRecordedSession: widget.editRecordedSession,
               onSave: () => _saveEdit(_editableSession),
               onEdit: _startEdit,
               onDelete: () async {
