@@ -131,8 +131,7 @@ class Session {
       'instrument': instrument,
       'categories': {
         for (final entry in categories.entries)
-          if (entry.value.time > 0)
-            entry.key.name: entry.value.toJson(),
+          if (entry.value.time > 0) entry.key.name: entry.value.toJson(),
       },
       'warmup': warmup?.toJson() ?? {'time': 0, 'bpm': 0},
     };

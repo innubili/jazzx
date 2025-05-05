@@ -140,7 +140,7 @@ class Song {
       'deleted': deleted,
       'links': {
         for (var link in links)
-          link.link: {
+          sanitizeFirebaseKey(link.link): {
             'key': link.key,
             'kind': link.kind,
             'name': link.name,
@@ -159,4 +159,22 @@ class Song {
     final index = list.indexWhere((s) => s.title == song.title);
     if (index != -1) list[index] = song;
   }
+
+  static Song getDefault(String title) => Song(
+    title: title,
+    key: '',
+    type: '',
+    form: '',
+    bpm: 120,
+    links: [],
+    notes: '',
+    recommendedVersions: '',
+    songwriters: '',
+    year: '',
+  );
+}
+
+String sanitizeFirebaseKey(String key) {
+  // Replace forbidden characters with _
+  return key.replaceAll(RegExp(r'[.#$\[\]/]'), '_');
 }

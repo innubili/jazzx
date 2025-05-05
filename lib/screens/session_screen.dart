@@ -802,8 +802,9 @@ class _SessionScreenState extends State<SessionScreen> {
                                 queuedMode: _queuedMode?.name,
                                 onModeSelected: (mode) {
                                   final category = mode.tryToPracticeCategory();
-                                  if (category != null)
+                                  if (category != null) {
                                     _startPractice(category);
+                                  }
                                 },
                                 crossAxisCount: crossAxisCount,
                               ),

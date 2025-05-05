@@ -104,8 +104,7 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
                         ),
                       ),
                     ),
-                  )
-                  .toList(),
+                  ),
             const Divider(thickness: 1, height: 32),
             PracticeCategoryList(
               session: _editedSession,

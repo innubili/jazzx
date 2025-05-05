@@ -173,7 +173,9 @@ class FirebaseService {
     final linksMap = {
       for (var link in links) sanitizeLinkKey(link.link): link.toJson(),
     };
-    log.info('[saveSongLinks] Saving links for $songTitle: ${links.length} links. Links data:\n' + prettyPrintJson(linksMap));
+    log.info(
+      '[saveSongLinks] Saving links for $songTitle: ${links.length} links. Links data:\n${prettyPrintJson(linksMap)}',
+    );
     await ref.set(linksMap);
   }
 
@@ -191,7 +193,9 @@ class FirebaseService {
       };
       songData['links'] = sanitizedLinks;
     }
-    log.info('[saveSong] Saving song to Firebase: $userId/${song.title}\n' + prettyPrintJson(songData));
+    log.info(
+      '[saveSong] Saving song to Firebase: $userId/${song.title}\n${prettyPrintJson(songData)}',
+    );
     await ref.set(songData);
   }
 

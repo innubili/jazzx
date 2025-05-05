@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/song.dart';
 import '../models/link.dart';
+import '../providers/user_profile_provider.dart';
 
 import 'song_widget.dart';
 
@@ -81,8 +83,12 @@ class _SongBrowserWidgetState extends State<SongBrowserWidget> {
               selectable: widget.selectable,
               onSelected: widget.onSelected != null ? () => widget.onSelected!(song) : null,
               addLinkForKind: widget.addLinkForKind,
-              initiallyExpanded: false,
-              onUpdated: (_) {},
+              initiallyExpanded: widget.initialScrollToTitle == song.title && widget.expandInitially,
+              onUpdated: (updatedSong) {
+                // Save song changes to Firebase via provider
+                final userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+                userProfileProvider.updateSong(updatedSong);
+              },
               onCopy: () {},
               onDelete: () {},
               leading: widget.bookmarkedTitles != null &&

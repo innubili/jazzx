@@ -101,7 +101,9 @@ class UserProfileProvider extends ChangeNotifier {
 
   // Add, update, and remove song links with partial update to Firebase
   void addSongLink(String songTitle, Link link) {
-    log.info('[addSongLink] Called for songTitle: $songTitle, link: \n' + prettyPrintJson(link.toJson()));
+    log.info(
+      '[addSongLink] Called for songTitle: $songTitle, link: \n${prettyPrintJson(link.toJson())}',
+    );
     if (_profile == null || _userId == null) {
       log.warning('[addSongLink] Profile or userId is null');
       return;
@@ -113,7 +115,9 @@ class UserProfileProvider extends ChangeNotifier {
     }
     final updatedLinks = [...song.links, link];
     _profile!.songs[songTitle] = song.copyWith(links: updatedLinks);
-    log.info('[addSongLink] Saving links for $songTitle: ${updatedLinks.length} links. Links data:\n' + prettyPrintJson(updatedLinks.map((l) => l.toJson()).toList()));
+    log.info(
+      '[addSongLink] Saving links for $songTitle: ${updatedLinks.length} links. Links data:\n${prettyPrintJson(updatedLinks.map((l) => l.toJson()).toList())}',
+    );
     FirebaseService().saveSongLinks(_userId!, songTitle, updatedLinks);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
@@ -121,7 +125,9 @@ class UserProfileProvider extends ChangeNotifier {
   }
 
   void updateSongLink(String songTitle, Link updatedLink) {
-    log.info('[updateSongLink] Called for songTitle: $songTitle, updatedLink: \n' + prettyPrintJson(updatedLink.toJson()));
+    log.info(
+      '[updateSongLink] Called for songTitle: $songTitle, updatedLink: \n${prettyPrintJson(updatedLink.toJson())}',
+    );
     if (_profile == null || _userId == null) {
       log.warning('[updateSongLink] Profile or userId is null');
       return;
@@ -136,7 +142,9 @@ class UserProfileProvider extends ChangeNotifier {
             .map((l) => l.key == updatedLink.key ? updatedLink : l)
             .toList();
     _profile!.songs[songTitle] = song.copyWith(links: updatedLinks);
-    log.info('[updateSongLink] Saving links for $songTitle: ${updatedLinks.length} links. Links data:\n' + prettyPrintJson(updatedLinks.map((l) => l.toJson()).toList()));
+    log.info(
+      '[updateSongLink] Saving links for $songTitle: ${updatedLinks.length} links. Links data:\n${prettyPrintJson(updatedLinks.map((l) => l.toJson()).toList())}',
+    );
     FirebaseService().saveSongLinks(_userId!, songTitle, updatedLinks);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
@@ -144,7 +152,9 @@ class UserProfileProvider extends ChangeNotifier {
   }
 
   void removeSongLink(String songTitle, String linkKey) {
-    log.info('[removeSongLink] Called for songTitle: $songTitle, linkKey: $linkKey');
+    log.info(
+      '[removeSongLink] Called for songTitle: $songTitle, linkKey: $linkKey',
+    );
     if (_profile == null || _userId == null) {
       log.warning('[removeSongLink] Profile or userId is null');
       return;
@@ -156,7 +166,9 @@ class UserProfileProvider extends ChangeNotifier {
     }
     final updatedLinks = song.links.where((l) => l.key != linkKey).toList();
     _profile!.songs[songTitle] = song.copyWith(links: updatedLinks);
-    log.info('[removeSongLink] Saving links for $songTitle: ${updatedLinks.length} links. Links data:\n' + prettyPrintJson(updatedLinks.map((l) => l.toJson()).toList()));
+    log.info(
+      '[removeSongLink] Saving links for $songTitle: ${updatedLinks.length} links. Links data:\n${prettyPrintJson(updatedLinks.map((l) => l.toJson()).toList())}',
+    );
     FirebaseService().saveSongLinks(_userId!, songTitle, updatedLinks);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();

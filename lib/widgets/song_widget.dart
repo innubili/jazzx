@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import '../models/song.dart';
 import '../models/link.dart';
+import '../models/wrappers.dart';
 import '../screens/link_search_screen.dart' show LinkSearchScreen;
 import 'link_widget.dart';
 import 'link_view_panel.dart';
 import 'link_editor_widgets.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_profile_provider.dart';
+import '../providers/jazz_standards_provider.dart';
 
 class SongWidget extends StatefulWidget {
   final Song song;
@@ -68,7 +70,6 @@ class _SongWidgetState extends State<SongWidget> {
   @override
   void dispose() {
     _customKeyController.dispose();
-    widget.onUpdated(_editedSong);
     super.dispose();
   }
 
@@ -268,7 +269,75 @@ class _SongWidgetState extends State<SongWidget> {
           IconButton(
             icon: const Icon(Icons.copy),
             tooltip: 'Duplicate',
-            onPressed: widget.onCopy,
+            onPressed: () async {
+              final profileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+              final standards = Provider.of<JazzStandardsProvider>(context, listen: false).standards;
+              final userSongs = profileProvider.profile?.songs ?? {};
+              final originalTitle = _editedSong.title;
+              final controller = TextEditingController(text: originalTitle + ' copy');
+              String? errorText;
+              bool isValid = false;
+              await showDialog<String>(
+                context: context,
+                builder: (context) {
+                  return StatefulBuilder(
+                    builder: (context, setState) {
+                      void validate(String value) {
+                        final trimmed = value.trim();
+                        final lower = trimmed.toLowerCase();
+                        final exists = userSongs.keys.map((k) => k.trim().toLowerCase()).contains(lower) ||
+                          standards.any((s) => s.title.trim().toLowerCase() == lower);
+                        if (trimmed.isEmpty) {
+                          errorText = 'Title required';
+                          isValid = false;
+                        } else if (exists) {
+                          errorText = 'Title already exists';
+                          isValid = false;
+                        } else {
+                          errorText = null;
+                          isValid = true;
+                        }
+                      }
+                      validate(controller.text);
+                      return AlertDialog(
+                        title: Text('Duplicate "' + originalTitle + '"'),
+                        content: TextField(
+                          controller: controller,
+                          autofocus: true,
+                          decoration: InputDecoration(
+                            labelText: 'Song Title',
+                            errorText: errorText,
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              validate(value);
+                            });
+                          },
+                        ),
+                        actions: [
+                          TextButton(
+                            child: const Text('Cancel'),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          ElevatedButton(
+                            child: const Text('Duplicate'),
+                            onPressed: isValid
+                              ? () {
+                                  final trimmed = controller.text.trim();
+                                  final clonedSong = _editedSong.copyWith(title: trimmed);
+                                  profileProvider.addSong(clonedSong);
+                                  Navigator.of(context).pop();
+                                  // Optionally scroll to new song, etc.
+                                }
+                              : null,
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.delete),
@@ -294,14 +363,21 @@ class _SongWidgetState extends State<SongWidget> {
                       ],
                     ),
               );
-              if (confirm == true) widget.onDelete();
+              if (confirm == true) {
+                final userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+                userProfileProvider.removeSong(_editedSong.title);
+                // Optionally: show feedback or close/refresh UI
+              }
             },
           ),
         ] else if (_editMode && !widget.readOnly) ...[
           IconButton(
             icon: const Icon(Icons.check),
             tooltip: 'Save',
-            onPressed: () => setState(() => _editMode = false),
+            onPressed: () {
+              setState(() => _editMode = false);
+              widget.onUpdated(_editedSong);
+            },
           ),
           IconButton(
             icon: const Icon(Icons.close),
@@ -411,22 +487,31 @@ class _SongWidgetState extends State<SongWidget> {
               label: const Text("Add Link"),
               onPressed: () async {
                 final newLink = Link.defaultLink(_editedSong.title);
-                final selected = await Navigator.push<Link>(
+                final selectedWrapper = await Navigator.push<LinkWrapper>(
                   context,
                   MaterialPageRoute(
                     builder:
                         (_) => LinkSearchScreen(
-                          songTitle: newLink.name,
-                          onSelected: (link) => Navigator.pop(context, link),
+                          query: newLink.name,
+                          onSelected:
+                              (linkWrapper) =>
+                                  Navigator.pop(context, linkWrapper),
+                          initialKind:
+                              null, // Optionally pass LinkKind if desired
+                          initialCategory:
+                              null, // Optionally pass LinkCategory if desired
                         ),
                   ),
                 );
 
-                if (!mounted || selected == null) return;
+                if (!mounted || selectedWrapper == null) return;
 
                 final confirmed = await showDialog<Link>(
                   context: context,
-                  builder: (_) => LinkConfirmationDialog(initialLink: selected),
+                  builder:
+                      (_) => LinkConfirmationDialog(
+                        initialLink: selectedWrapper.link,
+                      ),
                 );
 
                 if (confirmed != null) {

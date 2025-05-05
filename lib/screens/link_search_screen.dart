@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/link.dart';
+import '../models/wrappers.dart';
 import '../services/youtube_service.dart';
 import '../services/spotify_service.dart';
 import '../widgets/search_bar_widget.dart';
@@ -8,13 +9,17 @@ import '../widgets/link_view_panel.dart';
 import '../widgets/main_drawer.dart'; // Import the MainDrawer widget
 
 class LinkSearchScreen extends StatefulWidget {
-  final String songTitle;
-  final void Function(Link link) onSelected;
+  final String query;
+  final void Function(LinkWrapper link) onSelected;
+  final LinkKind? initialKind;
+  final LinkCategory? initialCategory;
 
   const LinkSearchScreen({
     super.key,
-    required this.songTitle,
+    required this.query,
     required this.onSelected,
+    this.initialKind,
+    this.initialCategory,
   });
 
   @override
@@ -30,17 +35,19 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
   final _spotifyService = SpotifySearchService();
   bool _isLoading = false;
   String _currentQuery = '';
-  LinkCategory _selectedCategory = LinkCategory.backingTrack;
-  Set<LinkKind> _selectedKinds = {LinkKind.youtube};
+  late LinkCategory _selectedCategory;
+  late Set<LinkKind> _selectedKinds;
   final Map<ValueKey, GlobalKey> _itemKeys = {};
 
   @override
   void initState() {
     super.initState();
+    _controller = TextEditingController(text: widget.query);
+    _selectedCategory = widget.initialCategory ?? LinkCategory.backingTrack;
+    _selectedKinds = widget.initialKind != null ? {widget.initialKind!} : {LinkKind.youtube};
     final suffix = _categorySuffix(_selectedCategory);
     final initialQuery =
-        '${widget.songTitle} ${suffix.isNotEmpty ? suffix : ''}'.trim();
-    _controller = TextEditingController(text: initialQuery);
+        '${widget.query} ${suffix.isNotEmpty ? suffix : ''}'.trim();
     _searchAllSources(initialQuery);
     _scrollController.addListener(_onScrollEndTrigger);
   }
@@ -102,8 +109,17 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
   }
 
   void _onSelect(SearchResult result) {
-    setState(() => _selectedResult = result);
-    _scrollToSelected();
+    final link = Link(
+      key: '',
+      name: result.title,
+      link: result.url,
+      kind: result.kind,
+      category: _selectedCategory,
+      isDefault: false,
+    );
+    final linkId = result.url;
+    final wrapper = LinkWrapper(linkId: linkId, link: link);
+    Navigator.pop(context, wrapper);
   }
 
   void _onConfirmSelection() {
@@ -118,7 +134,7 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
       isDefault: false,
     );
 
-    widget.onSelected(baseLink);
+    widget.onSelected(LinkWrapper(linkId: baseLink.link, link: baseLink));
   }
 
   void _onScrollEndTrigger() {
@@ -165,7 +181,7 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
 
   void _updateSearchQuery() {
     final suffix = _categorySuffix(_selectedCategory);
-    final base = widget.songTitle;
+    final base = widget.query;
     final query = '$base ${suffix.isNotEmpty ? suffix : ''}'.trim();
     _controller.text = query;
     _onSearch(query);
@@ -227,7 +243,7 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Find link for "${widget.songTitle}"'),
+        title: Text('Find link for "${widget.query}"'),
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
