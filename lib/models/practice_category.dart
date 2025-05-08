@@ -1,6 +1,7 @@
 // lib/models/practice_category.dart
 
 import 'package:flutter/material.dart';
+import 'link.dart';
 
 enum PracticeCategory {
   exercise,
@@ -183,3 +184,58 @@ extension PracticeCategorySchemaExtension on PracticeCategory {
   /// Returns true if any field is allowed.
   bool get allowsAny => schema.allowsAny;
 }
+
+class LinkSearchParams {
+  final String query;
+  final LinkKind initialKind;
+  final LinkCategory initialCategory;
+  const LinkSearchParams({
+    required this.query,
+    required this.initialKind,
+    required this.initialCategory,
+  });
+}
+
+const Map<PracticeCategory, LinkSearchParams> practiceCategoryLinkSearchSchema =
+    {
+      PracticeCategory.exercise: LinkSearchParams(
+        query: 'exercise backing track',
+        initialKind: LinkKind.youtube,
+        initialCategory: LinkCategory.backingTrack,
+      ),
+      PracticeCategory.newsong: LinkSearchParams(
+        query: 'new song lesson',
+        initialKind: LinkKind.youtube,
+        initialCategory: LinkCategory.lesson,
+      ),
+      PracticeCategory.repertoire: LinkSearchParams(
+        query: 'jazz standard',
+        initialKind: LinkKind.spotify,
+        initialCategory: LinkCategory.playlist,
+      ),
+      PracticeCategory.lesson: LinkSearchParams(
+        query: 'music lesson',
+        initialKind: LinkKind.youtube,
+        initialCategory: LinkCategory.lesson,
+      ),
+      PracticeCategory.theory: LinkSearchParams(
+        query: 'theory',
+        initialKind: LinkKind.youtube,
+        initialCategory: LinkCategory.other,
+      ),
+      PracticeCategory.video: LinkSearchParams(
+        query: 'music video',
+        initialKind: LinkKind.youtube,
+        initialCategory: LinkCategory.other,
+      ),
+      PracticeCategory.gig: LinkSearchParams(
+        query: 'gig',
+        initialKind: LinkKind.youtube,
+        initialCategory: LinkCategory.other,
+      ),
+      PracticeCategory.fun: LinkSearchParams(
+        query: 'fun',
+        initialKind: LinkKind.youtube,
+        initialCategory: LinkCategory.other,
+      ),
+    };

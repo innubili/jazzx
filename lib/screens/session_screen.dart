@@ -120,7 +120,11 @@ class _SessionScreenState extends State<SessionScreen> {
             : 'guitar';
 
     setState(() {
-      sessionData = Session.getDefault(instrument: instrument);
+      final sessionId = DateTime.now().millisecondsSinceEpoch;
+      sessionData = Session.getDefault(
+        sessionId: sessionId,
+        instrument: instrument,
+      );
       _activeMode = null;
       _queuedMode = null;
       _hasStartedFirstPractice = false;
@@ -512,8 +516,8 @@ class _SessionScreenState extends State<SessionScreen> {
   }
 
   Future<void> _onSessionDone() async {
-    _pausePracticeSession(); // <-- Pause the session before saving/summary
-    _stopPractice(_timerController.getElapsedSeconds());
+    _pausePracticeSession(); // Only pause, do not stop
+    // Do NOT call _stopPractice here
     sessionData = recalculateSessionFields(sessionData);
     final session = sessionData;
     final initialDateTime = DateTime.fromMillisecondsSinceEpoch(
@@ -528,7 +532,8 @@ class _SessionScreenState extends State<SessionScreen> {
       '${session.toJson()}',
     );
 
-    Navigator.push(
+    // Await result from review screen
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder:
@@ -541,6 +546,13 @@ class _SessionScreenState extends State<SessionScreen> {
             ),
       ),
     );
+    // Handle result: if user did not save, resume session
+    if (result == 'resume') {
+      _resumePracticeSession();
+    } else if (result == 'end') {
+      // Optionally reset state or show post-session prompt
+      // (Handled in review screen)
+    }
   }
 
   // Fix: _buildHeader must return a Widget (Column), not void
@@ -629,7 +641,7 @@ class _SessionScreenState extends State<SessionScreen> {
         ],
       ),
       drawer: const MainDrawer(),
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isPortrait = constraints.maxHeight > constraints.maxWidth;

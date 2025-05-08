@@ -86,7 +86,32 @@ class _LinkViewPanelState extends State<LinkViewPanel> {
     Widget player;
 
     if (widget.link.kind == LinkKind.youtube) {
-      player = YouTubePlayerWidget(youtubeUrl: widget.link.link);
+      player = Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              children: [
+                // Title
+                Expanded(
+                  child: Text(
+                    widget.link.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.deepPurple,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                // (No close button)
+              ],
+            ),
+          ),
+          YouTubePlayerWidget(youtubeUrl: widget.link.link),
+        ],
+      );
     } else if (widget.link.kind == LinkKind.spotify) {
       player = SpotifyPlayerWidget(
         url: widget.link.link,
@@ -117,12 +142,13 @@ class _LinkViewPanelState extends State<LinkViewPanel> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      widget.link.link,
-                      style: const TextStyle(color: Colors.blue),
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                    ),
+                    if (widget.link.kind != LinkKind.youtube)
+                      Text(
+                        widget.link.link,
+                        style: const TextStyle(color: Colors.blue),
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                      ),
                     const SizedBox(height: 4),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.check),

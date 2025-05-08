@@ -140,7 +140,7 @@ class Song {
       'deleted': deleted,
       'links': {
         for (var link in links)
-          sanitizeFirebaseKey(link.link): {
+          sanitizeLinkKey(link.link): {
             'key': link.key,
             'kind': link.kind,
             'name': link.name,
@@ -172,9 +172,4 @@ class Song {
     songwriters: '',
     year: '',
   );
-}
-
-String sanitizeFirebaseKey(String key) {
-  // Replace forbidden characters with _
-  return key.replaceAll(RegExp(r'[.#$\[\]/]'), '_');
 }

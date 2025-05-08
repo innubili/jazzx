@@ -40,7 +40,9 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
     final profile = profileProvider.profile;
     final allSongs =
         profile?.songs.values.where((s) => !s.deleted).toList() ?? [];
-    allSongs.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    allSongs.sort(
+      (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+    );
     final standards =
         Provider.of<JazzStandardsProvider>(context, listen: false).standards;
 
@@ -66,8 +68,15 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
             icon: const Icon(Icons.note_add),
             tooltip: 'Create new song',
             onPressed: () async {
-              final profileProvider = Provider.of<UserProfileProvider>(context, listen: false);
-              final standards = Provider.of<JazzStandardsProvider>(context, listen: false).standards;
+              final profileProvider = Provider.of<UserProfileProvider>(
+                context,
+                listen: false,
+              );
+              final standards =
+                  Provider.of<JazzStandardsProvider>(
+                    context,
+                    listen: false,
+                  ).standards;
               final userSongs = profileProvider.profile?.songs ?? {};
 
               String? newTitle = await showDialog<String>(
@@ -81,8 +90,13 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
                       void validate(String value) {
                         final trimmed = value.trim();
                         final lower = trimmed.toLowerCase();
-                        final exists = userSongs.keys.map((k) => k.trim().toLowerCase()).contains(lower) ||
-                          standards.any((s) => s.title.trim().toLowerCase() == lower);
+                        final exists =
+                            userSongs.keys
+                                .map((k) => k.trim().toLowerCase())
+                                .contains(lower) ||
+                            standards.any(
+                              (s) => s.title.trim().toLowerCase() == lower,
+                            );
                         if (trimmed.isEmpty) {
                           errorText = 'Title required';
                           isValid = false;
@@ -94,6 +108,7 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
                           isValid = true;
                         }
                       }
+
                       validate(controller.text);
                       return AlertDialog(
                         title: const Text('Create New Song'),
@@ -116,31 +131,37 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                           ElevatedButton(
+                            onPressed:
+                                isValid
+                                    ? () {
+                                      final trimmed = controller.text.trim();
+                                      final newSong = Song.getDefault(trimmed);
+                                      profileProvider.addSong(newSong);
+                                      Navigator.of(context).pop();
+                                      setState(() {
+                                        _searchQuery = '';
+                                      });
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                            Navigator.of(
+                                              context,
+                                            ).pushReplacement(
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (_) => UserSongsScreen(),
+                                                settings: RouteSettings(
+                                                  arguments: {
+                                                    'initialScrollToTitle':
+                                                        trimmed,
+                                                    'expandInitially': true,
+                                                  },
+                                                ),
+                                              ),
+                                            );
+                                          });
+                                    }
+                                    : null,
                             child: const Text('Create'),
-                            onPressed: isValid
-                              ? () {
-                                  final trimmed = controller.text.trim();
-                                  final newSong = Song.getDefault(trimmed);
-                                  profileProvider.addSong(newSong);
-                                  Navigator.of(context).pop();
-                                  setState(() {
-                                    _searchQuery = '';
-                                  });
-                                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                                    Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                        builder: (_) => UserSongsScreen(),
-                                        settings: RouteSettings(
-                                          arguments: {
-                                            'initialScrollToTitle': trimmed,
-                                            'expandInitially': true,
-                                          },
-                                        ),
-                                      ),
-                                    );
-                                  });
-                                }
-                              : null,
                           ),
                         ],
                       );
@@ -150,7 +171,6 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
               );
 
               if (newTitle == null) return;
-
             },
           ),
           IconButton(

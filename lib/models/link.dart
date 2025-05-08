@@ -66,6 +66,8 @@ LinkKind suggestNextKind(List<Link> existingLinks) {
 }
 
 class Link {
+  /// Returns the sanitized link string, suitable for use as a Firebase key
+  String get id => sanitizeLinkKey(link);
   final String key;
   final String name;
   final LinkKind kind;
@@ -84,14 +86,29 @@ class Link {
 
   factory Link.fromJson(Map<String, dynamic> json) {
     final map = asStringKeyedMap(json);
+    // Defensive: handle both enum and string for kind
+    LinkKind kind;
+    final kindRaw = map['kind'];
+    if (kindRaw is LinkKind) {
+      kind = kindRaw;
+    } else if (kindRaw is String && LinkKind.values.any((e) => e.name == kindRaw)) {
+      kind = LinkKind.values.firstWhere((e) => e.name == kindRaw);
+    } else {
+      // Fallback: try to infer from URL
+      final url = map['link'] ?? '';
+      if (url.contains('youtube.com') || url.contains('youtu.be')) {
+        kind = LinkKind.youtube;
+      } else if (url.contains('spotify.com')) {
+        kind = LinkKind.spotify;
+      } else {
+        kind = LinkKind.media;
+      }
+    }
     return Link(
       key: map['key'] ?? '',
       name: map['name'] ?? '',
       link: map['link'] ?? '',
-      kind: LinkKind.values.firstWhere(
-        (e) => e.name == map['kind'],
-        orElse: () => LinkKind.media,
-      ),
+      kind: kind,
       category: LinkCategory.values.firstWhere(
         (e) => e.name == map['category'],
         orElse: () => LinkCategory.other,

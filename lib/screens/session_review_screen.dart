@@ -37,11 +37,6 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
   @override
   void initState() {
     super.initState();
-    log.info(
-      '[SessionReviewScreen] Opened with sessionId: '
-      '\u001b[35m${widget.sessionId}\u001b[0m, initialDateTime: ${widget.initialDateTime}, session: '
-      '${widget.session?.toJson()}',
-    );
     if (widget.session != null) {
       _editableSession = widget.session!;
       _originalSession = widget.session!;
@@ -56,11 +51,14 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
       if (instruments.length == 1) {
         defaultInstrument = instruments.first;
       }
+      final sessionId = DateTime.now().millisecondsSinceEpoch;
       _editableSession = Session.getDefault(
+        sessionId: sessionId,
         instrument: defaultInstrument ?? 'guitar',
       );
       _originalSession = _editableSession;
       _editMode = true;
+      log.info('SessionReviewScreen on ${_editableSession.asLogString()}');
     } else {
       throw Exception(
         'SessionReviewScreen requires either session or manualEntry+initialDateTime',
@@ -85,37 +83,41 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
       updated,
       manualEnded: widget.initialDateTime,
     );
-    final profileProvider = Provider.of<UserProfileProvider>(
-      context,
-      listen: false,
-    );
-    final sessionId = updated.ended.toString();
-    await profileProvider.saveSessionWithId(sessionId, updated);
-    log.info(
-      '[FirebaseService] SessionID: $sessionId (${sessionIdToReadableString(sessionId)}) Data:\n${prettyPrintJson(updated.toJson())}',
+    final provider = Provider.of<UserProfileProvider>(context, listen: false);
+    await provider.saveSessionWithId(widget.sessionId, updated);
+    log.info('SessionReviewScreen saved: ${_editableSession.asLogString()}');
+    if (!mounted) return;
+    // Prompt for next action
+    final action = await showDialog<String>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Session Saved'),
+            content: const Text('What would you like to do next?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop('close'),
+                child: const Text('Close App'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop('new'),
+                child: const Text('New Session'),
+              ),
+            ],
+          ),
     );
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Session saved.')));
-    _originalSession = updated;
+    if (action == 'close') {
+      Navigator.of(context).pop('end');
+      // Optionally: SystemNavigator.pop() or similar to close app
+    } else if (action == 'new') {
+      Navigator.of(context).pop('end');
+      // Optionally: trigger new session logic in session screen
+    } else {
+      Navigator.of(context).pop('end');
+    }
   }
 
-  /*
-  void _onSessionChanged(Session session) {
-    setState(() {
-      // Recalculate duration as sum of all category times + warmup
-      final total =
-          ((session.warmupTime ?? 0) +
-                  session.categories.values.fold(
-                    0,
-                    (sum, cat) => sum + (cat.time),
-                  ))
-              .toInt();
-      _editableSession = session.copyWith(duration: total);
-    });
-  }
-*/
   void _showDatePickerOnly() async {
     int ts = _editableSession.ended;
     if (ts == 0 && int.tryParse(widget.sessionId) != null) {
@@ -245,7 +247,8 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
         if (!didPop) return;
         final shouldPop = await _onWillPop();
         if (shouldPop && mounted) {
-          Navigator.of(context).maybePop();
+          // If edits were not saved, signal to resume session
+          Navigator.of(context).pop('resume');
         }
       },
       child: Scaffold(

@@ -1,4 +1,6 @@
 import '../models/session.dart';
+import '../services/firebase_service.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 /// Utility for formatting a session ID (timestamp in seconds or ms) to a readable string.
 String sessionIdToReadableString(String sessionId) {
@@ -84,4 +86,21 @@ Map<String, int> findSessionsWithWrongDuration(Map<String, Session> sessions) {
     }
   });
   return wrongs;
+}
+
+/// Updates all sessions in Firebase for the current user, adding the .started field to each session.
+Future<void> addStartedToAllSessionsInFirebase() async {
+  final service = FirebaseService();
+  await service.ensureInitialized();
+  final userId = service.currentUserUid;
+  if (userId == null) throw Exception('User not signed in');
+  final sessionsRef = FirebaseDatabase.instance.ref('users/$userId/sessions');
+  final snapshot = await sessionsRef.get();
+  if (!snapshot.exists || snapshot.value == null) return;
+  final sessionsMap = Map<String, dynamic>.from(snapshot.value as Map);
+  for (final entry in sessionsMap.entries) {
+    final sessionId = entry.key;
+    final started = int.tryParse(sessionId) ?? 0;
+    await sessionsRef.child(sessionId).update({'started': started});
+  }
 }

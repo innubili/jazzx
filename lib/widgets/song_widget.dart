@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/song.dart';
 import '../models/link.dart';
-import '../models/wrappers.dart';
+
 import '../screens/link_search_screen.dart' show LinkSearchScreen;
 import 'link_widget.dart';
+import 'link_editor_widgets.dart' show LinkConfirmationDialog;
 import 'link_view_panel.dart';
 import 'link_editor_widgets.dart';
 import 'package:provider/provider.dart';
@@ -270,11 +271,20 @@ class _SongWidgetState extends State<SongWidget> {
             icon: const Icon(Icons.copy),
             tooltip: 'Duplicate',
             onPressed: () async {
-              final profileProvider = Provider.of<UserProfileProvider>(context, listen: false);
-              final standards = Provider.of<JazzStandardsProvider>(context, listen: false).standards;
+              final profileProvider = Provider.of<UserProfileProvider>(
+                context,
+                listen: false,
+              );
+              final standards =
+                  Provider.of<JazzStandardsProvider>(
+                    context,
+                    listen: false,
+                  ).standards;
               final userSongs = profileProvider.profile?.songs ?? {};
               final originalTitle = _editedSong.title;
-              final controller = TextEditingController(text: originalTitle + ' copy');
+              final controller = TextEditingController(
+                text: '$originalTitle copy',
+              );
               String? errorText;
               bool isValid = false;
               await showDialog<String>(
@@ -285,8 +295,13 @@ class _SongWidgetState extends State<SongWidget> {
                       void validate(String value) {
                         final trimmed = value.trim();
                         final lower = trimmed.toLowerCase();
-                        final exists = userSongs.keys.map((k) => k.trim().toLowerCase()).contains(lower) ||
-                          standards.any((s) => s.title.trim().toLowerCase() == lower);
+                        final exists =
+                            userSongs.keys
+                                .map((k) => k.trim().toLowerCase())
+                                .contains(lower) ||
+                            standards.any(
+                              (s) => s.title.trim().toLowerCase() == lower,
+                            );
                         if (trimmed.isEmpty) {
                           errorText = 'Title required';
                           isValid = false;
@@ -298,9 +313,10 @@ class _SongWidgetState extends State<SongWidget> {
                           isValid = true;
                         }
                       }
+
                       validate(controller.text);
                       return AlertDialog(
-                        title: Text('Duplicate "' + originalTitle + '"'),
+                        title: Text('Duplicate "$originalTitle"'),
                         content: TextField(
                           controller: controller,
                           autofocus: true,
@@ -320,16 +336,19 @@ class _SongWidgetState extends State<SongWidget> {
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                           ElevatedButton(
+                            onPressed:
+                                isValid
+                                    ? () {
+                                      final trimmed = controller.text.trim();
+                                      final clonedSong = _editedSong.copyWith(
+                                        title: trimmed,
+                                      );
+                                      profileProvider.addSong(clonedSong);
+                                      Navigator.of(context).pop();
+                                      // Optionally scroll to new song, etc.
+                                    }
+                                    : null,
                             child: const Text('Duplicate'),
-                            onPressed: isValid
-                              ? () {
-                                  final trimmed = controller.text.trim();
-                                  final clonedSong = _editedSong.copyWith(title: trimmed);
-                                  profileProvider.addSong(clonedSong);
-                                  Navigator.of(context).pop();
-                                  // Optionally scroll to new song, etc.
-                                }
-                              : null,
                           ),
                         ],
                       );
@@ -364,7 +383,10 @@ class _SongWidgetState extends State<SongWidget> {
                     ),
               );
               if (confirm == true) {
-                final userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+                final userProfileProvider = Provider.of<UserProfileProvider>(
+                  context,
+                  listen: false,
+                );
                 userProfileProvider.removeSong(_editedSong.title);
                 // Optionally: show feedback or close/refresh UI
               }
@@ -486,41 +508,31 @@ class _SongWidgetState extends State<SongWidget> {
               icon: const Icon(Icons.add),
               label: const Text("Add Link"),
               onPressed: () async {
-                final newLink = Link.defaultLink(_editedSong.title);
-                final selectedWrapper = await Navigator.push<LinkWrapper>(
+                final selectedLink = await Navigator.push<Link>(
                   context,
                   MaterialPageRoute(
                     builder:
-                        (_) => LinkSearchScreen(
-                          query: newLink.name,
-                          onSelected:
-                              (linkWrapper) =>
-                                  Navigator.pop(context, linkWrapper),
-                          initialKind:
-                              null, // Optionally pass LinkKind if desired
-                          initialCategory:
-                              null, // Optionally pass LinkCategory if desired
-                        ),
+                        (context) => LinkSearchScreen(
+                      query: _editedSong.title,
+                      initialKind: null,
+                      initialCategory: null,
+                      onSelected: (selected) {
+                        Navigator.pop(context, selected);
+                      },
+                    ),
                   ),
                 );
 
-                if (!mounted || selectedWrapper == null) return;
+                if (!mounted || selectedLink == null) return;
+                  final confirmed = await showDialog<Link>(
+                    context: context,
+                    builder:
+                        (_) => LinkConfirmationDialog(
+                          initialLink: selectedLink,
+                        ),
+                  );
 
-                final confirmed = await showDialog<Link>(
-                  context: context,
-                  builder:
-                      (_) => LinkConfirmationDialog(
-                        initialLink: selectedWrapper.link,
-                      ),
-                );
-
-                if (confirmed != null) {
-                  userProfileProvider.addSongLink(songTitle, confirmed);
-                  setState(() {
-                    _editedSong = _editedSong.copyWith(
-                      links: [..._editedSong.links, confirmed],
-                    );
-                  });
+                  if (confirmed != null) {
                 }
               },
             ),

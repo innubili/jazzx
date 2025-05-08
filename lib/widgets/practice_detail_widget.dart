@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/practice_category.dart';
+import '../models/link.dart';
 import '../providers/user_profile_provider.dart';
 import '../providers/jazz_standards_provider.dart';
 import 'song_line_widget.dart';
 import 'song_picker_sheet.dart';
 import 'multi_song_picker_sheet.dart';
+import '../screens/link_search_screen.dart';
 
-class PracticeDetailWidget extends StatelessWidget {
+
+import 'link_widget.dart'; // Import LinkWidget
+import 'link_editor_widgets.dart' show LinkConfirmationDialog;
+
+class PracticeDetailWidget extends StatefulWidget {
   final PracticeCategory category;
   final String note;
   final List<String> songs;
   final int time;
-  final List<String> links;
+  final List<Link> links;
   final ValueChanged<String> onNoteChanged;
   final ValueChanged<List<String>> onSongsChanged;
   final ValueChanged<int> onTimeChanged;
-  final ValueChanged<List<String>> onLinksChanged;
+  final ValueChanged<List<Link>> onLinksChanged;
 
   const PracticeDetailWidget({
     super.key,
@@ -32,6 +38,26 @@ class PracticeDetailWidget extends StatelessWidget {
   });
 
   @override
+  State<PracticeDetailWidget> createState() => _PracticeDetailWidgetState();
+}
+
+class _PracticeDetailWidgetState extends State<PracticeDetailWidget> {
+  // Track which link viewers are open by link key
+  final Set<String> _openViewers = {};
+
+  void _handleOpenViewer(String key) {
+    setState(() {
+      _openViewers.add(key);
+    });
+  }
+
+  void _handleCloseViewer(String key) {
+    setState(() {
+      _openViewers.remove(key);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<UserProfileProvider>(
       context,
@@ -41,9 +67,9 @@ class PracticeDetailWidget extends StatelessWidget {
         Provider.of<JazzStandardsProvider>(context, listen: false).standards;
 
     final selectedSong =
-        songs.isNotEmpty
-            ? (profileProvider.profile?.songs[songs.first] ??
-                standards.firstWhere((s) => s.title == songs.first))
+        widget.songs.isNotEmpty
+            ? (profileProvider.profile?.songs[widget.songs.first] ??
+                standards.firstWhere((s) => s.title == widget.songs.first))
             : null;
 
     return Padding(
@@ -52,13 +78,12 @@ class PracticeDetailWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Removed time adjustment row for reuse in session screen
-            if (category.allowsNote)
-              _NoteTextField(note: note, onNoteChanged: onNoteChanged),
-            if (category.allowsNote) const SizedBox(height: 16),
+            if (widget.category.allowsNote)
+              _NoteTextField(note: widget.note, onNoteChanged: widget.onNoteChanged),
+            if (widget.category.allowsNote) const SizedBox(height: 16),
 
             // Song Picker for newsong
-            if (category == PracticeCategory.newsong && category.allowsSongs)
+            if (widget.category == PracticeCategory.newsong && widget.category.allowsSongs)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -93,18 +118,18 @@ class PracticeDetailWidget extends StatelessWidget {
                       );
                       if (selectedSongTitle != null &&
                           selectedSongTitle.isNotEmpty) {
-                        onSongsChanged([selectedSongTitle]);
+                        widget.onSongsChanged([selectedSongTitle]);
                       }
                     },
                     child: const Text("Choose Song"),
                   ),
                 ],
               ),
-            if (category == PracticeCategory.newsong && category.allowsSongs)
+            if (widget.category == PracticeCategory.newsong && widget.category.allowsSongs)
               const SizedBox(height: 16),
 
             // Repertoire Multi Song Picker
-            if (category == PracticeCategory.repertoire && category.allowsSongs)
+            if (widget.category == PracticeCategory.repertoire && widget.category.allowsSongs)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -112,8 +137,8 @@ class PracticeDetailWidget extends StatelessWidget {
                     "Repertoire Songs",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  if (songs.isEmpty) const Text("No songs selected"),
-                  ...songs.map((s) => Text("• $s")),
+                  if (widget.songs.isEmpty) const Text("No songs selected"),
+                  ...widget.songs.map((s) => Text("• $s")),
                   TextButton(
                     onPressed: () async {
                       final selectedTitles =
@@ -122,7 +147,7 @@ class PracticeDetailWidget extends StatelessWidget {
                         isScrollControlled: true,
                         builder:
                             (context) => MultiSongPickerSheet(
-                          initialSelection: songs,
+                          initialSelection: widget.songs,
                           onSongsSelected:
                               (selected) =>
                                   Navigator.pop(context, selected),
@@ -130,14 +155,14 @@ class PracticeDetailWidget extends StatelessWidget {
                       );
 
                       if (selectedTitles != null) {
-                        onSongsChanged(selectedTitles);
+                        widget.onSongsChanged(selectedTitles);
                       }
                     },
                     child: const Text("Select Songs"),
                   ),
                 ],
               ),
-            if (category.allowsLinks)
+            if (widget.category.allowsLinks)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -145,66 +170,59 @@ class PracticeDetailWidget extends StatelessWidget {
                     'Links',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  if (links.isEmpty) const Text("No links added"),
-                  ...links.map(
-                    (l) => Row(
-                      children: [
-                        const Text("• ", style: TextStyle(fontSize: 18)),
-                        Expanded(child: Text(l, overflow: TextOverflow.ellipsis)),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 20),
-                          tooltip: 'Remove link',
-                          onPressed: () {
-                            final newLinks = List<String>.from(links)..remove(l);
-                            onLinksChanged(newLinks);
-                          },
-                        ),
-                      ],
+                  if (widget.links.isEmpty) const Text("No links added"),
+                  ...widget.links.map(
+                    (link) => LinkWidget(
+                      link: link,
+                      readOnly: false,
+                      isViewerOpen: _openViewers.contains(link.key),
+                      onOpenViewer: () => _handleOpenViewer(link.key),
+                      onCloseViewer: () => _handleCloseViewer(link.key),
+                      onUpdated: (updatedLink) {
+                        final newLinks = widget.links.map((l) => l.key == updatedLink.key ? updatedLink : l).toList();
+                        widget.onLinksChanged(newLinks);
+                      },
+                      onDelete: () {
+                        final newLinks = List<Link>.from(widget.links)..remove(link);
+                        widget.onLinksChanged(newLinks);
+                      },
+                      highlightQuery: null,
                     ),
                   ),
                   TextButton(
                     onPressed: () async {
-                      final controller = TextEditingController();
-                      final result = await showDialog<String>(
-                        context: context,
-                        builder:
-                            (ctx) => AlertDialog(
-                          title: const Text('Add Link'),
-                          content: TextField(
-                            controller: controller,
-                            decoration: const InputDecoration(
-                              hintText: 'Paste or type link',
-                            ),
-                            autofocus: true,
-                            onSubmitted:
-                                (value) =>
-                                    Navigator.of(ctx).pop(value.trim()),
+                      final params = practiceCategoryLinkSearchSchema[widget.category] ?? LinkSearchParams(query: '', initialKind: LinkKind.youtube, initialCategory: LinkCategory.other);
+                      final selectedLink = await Navigator.of(context).push<Link>(
+                        MaterialPageRoute(
+                          builder: (ctx) => LinkSearchScreen(
+                            query: params.query,
+                            initialKind: params.initialKind,
+                            initialCategory: params.initialCategory,
+                            onSelected: (selected) {
+                              Navigator.pop(ctx, selected);
+                            },
                           ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(ctx).pop(),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed:
-                                  () => Navigator.of(
-                                        ctx,
-                                      ).pop(controller.text.trim()),
-                              child: const Text('Add'),
-                            ),
-                          ],
                         ),
                       );
-                      if (result != null && result.isNotEmpty) {
-                        final newLinks = List<String>.from(links)..add(result);
-                        onLinksChanged(newLinks);
+                      if (selectedLink != null) {
+                        final confirmed = await showDialog<Link>(
+                          context: context,
+                          builder: (_) => LinkConfirmationDialog(
+                            initialLink: selectedLink,
+                          ),
+                        );
+
+                        if (confirmed != null) {
+                          final updatedLinks = [...widget.links, confirmed];
+                          widget.onLinksChanged(updatedLinks);
+                        }
                       }
                     },
                     child: const Text("Add Link"),
                   ),
                 ],
               ),
-            if (category.allowsLinks) const SizedBox(height: 16),
+            if (widget.category.allowsLinks) const SizedBox(height: 16),
           ],
         ),
       ),

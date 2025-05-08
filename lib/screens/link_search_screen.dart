@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/link.dart';
-import '../models/wrappers.dart';
+
 import '../services/youtube_service.dart';
 import '../services/spotify_service.dart';
 import '../widgets/search_bar_widget.dart';
@@ -10,7 +10,7 @@ import '../widgets/main_drawer.dart'; // Import the MainDrawer widget
 
 class LinkSearchScreen extends StatefulWidget {
   final String query;
-  final void Function(LinkWrapper link) onSelected;
+  final void Function(Link link) onSelected;
   final LinkKind? initialKind;
   final LinkCategory? initialCategory;
 
@@ -39,12 +39,36 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
   late Set<LinkKind> _selectedKinds;
   final Map<ValueKey, GlobalKey> _itemKeys = {};
 
+  // --- Utility: Detect if query is a URL or domain ---
+  String? _normalizeUrl(String query) {
+    final trimmed = query.trim();
+    // Accept if it's a full URL
+    final urlPattern = RegExp(r'^(https?://)');
+    if (urlPattern.hasMatch(trimmed)) {
+      try {
+        final uri = Uri.parse(trimmed);
+        if (uri.hasAbsolutePath || uri.host.isNotEmpty) return trimmed;
+      } catch (_) {}
+    }
+    // Accept if it looks like a domain (e.g. www.youtube.com/...)
+    final domainPattern = RegExp(r'^(www\.|[a-zA-Z0-9-]+\.[a-zA-Z]{2,})(/.*)?');
+    if (domainPattern.hasMatch(trimmed)) {
+      final candidate = 'https://$trimmed';
+      try {
+        final uri = Uri.parse(candidate);
+        if (uri.hasAbsolutePath || uri.host.isNotEmpty) return candidate;
+      } catch (_) {}
+    }
+    return null;
+  }
+
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.query);
     _selectedCategory = widget.initialCategory ?? LinkCategory.backingTrack;
-    _selectedKinds = widget.initialKind != null ? {widget.initialKind!} : {LinkKind.youtube};
+    _selectedKinds =
+        widget.initialKind != null ? {widget.initialKind!} : {LinkKind.youtube};
     final suffix = _categorySuffix(_selectedCategory);
     final initialQuery =
         '${widget.query} ${suffix.isNotEmpty ? suffix : ''}'.trim();
@@ -117,9 +141,7 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
       category: _selectedCategory,
       isDefault: false,
     );
-    final linkId = result.url;
-    final wrapper = LinkWrapper(linkId: linkId, link: link);
-    Navigator.pop(context, wrapper);
+    Navigator.pop(context, link);
   }
 
   void _onConfirmSelection() {
@@ -134,7 +156,7 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
       isDefault: false,
     );
 
-    widget.onSelected(LinkWrapper(linkId: baseLink.link, link: baseLink));
+    widget.onSelected(baseLink);
   }
 
   void _onScrollEndTrigger() {
@@ -241,15 +263,17 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final normalizedUrl = _normalizeUrl(_controller.text);
     return Scaffold(
       appBar: AppBar(
         title: Text('Find link for "${widget.query}"'),
         leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            tooltip: 'Open navigation menu',
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
+          builder:
+              (context) => IconButton(
+                icon: const Icon(Icons.menu),
+                tooltip: 'Open navigation menu',
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
         ),
       ),
       drawer: const MainDrawer(),
@@ -267,6 +291,24 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
             selectedKinds: _selectedKinds,
             onKindsChanged: _handleKindChange,
           ),
+          if (normalizedUrl != null)
+            ListTile(
+              leading: const Icon(Icons.link),
+              title: const Text('Use this link'),
+              subtitle: Text(normalizedUrl),
+              tileColor: Colors.green.shade50,
+              onTap: () {
+                final link = Link(
+                  key: '',
+                  name: normalizedUrl,
+                  kind: LinkKind.youtube, // Or infer from context
+                  link: normalizedUrl,
+                  category: _selectedCategory,
+                  isDefault: false,
+                );
+                Navigator.pop(context, link);
+              },
+            ),
           if (_selectedResult != null)
             LinkViewPanel(
               link: Link(

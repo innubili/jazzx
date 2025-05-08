@@ -1,13 +1,14 @@
 import '../utils/utils.dart';
 import 'practice_category.dart';
 import '../utils/session_utils.dart';
+import 'link.dart';
 
 class SessionCategory {
   final int time; // in seconds
   final String? note; // text
   final int? bpm; // beats per minute
   final Map<String, int>? songs;
-  final List<String>? links;
+  final List<Link>? links;
 
   SessionCategory({
     required this.time,
@@ -19,6 +20,37 @@ class SessionCategory {
 
   factory SessionCategory.fromJson(Map<String, dynamic> json) {
     final safeJson = asStringKeyedMap(json);
+    List<Link>? parsedLinks;
+    if (safeJson['links'] is Map) {
+      parsedLinks = [];
+      final linksMap = asStringKeyedMap(safeJson['links']);
+      for (final entry in linksMap.entries) {
+        final desanitizedKey = desanitizeLinkKey(entry.key);
+        if (entry.value is Map) {
+          parsedLinks.add(
+            Link.fromJson({
+              ...asStringKeyedMap(entry.value),
+              'key': desanitizedKey,
+            }),
+          );
+        }
+      }
+    } else if (safeJson['links'] is List) {
+      // For backward compatibility: treat as list of URLs (strings)
+      parsedLinks =
+          List<String>.from(safeJson['links'])
+              .map(
+                (url) => Link(
+                  key: sanitizeLinkKey(url),
+                  name: url,
+                  kind: LinkKind.youtube, // fallback
+                  link: url,
+                  category: LinkCategory.other,
+                  isDefault: false,
+                ),
+              )
+              .toList();
+    }
     return SessionCategory(
       time: safeJson['time'] ?? 0,
       note: safeJson['note'],
@@ -27,10 +59,7 @@ class SessionCategory {
           safeJson['songs'] is Map
               ? Map<String, int>.from(safeJson['songs'])
               : null,
-      links:
-          safeJson['links'] is List
-              ? List<String>.from(safeJson['links'])
-              : null,
+      links: parsedLinks,
     );
   }
 
@@ -39,7 +68,8 @@ class SessionCategory {
     if (note != null) 'note': note,
     if (bpm != null) 'bpm': bpm,
     if (songs != null) 'songs': songs,
-    if (links != null) 'links': links,
+    if (links != null)
+      'links': {for (final link in links!) link.key: link.toJson()},
   };
 
   @override
@@ -53,7 +83,7 @@ extension SessionCategoryCopyWith on SessionCategory {
     String? note,
     int? bpm,
     Map<String, int>? songs,
-    List<String>? links,
+    List<Link>? links,
   }) {
     return SessionCategory(
       time: time ?? this.time,
@@ -82,6 +112,8 @@ class Warmup {
 }
 
 class Session {
+  /// .started: Timestamp of session start (UNIX seconds), used as sessionID as string in Firebase
+  final int started; // timestamp
   final int duration; // in seconds
   final int ended; // timestamp
   final String instrument;
@@ -89,12 +121,16 @@ class Session {
   final Warmup? warmup;
 
   Session({
+    required this.started,
     required this.duration,
     required this.ended,
     required this.instrument,
     required this.categories,
     this.warmup,
   });
+
+  /// Returns the session's ID (the .started field as a string, for Firebase compatibility)
+  String get id => started.toString();
 
   factory Session.fromJson(Map<String, dynamic> json) {
     final safeJson = asStringKeyedMap(json);
@@ -116,6 +152,7 @@ class Session {
       catMap.putIfAbsent(cat, () => SessionCategory(time: 0));
     }
     return Session(
+      started: safeJson['strted'] ?? 0,
       duration: safeJson['duration'] ?? 0,
       ended: safeJson['ended'] ?? 0,
       instrument: safeJson['instrument'] ?? '',
@@ -126,6 +163,7 @@ class Session {
 
   Map<String, dynamic> toJson() {
     return {
+      'strted': started,
       'duration': duration,
       'ended': ended,
       'instrument': instrument,
@@ -138,6 +176,7 @@ class Session {
   }
 
   Session copyWith({
+    int? strted,
     int? duration,
     int? ended,
     String? instrument,
@@ -145,6 +184,7 @@ class Session {
     Warmup? warmup,
   }) {
     return Session(
+      started: strted ?? started,
       duration: duration ?? this.duration,
       ended: ended ?? this.ended,
       instrument: instrument ?? this.instrument,
@@ -159,6 +199,7 @@ class Session {
     );
     newCategories[category] = data;
     return Session(
+      started: started,
       duration: duration,
       ended: ended,
       instrument: instrument,
@@ -167,7 +208,11 @@ class Session {
     );
   }
 
-  static Session getDefault({String instrument = 'guitar'}) => Session(
+  static Session getDefault({
+    required int sessionId,
+    String instrument = 'guitar',
+  }) => Session(
+    started: sessionId,
     duration: 0,
     ended: 0,
     instrument: instrument,
@@ -176,6 +221,34 @@ class Session {
       for (final cat in PracticeCategory.values) cat: SessionCategory(time: 0),
     },
   );
+
+  /// Returns a pretty-printed log string matching FirebaseService session log format.
+  String asLogString() {
+    // Format sessionId (UNIX timestamp in seconds) to DD-MMM-YYYY HH:mm:ss
+    final ts = int.tryParse(id);
+    String humanReadable = '';
+    if (ts != null) {
+      final dt = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+      humanReadable =
+          '${dt.day.toString().padLeft(2, '0')}-${months[dt.month - 1]}-${dt.year} '
+          '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
+    }
+    return 'Session[$id] ($humanReadable)';
+  }
 
   @override
   String toString() =>

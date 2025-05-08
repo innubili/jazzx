@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/practice_category.dart';
 import '../models/session.dart';
+import '../models/link.dart';
 import 'practice_detail_widget.dart';
 
 class PracticeCategoryExpandableCard extends StatelessWidget {
@@ -12,7 +13,7 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
   final ValueChanged<String> onNoteChanged;
   final ValueChanged<List<String>> onSongsChanged;
   final ValueChanged<int> onTimeChanged;
-  final ValueChanged<List<String>> onLinksChanged;
+  final ValueChanged<List<Link>> onLinksChanged;
   final bool editRecordedSession;
 
   const PracticeCategoryExpandableCard({
@@ -100,10 +101,8 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
               context: context,
               builder:
                   (ctx) => AlertDialog(
-                    title: const Text('Select Songs'),
-                    content: const Text(
-                      'Please select at least one song for Repertoire.',
-                    ),
+                    title: const Text('No Songs Selected'),
+                    content: const Text('Please select at least one song.'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(ctx).pop(),
@@ -112,9 +111,9 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
                     ],
                   ),
             );
-            return;
+          } else {
+            onTap();
           }
-          onTap();
         };
       } else {
         return onTap;
@@ -122,24 +121,14 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
     }
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child:
-          editMode
-              ? isExpanded
-                  ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InkWell(onTap: buildOnTap(context), child: topBar),
-                      AnimatedCrossFade(
-                        crossFadeState: CrossFadeState.showSecond,
-                        duration: const Duration(milliseconds: 200),
-                        firstChild: const SizedBox.shrink(),
-                        secondChild: editor,
-                      ),
-                    ],
-                  )
-                  : InkWell(onTap: buildOnTap(context), child: topBar)
-              : topBar,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+      elevation: isExpanded ? 4 : 1,
+      child: Column(
+        children: [
+          InkWell(onTap: buildOnTap(context), child: topBar),
+          if (isExpanded) editor,
+        ],
+      ),
     );
   }
 
@@ -162,17 +151,17 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
       case PracticeCategory.exercise:
         return Colors.blue;
       case PracticeCategory.newsong:
-        return Colors.green;
-      case PracticeCategory.repertoire:
-        return Colors.purple;
-      case PracticeCategory.lesson:
         return Colors.orange;
+      case PracticeCategory.repertoire:
+        return Colors.green;
+      case PracticeCategory.lesson:
+        return Colors.purple;
       case PracticeCategory.theory:
         return Colors.teal;
       case PracticeCategory.video:
         return Colors.red;
       case PracticeCategory.gig:
-        return Colors.amber;
+        return Colors.brown;
       case PracticeCategory.fun:
         return Colors.pink;
     }
