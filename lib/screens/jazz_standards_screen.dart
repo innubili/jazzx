@@ -19,17 +19,20 @@ class _JazzStandardsScreenState extends State<JazzStandardsScreen> {
   @override
   Widget build(BuildContext context) {
     final standards = Provider.of<JazzStandardsProvider>(context).standards;
-    final userSongs = Provider.of<UserProfileProvider>(context).profile?.songs.keys
-        .map((e) => e.trim().toLowerCase())
-        .toSet() ?? {};
-    final filtered = _searchQuery.isEmpty
-        ? standards
-        : standards.where((s) {
-            final q = _searchQuery.toLowerCase();
-            return s.title.toLowerCase().contains(q) ||
-                s.songwriters.toLowerCase().contains(q) ||
-                s.summary.toLowerCase().contains(q);
-          }).toList();
+    final userSongs =
+        Provider.of<UserProfileProvider>(
+          context,
+        ).profile?.songs.keys.map((e) => e.trim().toLowerCase()).toSet() ??
+        {};
+    final filtered =
+        _searchQuery.isEmpty
+            ? standards
+            : standards.where((s) {
+              final q = _searchQuery.toLowerCase();
+              return s.title.toLowerCase().contains(q) ||
+                  s.songwriters.toLowerCase().contains(q) ||
+                  s.summary.toLowerCase().contains(q);
+            }).toList();
 
     return Scaffold(
       appBar: SearchAppBar(

@@ -3,11 +3,12 @@ import 'package:http/http.dart' as http;
 
 import '../models/link.dart';
 import '../secrets.dart'; // contains APP_GOOGLE_API_KEY
-import '../screens/link_search_screen.dart'; // for SearchResult
+import '../models/search_result.dart';
+import 'cache_service.dart';
 
 class YouTubeSearchService {
   String? _nextPageToken;
-  final Map<String, List<SearchResult>> _cache = {};
+  final CacheService _cacheService = CacheService();
   final Map<String, bool> _fullyFetched = {};
 
   void resetPagination() {
@@ -16,23 +17,22 @@ class YouTubeSearchService {
 
   bool get hasMore => _nextPageToken != null;
 
-  String _cacheKey(String query, LinkCategory category) =>
-      '$query|${category.name}';
-
   Future<List<SearchResult>> search(
     String query, {
     required LinkCategory category,
     bool loadMore = false,
   }) async {
     final type = (category == LinkCategory.playlist) ? 'playlist' : 'video';
-    final key = _cacheKey(query, category);
+    const provider = 'youtube';
+    final cached = _cacheService.getExact(provider, query, category);
+    final key = _cacheService.buildKey(provider, query, category);
 
-    if (!loadMore && _cache.containsKey(key)) {
-      return _cache[key]!;
+    if (!loadMore && cached != null) {
+      return cached;
     }
 
     if (loadMore && (_fullyFetched[key] ?? false)) {
-      return _cache[key] ?? [];
+      return cached ?? [];
     }
 
     final baseParams = {
@@ -94,13 +94,13 @@ class YouTubeSearchService {
             .whereType<SearchResult>()
             .toList();
 
-    final existing = _cache[key] ?? [];
+    final existing = cached ?? [];
     final combined = [...existing, ...results];
     if (combined.length >= 100 || _nextPageToken == null) {
       _fullyFetched[key] = true;
     }
 
-    _cache[key] = combined;
+    _cacheService.store(provider, query, category, combined);
     return combined;
   }
 

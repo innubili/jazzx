@@ -7,7 +7,7 @@ import '../models/preferences.dart';
 import '../models/statistics.dart';
 import '../services/firebase_service.dart';
 import '../utils/utils.dart';
-import '../utils/statistics_utils.dart';
+import '../utils/statistics_recalculation.dart';
 
 class UserProfileProvider extends ChangeNotifier {
   UserProfile? _profile;
@@ -386,13 +386,21 @@ class UserProfileProvider extends ChangeNotifier {
   }
 
   /// Recalculate statistics from all sessions and clear the dirty flag
-  Future<void> recalculateStatisticsFromAllSessionsAndClearFlag() async {
+  /// Recalculate statistics from all sessions and clear the dirty flag
+  /// If [force] is true, recalculate regardless of the dirty flag.
+  Future<void> recalculateStatisticsFromAllSessionsAndClearFlag({bool force = false}) async {
     if (_profile == null || _userId == null) return;
-    log.info(
-      '[UserProfileProvider] Starting full statistics recalculation from all sessions...',
-    );
-    final sessions = _profile!.sessions.values.toList();
-    final updatedStats = recalculateStatisticsFromSessions(sessions);
+    // Only recalculate if dirty, unless forced
+    if (!force && !_profile!.preferences.statisticsDirty) {
+      log.info('[UserProfileProvider] Skipping statistics recalculation: not dirty and not forced.');
+      return;
+    }
+    log.info('[UserProfileProvider] Starting full statistics recalculation from all sessions (batched)...');
+    final stopwatch = Stopwatch()..start();
+    // Use the new batch-based loader
+    final updatedStats = await recalculateStatisticsWithBatches(batchSize: 100);
+    stopwatch.stop();
+    log.info('[UserProfileProvider] Statistics loaded and recalculated in \\${stopwatch.elapsedMilliseconds} ms');
     // Update statistics and clear dirty flag
     final updatedPrefs = _profile!.preferences.copyWith(statisticsDirty: false);
     _profile = _profile!.copyWith(
@@ -401,9 +409,7 @@ class UserProfileProvider extends ChangeNotifier {
     );
     await FirebaseService().saveStatistics(updatedStats);
     await FirebaseService().savePreferences(updatedPrefs);
-    log.info(
-      '[UserProfileProvider] Full statistics recalculation complete. statisticsDirty flag reset to FALSE.',
-    );
+    log.info('[UserProfileProvider] Full statistics recalculation complete. statisticsDirty flag reset to FALSE.');
     notifyListeners();
   }
 }

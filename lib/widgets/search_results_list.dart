@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../screens/link_search_screen.dart';
+import '../models/search_result.dart';
+
 
 class SearchResultsList extends StatefulWidget {
   final List<SearchResult> results;
@@ -91,6 +92,7 @@ class _SearchResultsListState extends State<SearchResultsList> {
                       width: 80,
                       height: 60,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Icon(Icons.broken_image, size: 48, color: Colors.grey),
                     ),
                   )
                   : const Icon(Icons.music_video, size: 40),

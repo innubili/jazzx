@@ -41,6 +41,7 @@ class Song {
   final String songwriters;
   final String year;
   final bool deleted;
+  final int? added; // Timestamp (UNIX seconds), optional for backward compatibility
 
   Song({
     required this.title,
@@ -54,6 +55,7 @@ class Song {
     required this.songwriters,
     required this.year,
     this.deleted = false,
+    this.added,
   });
 
   Song copyWith({
@@ -68,6 +70,7 @@ class Song {
     String? songwriters,
     String? year,
     bool? deleted,
+    int? added,
   }) {
     return Song(
       title: title ?? this.title,
@@ -81,6 +84,7 @@ class Song {
       songwriters: songwriters ?? this.songwriters,
       year: year ?? this.year,
       deleted: deleted ?? this.deleted,
+      added: added ?? this.added,
     );
   }
 
@@ -124,6 +128,7 @@ class Song {
       songwriters: json['songwriters'] ?? '',
       year: json['year'] ?? '',
       deleted: json['deleted'] ?? false,
+      added: json['added'], // Will be null for jazz_standards
     );
   }
 
@@ -138,6 +143,7 @@ class Song {
       'songwriters': songwriters,
       'year': year,
       'deleted': deleted,
+      'added': added,
       'links': {
         for (var link in links)
           sanitizeLinkKey(link.link): {
@@ -171,5 +177,6 @@ class Song {
     recommendedVersions: '',
     songwriters: '',
     year: '',
+    added: DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000,
   );
 }

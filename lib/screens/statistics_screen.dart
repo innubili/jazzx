@@ -20,7 +20,8 @@ class StatisticsScreen extends StatelessWidget {
       final mins = secs ~/ 60;
       final h = mins ~/ 60;
       final m = mins % 60;
-      return h > 0 ? '${h}h ${m}m' : '${m}m';
+      final minStr = m.toString().padLeft(2, '0');
+      return h > 0 ? "${h}h${minStr}'" : "${minStr}'";
     }
 
     int getTotalSeconds() => stats.total.values.values.fold(0, (a, b) => a + b);
@@ -31,10 +32,14 @@ class StatisticsScreen extends StatelessWidget {
       (p) => p.profile?.songs.length ?? 0,
     );
 
+    // Gather years and sort (descending)
+    final years = stats.years.keys.toList()..sort((a, b) => b.compareTo(a));
+    final tabCount = 2 + years.length;
+
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text('Statistics'),
-        centerTitle: true,
         leading: Builder(
           builder:
               (context) => IconButton(
@@ -77,7 +82,7 @@ class StatisticsScreen extends StatelessWidget {
                     ),
                     _StatBlock(
                       label: 'Sessions',
-                      value: getTotalSessions().toString(),
+                      value: stats.sessionCount.toString(),
                     ),
                     _StatBlock(
                       label: 'Songs Practiced',
@@ -88,124 +93,210 @@ class StatisticsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            Text(
-              'By Category',
-              style: GoogleFonts.montserrat(
-                textStyle: Theme.of(context).textTheme.titleLarge,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 120, // Show top 3 categories, scroll for more
-              child: Builder(
-                builder: (context) {
-                  final catStats = stats.total.values;
-                  if (catStats.isEmpty) return const SizedBox.shrink();
-                  final sorted =
-                      catStats.entries.toList()
-                        ..sort((a, b) => b.value.compareTo(a.value));
-                  final maxSeconds = sorted.isNotEmpty ? sorted.first.value : 1;
-                  return ListView.separated(
-                    scrollDirection: Axis.vertical,
-                    itemCount: sorted.length,
-                    separatorBuilder: (_, __) => const Divider(height: 8),
-                    itemBuilder: (context, idx) {
-                      final entry = sorted[idx];
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            DefaultTabController(
+              length: tabCount,
+              child: Expanded(
+                child: Column(
+                  children: [
+                    TabBar(
+                      labelColor: Theme.of(context).primaryColor,
+                      unselectedLabelColor: Colors.grey,
+                      indicatorColor: Theme.of(context).primaryColor,
+                      isScrollable: true,
+                      tabs: [
+                        const Tab(text: 'Songs Practiced'),
+                        const Tab(text: 'By Category'),
+                        ...years.map((y) => Tab(text: y.toString())),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
                         children: [
-                          Row(
-                            children: [
-                              Icon(
-                                PracticeCategoryUtils.icons[entry.key],
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  entry.key.name.capitalize(),
-                                  style: GoogleFonts.montserrat(fontSize: 14),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(formatSeconds(entry.value)),
-                            ],
+                          // Songs Practiced Tab (overall)
+                          Builder(
+                            builder: (context) {
+                              final songSeconds = stats.songSeconds;
+                              if (songSeconds.isEmpty)
+                                return const Center(
+                                  child: Text('No song data'),
+                                );
+                              final sorted =
+                                  songSeconds.entries.toList()..sort(
+                                    (a, b) => b.value.compareTo(a.value),
+                                  );
+                              final maxSeconds =
+                                  sorted.isNotEmpty ? sorted.first.value : 1;
+                              return ListView.separated(
+                                scrollDirection: Axis.vertical,
+                                itemCount: sorted.length,
+                                separatorBuilder:
+                                    (_, __) => const Divider(height: 8),
+                                itemBuilder: (context, idx) {
+                                  final entry = sorted[idx];
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              entry.key.length > 24
+                                                  ? '${entry.key.substring(0, 21)}...'
+                                                  : entry.key,
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: 14,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(formatSeconds(entry.value)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      LinearProgressIndicator(
+                                        value: entry.value / maxSeconds,
+                                        backgroundColor: Colors.grey[300],
+                                        color: Theme.of(context).primaryColor,
+                                        minHeight: 7,
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
                           ),
-                          const SizedBox(height: 4),
-                          LinearProgressIndicator(
-                            value: entry.value / maxSeconds,
-                            backgroundColor: Colors.grey[300],
-                            color: Theme.of(context).primaryColor,
-                            minHeight: 7,
+                          // By Category Tab (overall)
+                          Builder(
+                            builder: (context) {
+                              final catStats = stats.total.values;
+                              if (catStats.isEmpty)
+                                return const Center(
+                                  child: Text('No category data'),
+                                );
+                              final sorted =
+                                  catStats.entries.toList()..sort(
+                                    (a, b) => b.value.compareTo(a.value),
+                                  );
+                              final maxSeconds =
+                                  sorted.isNotEmpty ? sorted.first.value : 1;
+                              return ListView.separated(
+                                scrollDirection: Axis.vertical,
+                                itemCount: sorted.length,
+                                separatorBuilder:
+                                    (_, __) => const Divider(height: 8),
+                                itemBuilder: (context, idx) {
+                                  final entry = sorted[idx];
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            PracticeCategoryUtils.icons[entry
+                                                .key],
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              entry.key.name.capitalize(),
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: 14,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(formatSeconds(entry.value)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      LinearProgressIndicator(
+                                        value: entry.value / maxSeconds,
+                                        backgroundColor: Colors.grey[300],
+                                        color: Theme.of(context).primaryColor,
+                                        minHeight: 7,
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                          // Year tabs (per-category for each year)
+                          ...years.map(
+                            (y) => Builder(
+                              builder: (context) {
+                                final yearStats = stats.years[y];
+                                if (yearStats == null)
+                                  return Center(child: Text('No data for $y'));
+                                final catStats = yearStats.total.values;
+                                if (catStats.isEmpty)
+                                  return Center(
+                                    child: Text('No category data for $y'),
+                                  );
+                                final sorted =
+                                    catStats.entries.toList()..sort(
+                                      (a, b) => b.value.compareTo(a.value),
+                                    );
+                                final maxSeconds =
+                                    sorted.isNotEmpty ? sorted.first.value : 1;
+                                return ListView.separated(
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: sorted.length,
+                                  separatorBuilder:
+                                      (_, __) => const Divider(height: 8),
+                                  itemBuilder: (context, idx) {
+                                    final entry = sorted[idx];
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              PracticeCategoryUtils.icons[entry
+                                                  .key],
+                                              size: 20,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                entry.key.name.capitalize(),
+                                                style: GoogleFonts.montserrat(
+                                                  fontSize: 14,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(formatSeconds(entry.value)),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 4),
+                                        LinearProgressIndicator(
+                                          value: entry.value / maxSeconds,
+                                          backgroundColor: Colors.grey[300],
+                                          color: Theme.of(context).primaryColor,
+                                          minHeight: 7,
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ],
-                      );
-                    },
-                  );
-                },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 32),
-            Text(
-              'Songs Practiced',
-              style: GoogleFonts.montserrat(
-                textStyle: Theme.of(context).textTheme.titleLarge,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 120, // Show top 3 songs, scroll for more
-              child: Builder(
-                builder: (context) {
-                  final songSeconds = stats.songSeconds;
-                  if (songSeconds.isEmpty) return const SizedBox.shrink();
-                  final sorted =
-                      songSeconds.entries.toList()
-                        ..sort((a, b) => b.value.compareTo(a.value));
-                  final maxSeconds = sorted.isNotEmpty ? sorted.first.value : 1;
-                  return ListView.separated(
-                    scrollDirection: Axis.vertical,
-                    itemCount: sorted.length,
-                    separatorBuilder: (_, __) => const Divider(height: 8),
-                    itemBuilder: (context, idx) {
-                      final entry = sorted[idx];
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  entry.key.length > 24
-                                      ? '${entry.key.substring(0, 21)}...'
-                                      : entry.key,
-                                  style: GoogleFonts.montserrat(fontSize: 14),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(formatSeconds(entry.value)),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          LinearProgressIndicator(
-                            value: entry.value / maxSeconds,
-                            backgroundColor: Colors.grey[300],
-                            color: Theme.of(context).primaryColor,
-                            minHeight: 7,
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 32),
-            // Removed 'Recent Sessions' section as requested
           ],
         ),
       ),

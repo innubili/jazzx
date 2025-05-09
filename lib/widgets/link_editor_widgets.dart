@@ -46,7 +46,10 @@ class _LinkConfirmationDialogState extends State<LinkConfirmationDialog> {
       category: _category,
     );
     // Update provider (Firebase) if possible
-    final userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+    final userProfileProvider = Provider.of<UserProfileProvider>(
+      context,
+      listen: false,
+    );
     final song = userProfileProvider.profile?.songs[updated.name];
     if (song != null) {
       userProfileProvider.updateSongLink(updated.name, updated);
@@ -269,12 +272,8 @@ class LinkKindPicker extends StatelessWidget {
         isSelected: kinds.map((k) => selected.contains(k)).toList(),
         onPressed: (index) {
           final kind = kinds[index];
-          final newSet = Set<LinkKind>.from(selected);
-          if (newSet.contains(kind)) {
-            newSet.remove(kind);
-          } else {
-            newSet.add(kind);
-          }
+          // Single-select: only one kind can be selected at a time
+          final newSet = <LinkKind>{kind};
           onChanged(newSet);
         },
         constraints: const BoxConstraints(minWidth: 72, minHeight: 64),

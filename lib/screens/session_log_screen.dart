@@ -74,6 +74,7 @@ class _SessionLogScreenState extends State<SessionLogScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text('Session Log'),
         leading: Builder(
           builder:

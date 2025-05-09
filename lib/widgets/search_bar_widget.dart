@@ -57,15 +57,16 @@ class SearchBarWidget extends StatelessWidget {
     final allowed = _allowedKindsFor(category);
     onKindsChanged(allowed);
 
-    final base =
-        controller.text
-            .split(
-              RegExp(
-                r'(backing track|playlist|lesson|sheet music)',
-                caseSensitive: false,
-              ),
-            )[0]
-            .trim();
+    // Remove any trailing site:... or OR site:... from the text
+    final base = controller.text
+        .replaceAll(RegExp(r'(site:[^ ]+|OR site:[^ ]+)', caseSensitive: false), '')
+        .split(
+          RegExp(
+            r'(backing track|playlist|lesson|sheet music)',
+            caseSensitive: false,
+          ),
+        )[0]
+        .trim();
     final updated = '$base ${_categorySuffix(category)}'.trim();
     controller.text = updated;
     onQueryChanged(updated);
@@ -87,7 +88,7 @@ class SearchBarWidget extends StatelessWidget {
               Expanded(
                 child: TextField(
                   controller: controller,
-                  onChanged: onQueryChanged,
+                  onSubmitted: onQueryChanged,
                   decoration: InputDecoration(
                     labelText: 'Search...',
                     suffixIcon: IconButton(

@@ -135,7 +135,8 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
                                 isValid
                                     ? () {
                                       final trimmed = controller.text.trim();
-                                      final newSong = Song.getDefault(trimmed);
+                                      final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+                                      final newSong = Song.getDefault(trimmed).copyWith(added: now);
                                       profileProvider.addSong(newSong);
                                       Navigator.of(context).pop();
                                       setState(() {

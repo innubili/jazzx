@@ -5,85 +5,89 @@ class PracticeModeButtonsWidget extends StatelessWidget {
   final String? activeMode;
   final String? queuedMode;
   final void Function(String mode) onModeSelected;
-  final int crossAxisCount;
 
   const PracticeModeButtonsWidget({
     super.key,
     this.activeMode,
     this.queuedMode,
     required this.onModeSelected,
-    required this.crossAxisCount,
   });
 
   @override
   Widget build(BuildContext context) {
-    final categories = PracticeCategory.values;
+    // Only include the four required categories
+    final categories = [
+      PracticeCategory.exercise,
+      PracticeCategory.newsong,
+      PracticeCategory.repertoire,
+      PracticeCategory.fun,
+    ];
     return LayoutBuilder(
       builder: (context, constraints) {
         final w = constraints.maxWidth;
         final h = constraints.maxHeight;
-        late double buttonSize;
-        Widget grid;
-        if (crossAxisCount == 4) {
-          // 2 rows x 4 buttons (portrait phone)
-          buttonSize = (w / 4).clamp(0, h / 2);
-          grid = Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(4, (i) => _sizedButton(context, categories[i], buttonSize)),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(4, (i) => _sizedButton(context, categories[i + 4], buttonSize)),
-              ),
-            ],
-          );
-        } else if (crossAxisCount == 8) {
-          // 1 row x 8 buttons (portrait tablet)
-          buttonSize = (w / 8).clamp(0, h);
-          grid = Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(8, (i) => _sizedButton(context, categories[i], buttonSize)),
-          );
-        } else if (crossAxisCount == 2) {
-          // 2 columns x 4 buttons (landscape phone)
-          buttonSize = (w / 2).clamp(0, h / 4);
-          grid = Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(4, (i) => _sizedButton(context, categories[i], buttonSize)),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(4, (i) => _sizedButton(context, categories[i + 4], buttonSize)),
-              ),
-            ],
-          );
-        } else if (crossAxisCount == 1) {
-          // 1 column x 8 buttons (landscape tablet)
-          buttonSize = (h / 8).clamp(0, w);
-          grid = Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(8, (i) => _sizedButton(context, categories[i], buttonSize)),
+        //info.log(Level.INFO, 'Resized: width=[1m$w[0m, height=[1m$h[0m');
+        // Portrait: single row, Landscape: single column
+        if (w > h) {
+          // Portrait: single row
+          final buttonSize =
+              w < h
+                  ? w / 4
+                  : h; // Always square: cannot exceed available height
+
+          return SizedBox(
+            width: w,
+            height: buttonSize,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(7, (i) {
+                if (i.isOdd) {
+                  // Insert a gap between buttons
+                  return SizedBox(width: 8.0);
+                } else {
+                  return _sizedButton(context, categories[i ~/ 2], buttonSize);
+                }
+              }),
+            ),
           );
         } else {
-          // Fallback: all in a row
-          buttonSize = (w / 8).clamp(0, h);
-          grid = Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(8, (i) => _sizedButton(context, categories[i], buttonSize)),
+          // Landscape: single column
+          final buttonSize =
+              h < w ? h / 4 : w; // Always square: cannot exceed available width
+
+          return SizedBox(
+            width: buttonSize,
+            height: h,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(7, (i) {
+                if (i.isOdd) {
+                  // Insert a gap between buttons
+                  return SizedBox(height: 8.0);
+                } else {
+                  return SizedBox(
+                    width: buttonSize,
+                    height: buttonSize,
+                    child: _sizedButton(
+                      context,
+                      categories[i ~/ 2],
+                      buttonSize,
+                    ),
+                  );
+                }
+              }),
+            ),
           );
         }
-        return grid;
       },
     );
   }
 
-  Widget _sizedButton(BuildContext context, PracticeCategory mode, double size) {
+  Widget _sizedButton(
+    BuildContext context,
+    PracticeCategory mode,
+    double size,
+  ) {
     return SizedBox(
       width: size,
       height: size,
@@ -94,7 +98,7 @@ class PracticeModeButtonsWidget extends StatelessWidget {
   Widget _buildButton(BuildContext context, PracticeCategory mode) {
     final isSelected = mode.name == activeMode || mode.name == queuedMode;
     return Padding(
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.only(top: 6, bottom: 6),
       child: ElevatedButton(
         onPressed: isSelected ? null : () => onModeSelected(mode.name),
         style: ElevatedButton.styleFrom(
@@ -108,10 +112,7 @@ class PracticeModeButtonsWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              PracticeCategoryUtils.icons[mode],
-              size: 32,
-            ),
+            Icon(PracticeCategoryUtils.icons[mode], size: 32),
             const SizedBox(height: 4),
             Flexible(
               child: FittedBox(

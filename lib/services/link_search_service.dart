@@ -1,58 +1,68 @@
-// import '../models/link.dart';
-// import '../screens/link_search_screen.dart';
+import '../models/link.dart';
+import '../models/search_result.dart';
+import 'youtube_service.dart';
+import 'spotify_service.dart';
+import 'link_query_schema.dart';
+import 'google_search_service.dart';
+import '../secrets.dart';
+import '../utils/utils.dart';
 
-// Future<List<SearchResult>> searchLinks({
-//   required String query,
-//   required SearchMode mode,
-//   required LinkCategory category,
-// }) async {
-//   switch (mode) {
-//     case SearchMode.web:
-//       return await _searchWeb(query, category);
-//     case SearchMode.local:
-//       return await _searchLocal(query, category);
-//     case SearchMode.irealpro:
-//       return await _searchIRealPro(query, category);
-//   }
-// }
+/// Unified service for searching links by kind and category.
+class LinkSearchService {
+  final YouTubeSearchService _youtubeService;
+  final SpotifySearchService _spotifyService;
+  final GoogleSearchService _googleService = GoogleSearchService(
+    apiKey: APP_GOOGLE_API_KEY,
+    cx: GOOGLE_CUSTOM_SEARCH_CX,
+  );
 
-// Future<List<SearchResult>> _searchWeb(
-//   String query,
-//   LinkCategory category,
-// ) async {
-//   // TODO: Replace with real APIs
-//   return [
-//     SearchResult(
-//       url: 'https://www.youtube.com/watch?v=abc123',
-//       title: '$query - Backing Track',
-//       kind: LinkKind.youtube,
-//     ),
-//     SearchResult(
-//       url: 'https://open.spotify.com/track/xyz456',
-//       title: '$query - Spotify Backing Track',
-//       kind: LinkKind.spotify,
-//     ),
-//   ];
-// }
+  LinkSearchService({
+    YouTubeSearchService? youtubeService,
+    SpotifySearchService? spotifyService,
+  }) : _youtubeService = youtubeService ?? YouTubeSearchService(),
+       _spotifyService = spotifyService ?? SpotifySearchService();
 
-// Future<List<SearchResult>> _searchLocal(
-//   String query,
-//   LinkCategory category,
-// ) async {
-//   // Local file search is triggered manually via FilePicker
-//   return [];
-// }
+  /// Unified search method
+  Future<List<SearchResult>> search({
+    required String query,
+    required LinkCategory category,
+    required LinkKind kind,
+    bool loadMore = false,
+  }) async {
+    // Use the schema to build the effective query
+    final effectiveQuery = buildLinkQuery(kind, category, query);
+    log.info(
+      'SEARCH | kind: $kind | category: $category | query: "$effectiveQuery" | service: google',
+    );
+    // Always use GoogleSearchService for all searches
+    final results = await _googleService.search(effectiveQuery, kind: kind);
+    return results;
+  }
 
-// Future<List<SearchResult>> _searchIRealPro(
-//   String query,
-//   LinkCategory category,
-// ) async {
-//   // No real search available — just simulate a result
-//   return [
-//     SearchResult(
-//       url: 'irealpro://open?song=$query',
-//       title: 'Open $query in iRealPro',
-//       kind: LinkKind.iReal,
-//     ),
-//   ];
-// }
+  /// Optionally, expose pagination helpers
+  bool hasMore(LinkKind kind) {
+    switch (kind) {
+      case LinkKind.youtube:
+        return _youtubeService.hasMore;
+      case LinkKind.spotify:
+        return _spotifyService.hasMore;
+      // Add other LinkKinds as needed
+      default:
+        // Optionally, fallback to Google search here in the future
+        return false;
+    }
+  }
+
+  void resetPagination(LinkKind kind) {
+    switch (kind) {
+      case LinkKind.youtube:
+        _youtubeService.resetPagination();
+        break;
+      case LinkKind.spotify:
+        _spotifyService.resetPagination();
+        break;
+      default:
+        break;
+    }
+  }
+}

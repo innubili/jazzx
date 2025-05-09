@@ -7,7 +7,6 @@ import '../models/link.dart';
 import 'link_editor_widgets.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_profile_provider.dart';
-import 'package:logging/logging.dart';
 import '../utils/utils.dart';
 import 'link_view_panel.dart';
 
@@ -35,8 +34,6 @@ class LinkWidget extends StatelessWidget {
     this.readOnly = false,
   });
 
-  final log = Logger('LinkWidget');
-
   Widget _iconForKind(LinkKind kind) {
     switch (kind) {
       case LinkKind.youtube:
@@ -55,8 +52,6 @@ class LinkWidget extends StatelessWidget {
           height: 24,
           width: 24,
         );
-      default:
-        return const Icon(Icons.link);
     }
   }
 
@@ -97,7 +92,10 @@ class LinkWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 4,
+            vertical: 0,
+          ),
           leading: IconButton(
             icon: _iconForKind(link.kind),
             tooltip: 'toggle viewer',
@@ -115,49 +113,58 @@ class LinkWidget extends StatelessWidget {
               readOnly
                   ? null
                   : IconButton(
-                      icon: const Icon(Icons.delete),
-                      tooltip: 'Delete',
-                      onPressed: () async {
-                        final confirm = await showDialog<bool>(
-                          context: context,
-                          builder:
-                              (context) => AlertDialog(
-                                title: const Text('Delete Link'),
-                                content: const Text(
-                                  'Are you sure you want to delete this link?',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context, false),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context, true),
-                                    child: const Text('Delete'),
-                                  ),
-                                ],
+                    icon: const Icon(Icons.delete),
+                    tooltip: 'Delete',
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              title: const Text('Delete Link'),
+                              content: const Text(
+                                'Are you sure you want to delete this link?',
                               ),
-                        );
-                        if (!context.mounted) return;
-                        if (confirm == true) {
-                          onDelete();
-                          // Also update provider if available
-                          final userProfileProvider =
-                              Provider.of<UserProfileProvider>(
-                                context,
-                                listen: false,
-                              );
-                          final song = userProfileProvider.profile?.songs[link.name];
-                          if (song != null) {
-                            userProfileProvider.removeSongLink(link.name, link.key);
-                          }
+                              actions: [
+                                TextButton(
+                                  onPressed:
+                                      () => Navigator.pop(context, false),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: const Text('Delete'),
+                                ),
+                              ],
+                            ),
+                      );
+                      if (!context.mounted) return;
+                      if (confirm == true) {
+                        onDelete();
+                        // Also update provider if available
+                        final userProfileProvider =
+                            Provider.of<UserProfileProvider>(
+                              context,
+                              listen: false,
+                            );
+                        final song =
+                            userProfileProvider.profile?.songs[link.name];
+                        if (song != null) {
+                          userProfileProvider.removeSongLink(
+                            link.name,
+                            link.key,
+                          );
                         }
-                      },
-                    ),
+                      }
+                    },
+                  ),
         ),
         if (isViewerOpen)
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+            padding: const EdgeInsets.only(
+              left: 16.0,
+              right: 16.0,
+              bottom: 16.0,
+            ),
             child: LinkViewPanel(
               link: link,
               onButtonPressed: onCloseViewer,

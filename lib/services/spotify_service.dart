@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/link.dart';
-import '../screens/link_search_screen.dart'; // For SearchResult
+import '../models/search_result.dart'; // For SearchResult
 import '../secrets.dart'; // For Spotify credentials
 
 class SpotifySearchService {

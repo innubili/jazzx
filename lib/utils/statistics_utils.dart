@@ -118,6 +118,7 @@ Statistics recalculateStatisticsFromSessions(List<Session> sessions) {
     total: CategoryStats(values: totalByCategory),
     years: years,
     songSeconds: songSeconds,
+    sessionCount: sessions.length,
   );
 }
 
@@ -132,7 +133,9 @@ Statistics updateStatisticsIncremental({
 }) {
   // If no stats exist, just create from this session
   if (existingStats == null) {
-    return recalculateStatisticsFromSessions([session]);
+    return recalculateStatisticsFromSessions([
+      session,
+    ]); // sessionCount handled in recalculateStatisticsFromSessions
   }
 
   // Deep copy existing stats
@@ -250,5 +253,6 @@ Statistics updateStatisticsIncremental({
     total: CategoryStats(values: total),
     years: years,
     songSeconds: songSeconds,
+    sessionCount: existingStats != null ? existingStats.sessionCount + 1 : 1,
   );
 }

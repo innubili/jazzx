@@ -53,6 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text('Settings'),
         leading: Builder(
           builder:

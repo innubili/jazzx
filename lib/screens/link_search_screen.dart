@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/link.dart';
+import '../models/search_result.dart';
 
-import '../services/youtube_service.dart';
-import '../services/spotify_service.dart';
+import '../services/link_search_service.dart';
 import '../widgets/search_bar_widget.dart';
 import '../widgets/link_view_panel.dart';
 import '../widgets/main_drawer.dart'; // Import the MainDrawer widget
@@ -31,8 +31,7 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
   final List<SearchResult> _results = [];
   final ScrollController _scrollController = ScrollController();
   SearchResult? _selectedResult;
-  final _ytService = YouTubeSearchService();
-  final _spotifyService = SpotifySearchService();
+  final LinkSearchService _searchService = LinkSearchService();
   bool _isLoading = false;
   String _currentQuery = '';
   late LinkCategory _selectedCategory;
@@ -89,8 +88,10 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
 
     try {
       if (!loadMore) {
-        _ytService.resetPagination();
-        _spotifyService.resetPagination();
+        // Only one kind should be selected at a time
+        if (_selectedKinds.isNotEmpty) {
+          _searchService.resetPagination(_selectedKinds.first);
+        }
         _results.clear();
         _selectedResult = null;
         _currentQuery = query;
@@ -98,29 +99,16 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
         _results.removeWhere((r) => !_selectedKinds.contains(r.kind));
       }
 
-      final futures = <Future<List<SearchResult>>>[];
-
-      if (_selectedKinds.contains(LinkKind.youtube)) {
-        futures.add(
-          _ytService.search(
-            query,
-            category: _selectedCategory,
-            loadMore: loadMore,
-          ),
+      if (_selectedKinds.isNotEmpty) {
+        final kind = _selectedKinds.first;
+        final newResults = await _searchService.search(
+          query: query,
+          category: _selectedCategory,
+          kind: kind,
+          loadMore: loadMore,
         );
+        setState(() => _results.addAll(newResults));
       }
-      if (_selectedKinds.contains(LinkKind.spotify)) {
-        futures.add(
-          _spotifyService.search(
-            query,
-            category: _selectedCategory,
-            loadMore: loadMore,
-          ),
-        );
-      }
-
-      final newResults = (await Future.wait(futures)).expand((r) => r).toList();
-      setState(() => _results.addAll(newResults));
     } catch (e) {
       debugPrint('Search error: $e');
     }
@@ -133,15 +121,10 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
   }
 
   void _onSelect(SearchResult result) {
-    final link = Link(
-      key: '',
-      name: result.title,
-      link: result.url,
-      kind: result.kind,
-      category: _selectedCategory,
-      isDefault: false,
-    );
-    Navigator.pop(context, link);
+    setState(() {
+      _selectedResult = result;
+    });
+    // Do not pop here! Show preview/player first.
   }
 
   void _onConfirmSelection() {
@@ -167,11 +150,11 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
   }
 
   void _onScrollEnd() {
-    if (_selectedKinds.contains(LinkKind.youtube) && _ytService.hasMore) {
-      _searchAllSources(_currentQuery, loadMore: true);
-    } else if (_selectedKinds.contains(LinkKind.spotify) &&
-        _spotifyService.hasMore) {
-      _searchAllSources(_currentQuery, loadMore: true);
+    for (final kind in _selectedKinds) {
+      if (_searchService.hasMore(kind)) {
+        _searchAllSources(_currentQuery, loadMore: true);
+        break;
+      }
     }
   }
 
@@ -266,6 +249,7 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
     final normalizedUrl = _normalizeUrl(_controller.text);
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: Text('Find link for "${widget.query}"'),
         leading: Builder(
           builder:
@@ -283,8 +267,8 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
             controller: _controller,
             onQueryChanged: _onSearch,
             onClear: () {
-              _controller.clear();
-              _onSearch('');
+              _controller.text = widget.query;
+              _onSearch(widget.query);
             },
             selectedCategory: _selectedCategory,
             onCategoryChanged: _handleCategoryChange,
@@ -403,16 +387,4 @@ class _LinkSearchScreenState extends State<LinkSearchScreen> {
   }
 }
 
-class SearchResult {
-  final String url;
-  final String title;
-  final LinkKind kind;
-  final String? thumbnailUrl;
 
-  SearchResult({
-    required this.url,
-    required this.title,
-    required this.kind,
-    this.thumbnailUrl,
-  });
-}

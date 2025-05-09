@@ -253,6 +253,7 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: false,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () async {

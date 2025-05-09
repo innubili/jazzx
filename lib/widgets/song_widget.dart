@@ -3,6 +3,7 @@ import '../models/song.dart';
 import '../models/link.dart';
 
 import '../screens/link_search_screen.dart' show LinkSearchScreen;
+import 'session_date_time_picker.dart';
 import 'link_widget.dart';
 import 'link_editor_widgets.dart' show LinkConfirmationDialog;
 import 'link_view_panel.dart';
@@ -340,8 +341,10 @@ class _SongWidgetState extends State<SongWidget> {
                                 isValid
                                     ? () {
                                       final trimmed = controller.text.trim();
+                                      final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
                                       final clonedSong = _editedSong.copyWith(
                                         title: trimmed,
+                                        added: now,
                                       );
                                       profileProvider.addSong(clonedSong);
                                       Navigator.of(context).pop();
@@ -513,31 +516,99 @@ class _SongWidgetState extends State<SongWidget> {
                   MaterialPageRoute(
                     builder:
                         (context) => LinkSearchScreen(
-                      query: _editedSong.title,
-                      initialKind: null,
-                      initialCategory: null,
-                      onSelected: (selected) {
-                        Navigator.pop(context, selected);
-                      },
-                    ),
+                          query: _editedSong.title,
+                          initialKind: null,
+                          initialCategory: null,
+                          onSelected: (selected) {
+                            Navigator.pop(context, selected);
+                          },
+                        ),
                   ),
                 );
 
                 if (!mounted || selectedLink == null) return;
-                  final confirmed = await showDialog<Link>(
-                    context: context,
-                    builder:
-                        (_) => LinkConfirmationDialog(
-                          initialLink: selectedLink,
-                        ),
-                  );
+                final confirmed = await showDialog<Link>(
+                  context: context,
+                  builder:
+                      (_) => LinkConfirmationDialog(initialLink: selectedLink),
+                );
 
-                  if (confirmed != null) {
+                if (confirmed != null) {
+                  setState(() {
+                    _editedSong = _editedSong.copyWith(
+                      links: [..._editedSong.links, confirmed],
+                    );
+                  });
+                  // Optionally update provider for persistence
+                  final userProfileProvider = Provider.of<UserProfileProvider>(
+                    context,
+                    listen: false,
+                  );
+                  userProfileProvider.addSongLink(_editedSong.title, confirmed);
                 }
               },
             ),
           ),
       ],
+    );
+  }
+
+  DateTime? _editedAddedDate;
+
+  String _monthName(int month) {
+    const months = [
+      '',
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December',
+    ];
+    return months[month];
+  }
+
+
+  Widget _editableAddedDate() {
+    final initialDate = _editedAddedDate ?? (_editedSong.added != null
+        ? DateTime.fromMillisecondsSinceEpoch(_editedSong.added! * 1000).toLocal()
+        : DateTime.now());
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: InkWell(
+              onTap: () async {
+                final picked = await SessionDateTimePicker.showDatePickerOnly(
+                  context: context,
+                  initial: initialDate,
+                );
+                if (picked != null) {
+                  // Set time to 14:00
+                  final pickedWithTime = DateTime(
+                    picked.year,
+                    picked.month,
+                    picked.day,
+                    14, 0, 0, 0, 0,
+                  );
+                  setState(() {
+                    _editedAddedDate = pickedWithTime;
+                    _editedSong = _editedSong.copyWith(added: pickedWithTime.toUtc().millisecondsSinceEpoch ~/ 1000);
+                  });
+                }
+              },
+              child: InputDecorator(
+                decoration: const InputDecoration(
+                  labelText: 'Date Added',
+                  filled: true,
+                  border: OutlineInputBorder(),
+                ),
+                child: Text(
+                  "${initialDate.year}-${_monthName(initialDate.month)}",
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -551,6 +622,7 @@ class _SongWidgetState extends State<SongWidget> {
           _topBar(),
           if (!_editMode) _summaryRow(),
           if (_editMode && !widget.readOnly) ...[
+            _editableAddedDate(),
             _editableText(
               "Composer",
               _editedSong.songwriters,

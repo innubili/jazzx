@@ -198,6 +198,8 @@ class Statistics {
   final CategoryStats total;
   final Map<int, YearlyStats> years;
   final Map<String, int> songSeconds;
+  final int sessionCount;
+
 
   Statistics({
     required this.avgDaily,
@@ -206,6 +208,7 @@ class Statistics {
     required this.total,
     required this.years,
     required this.songSeconds,
+    required this.sessionCount,
   });
 
   factory Statistics.fromJson(Map<String, dynamic> json) {
@@ -253,6 +256,7 @@ class Statistics {
       total: total,
       years: years,
       songSeconds: songSeconds,
+      sessionCount: json['sessionCount'] is int ? json['sessionCount'] : int.tryParse(json['sessionCount']?.toString() ?? '') ?? 0,
     );
   }
 
@@ -263,6 +267,7 @@ class Statistics {
     total: CategoryStats.empty(),
     years: {},
     songSeconds: {},
+    sessionCount: 0,
   );
 
   Map<String, dynamic> toJson() => {
@@ -275,5 +280,6 @@ class Statistics {
         entry.key.toString(): entry.value.toJson(),
     },
     'songSeconds': songSeconds,
+    'sessionCount': sessionCount,
   };
 }

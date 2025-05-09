@@ -71,7 +71,7 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen> {
             : null);
     if (session == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Session Summary')),
+        appBar: AppBar(title: const Text('Session Summary'), centerTitle: false),
         body: const Center(child: Text('No session data provided.')),
       );
     }

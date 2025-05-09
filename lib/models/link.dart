@@ -1,6 +1,6 @@
 import '../utils/utils.dart';
 
-enum LinkKind { iReal, youtube, spotify, apple, media, skool, soundslice }
+enum LinkKind { iReal, youtube, spotify, skool, soundslice, media }
 
 enum LinkCategory { backingTrack, playlist, lesson, scores, other }
 
@@ -11,13 +11,12 @@ extension LinkKindExtension on LinkKind {
       case LinkKind.youtube:
         return 1;
       case LinkKind.spotify:
-      case LinkKind.apple:
         return 2;
-      case LinkKind.media:
-        return 3;
       case LinkKind.skool:
-        return 4;
+        return 3;
       case LinkKind.soundslice:
+        return 4;
+      case LinkKind.media:
         return 5;
     }
   }
@@ -91,7 +90,8 @@ class Link {
     final kindRaw = map['kind'];
     if (kindRaw is LinkKind) {
       kind = kindRaw;
-    } else if (kindRaw is String && LinkKind.values.any((e) => e.name == kindRaw)) {
+    } else if (kindRaw is String &&
+        LinkKind.values.any((e) => e.name == kindRaw)) {
       kind = LinkKind.values.firstWhere((e) => e.name == kindRaw);
     } else {
       // Fallback: try to infer from URL

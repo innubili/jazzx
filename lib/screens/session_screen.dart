@@ -620,6 +620,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text('Session'),
         actions: [
           AddManualSessionButton(
@@ -645,7 +646,7 @@ class _SessionScreenState extends State<SessionScreen> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isPortrait = constraints.maxHeight > constraints.maxWidth;
-          final isLargeScreen = constraints.maxWidth > 800;
+
           if (isPortrait) {
             // Portrait: visually modernized layout
             return SafeArea(
@@ -785,20 +786,17 @@ class _SessionScreenState extends State<SessionScreen> {
                         final isTablet = mediaQuery.size.shortestSide >= 600;
 
                         // --- PORTRAIT ---
-                        final crossAxisCount = isTablet ? 8 : 4;
+
                         final cardHeight =
                             isTablet
                                 ? mediaQuery.size.height *
-                                    0.10 // 1/10 for tablet
+                                    0.1 // 1/10 for tablet
                                 : mediaQuery.size.height *
-                                    0.20; // 1/5 for phone
+                                    0.1; // 1/10 for phone
                         return Card(
                           elevation: 0, // No elevation for flat appearance
                           shadowColor: Colors.transparent, // No shadow
-                          color:
-                              Theme.of(
-                                context,
-                              ).scaffoldBackgroundColor, // Match background color
+                          color: Colors.transparent,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -818,7 +816,6 @@ class _SessionScreenState extends State<SessionScreen> {
                                     _startPractice(category);
                                   }
                                 },
-                                crossAxisCount: crossAxisCount,
                               ),
                             ),
                           ),
@@ -836,31 +833,28 @@ class _SessionScreenState extends State<SessionScreen> {
                 children: [
                   // Sidebar Buttons
                   Card(
-                    elevation: 8,
-                    margin: const EdgeInsets.all(16),
+                    elevation: 0, // No elevation for flat appearance
+                    shadowColor: Colors.transparent, // No shadow
+                    color: Colors.transparent, // Transparent background
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final mediaQuery = MediaQuery.of(context);
-                        final isTablet = mediaQuery.size.shortestSide >= 600;
+                    child: Padding(
+                      padding: EdgeInsets.zero, // No inner padding
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final mediaQuery = MediaQuery.of(context);
+                          final isTablet = mediaQuery.size.shortestSide >= 600;
 
-                        // --- LANDSCAPE ---
-                        final crossAxisCount = isTablet ? 1 : 2;
-                        final cardWidth =
-                            isTablet
-                                ? mediaQuery.size.width *
-                                    0.125 // 1/8 for tablet
-                                : mediaQuery.size.width * 0.20; // 1/5 for phone
-                        return SizedBox(
-                          width: cardWidth,
-                          height: double.infinity,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 24,
-                              horizontal: 8,
-                            ),
+                          // --- LANDSCAPE ---
+                          final cardWidth =
+                              isTablet
+                                  ? mediaQuery.size.width *
+                                      0.125 // 1/8 for tablet
+                                  : mediaQuery.size.width * 0.20; // 1/5 for phone
+                          return SizedBox(
+                            width: cardWidth,
+                            height: double.infinity,
                             child: PracticeModeButtonsWidget(
                               activeMode: _activeMode?.name,
                               queuedMode: _queuedMode?.name,
@@ -868,11 +862,10 @@ class _SessionScreenState extends State<SessionScreen> {
                                 final category = mode.tryToPracticeCategory();
                                 if (category != null) _startPractice(category);
                               },
-                              crossAxisCount: crossAxisCount,
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                   // Main Content
