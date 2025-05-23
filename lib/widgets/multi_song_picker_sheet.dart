@@ -96,13 +96,47 @@ class _MultiSongPickerSheetState extends State<MultiSongPickerSheet> {
                 ),
               ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.check_circle),
-                label: const Text("Confirm Selection"),
-                onPressed: () {
-                  Navigator.pop(context, selectedTitles);
-                },
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.check_circle),
+                      label: const Text("Confirm Selection"),
+                      onPressed: () {
+                        Navigator.pop(context, selectedTitles);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Row(
+                    children: [
+                      const Text('Select All'),
+                      Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Checkbox(
+                          value:
+                              selectedTitles.length == userSongs.length
+                                  ? true
+                                  : selectedTitles.isEmpty
+                                  ? false
+                                  : null,
+                          tristate: true,
+                          onChanged: (checked) {
+                            setState(() {
+                              if (checked == true) {
+                                selectedTitles =
+                                    userSongs.map((s) => s.title).toList();
+                              } else {
+                                selectedTitles.clear();
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],

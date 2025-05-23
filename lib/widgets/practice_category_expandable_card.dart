@@ -91,33 +91,7 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
     );
 
     VoidCallback buildOnTap(BuildContext context) {
-      if (editMode && category == PracticeCategory.repertoire) {
-        return () {
-          // Only show alert if user is trying to add or save songs, not just expand
-          if ((data.time > 0) &&
-              (data.songs == null || data.songs!.isEmpty) &&
-              !isExpanded) {
-            showDialog(
-              context: context,
-              builder:
-                  (ctx) => AlertDialog(
-                    title: const Text('No Songs Selected'),
-                    content: const Text('Please select at least one song.'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(),
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  ),
-            );
-          } else {
-            onTap();
-          }
-        };
-      } else {
-        return onTap;
-      }
+      return onTap;
     }
 
     return Card(
