@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>824026860782-kkdqhtibh1j8niuvoca48jiph3h6lrs1.apps.googleusercontent.com</string>
+	<string>824026860782-lbppmsb806371q8c93alucrum67mfm6q.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.824026860782-kkdqhtibh1j8niuvoca48jiph3h6lrs1</string>
+	<string>com.googleusercontent.apps.824026860782-lbppmsb806371q8c93alucrum67mfm6q</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>824026860782-99490k01d13k766bdorakqgqub1neltl.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDeYZ3JKvU3uUAmL1Zxd53kgNWoIppyPBE</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.jazzxApp</string>
+	<string>com.innubili.jazzxApp</string>
 	<key>PROJECT_ID</key>
 	<string>jazzx-97daf</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:824026860782:ios:8de6af7d8d4fd56077f7ff</string>
+	<string>1:824026860782:ios:54802af7318812bc77f7ff</string>
 	<key>DATABASE_URL</key>
 	<string>https://jazzx-97daf-default-rtdb.europe-west1.firebasedatabase.app</string>
 </dict>

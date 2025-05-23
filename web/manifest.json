@@ -1,6 +1,6 @@
 {
-    "name": "jazzx_app",
-    "short_name": "jazzx_app",
+    "name": "jazzx",
+    "short_name": "jazzx",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

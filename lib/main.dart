@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -34,10 +34,16 @@ void main() async {
   log.info('🔥 Starting app initialization...');
 
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    log.info('✅ Firebase initialized (${kIsWeb ? "Web" : "Non-Web"})');
+    log.info('Firebase.apps before init: count = [33m${Firebase.apps.length}[39m, names = [33m${Firebase.apps.map((a) => a.name).toList()}[39m');
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      log.info('✅ Firebase initialized (${kIsWeb ? "Web" : "Non-Web"})');
+    } else {
+      log.info('✅ Firebase already initialized (${kIsWeb ? "Web" : "Non-Web"})');
+    }
+    log.info('Firebase.apps after init: count = [33m${Firebase.apps.length}[39m, names = [33m${Firebase.apps.map((a) => a.name).toList()}[39m');
     await setWebFirebasePersistence();
     await FirebaseService().ensureInitialized();
     runApp(const JazzXApp());

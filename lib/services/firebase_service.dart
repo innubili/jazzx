@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../models/user_profile.dart';
 import '../models/preferences.dart';
@@ -9,7 +8,6 @@ import '../models/statistics.dart';
 import '../models/session.dart';
 import '../utils/utils.dart';
 import '../utils/statistics_utils.dart';
-import '../firebase_options.dart';
 
 class FirebaseService {
   static final FirebaseService _instance = FirebaseService._internal();
@@ -35,12 +33,7 @@ class FirebaseService {
   Future<void> initialize() async {
     if (_isInitialized) return;
 
-    if (Firebase.apps.isEmpty) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-    }
-
+    // Firebase is assumed to be initialized in main.dart
     _auth = FirebaseAuth.instance;
     _db = FirebaseDatabase.instance;
     _isInitialized = true;

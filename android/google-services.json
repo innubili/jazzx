@@ -1,4 +1,3 @@
-
 {
   "project_info": {
     "project_number": "824026860782",
@@ -16,13 +15,21 @@
       },
       "oauth_client": [
         {
+          "client_id": "824026860782-99490k01d13k766bdorakqgqub1neltl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.innubili.jazzx",
+            "certificate_hash": "e9fc906e65510eea56679481fecdcb311a993018"
+          }
+        },
+        {
           "client_id": "824026860782-hqi7uac02gb6hljf9hl7f90lsdthlncl.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDaijaL5PCJ-3yPduDWMo-MOF0-4Cg_Ffk"
+          "current_key": "AIzaSyAWHlBA5qGga8dtw-id9-UMZwpeTPhiiJ8"
         }
       ],
       "services": {
@@ -31,6 +38,13 @@
             {
               "client_id": "824026860782-hqi7uac02gb6hljf9hl7f90lsdthlncl.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "824026860782-41tljlcffs0sirr8nf4ue3k4bof1d0lt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.innubili.jazzx"
+              }
             }
           ]
         }

@@ -52,39 +52,36 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDaijaL5PCJ-3yPduDWMo-MOF0-4Cg_Ffk',
-    appId: '1:824026860782:android:469b7d976876f1f677f7ff',
+    apiKey: 'AIzaSyAWHlBA5qGga8dtw-id9-UMZwpeTPhiiJ8',
+    appId: '1:824026860782:android:d3dd15914d9e252f77f7ff',
     messagingSenderId: '824026860782',
     projectId: 'jazzx-97daf',
-    databaseURL:
-        'https://jazzx-97daf-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'jazzx-97daf.appspot.com',
+    databaseURL: 'https://jazzx-97daf-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'jazzx-97daf.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDeYZ3JKvU3uUAmL1Zxd53kgNWoIppyPBE',
-    appId: '1:824026860782:ios:8de6af7d8d4fd56077f7ff',
+    appId: '1:824026860782:ios:efb360c68d3cfe8a77f7ff',
     messagingSenderId: '824026860782',
     projectId: 'jazzx-97daf',
-    databaseURL:
-        'https://jazzx-97daf-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'jazzx-97daf.appspot.com',
-    iosClientId:
-        '824026860782-kkdqhtibh1j8niuvoca48jiph3h6lrs1.apps.googleusercontent.com',
-    iosBundleId: 'com.example.jazzxApp',
+    databaseURL: 'https://jazzx-97daf-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'jazzx-97daf.firebasestorage.app',
+    androidClientId: '824026860782-99490k01d13k766bdorakqgqub1neltl.apps.googleusercontent.com',
+    iosClientId: '824026860782-41tljlcffs0sirr8nf4ue3k4bof1d0lt.apps.googleusercontent.com',
+    iosBundleId: 'com.innubili.jazzx',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDeYZ3JKvU3uUAmL1Zxd53kgNWoIppyPBE',
-    appId: '1:824026860782:ios:8de6af7d8d4fd56077f7ff',
+    appId: '1:824026860782:ios:54802af7318812bc77f7ff',
     messagingSenderId: '824026860782',
     projectId: 'jazzx-97daf',
-    databaseURL:
-        'https://jazzx-97daf-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'jazzx-97daf.appspot.com',
-    iosClientId:
-        '824026860782-kkdqhtibh1j8niuvoca48jiph3h6lrs1.apps.googleusercontent.com',
-    iosBundleId: 'com.example.jazzxApp',
+    databaseURL: 'https://jazzx-97daf-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'jazzx-97daf.firebasestorage.app',
+    androidClientId: '824026860782-99490k01d13k766bdorakqgqub1neltl.apps.googleusercontent.com',
+    iosClientId: '824026860782-lbppmsb806371q8c93alucrum67mfm6q.apps.googleusercontent.com',
+    iosBundleId: 'com.innubili.jazzxApp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

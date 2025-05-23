@@ -21,7 +21,7 @@ class StatisticsScreen extends StatelessWidget {
       final h = mins ~/ 60;
       final m = mins % 60;
       final minStr = m.toString().padLeft(2, '0');
-      return h > 0 ? "${h}h${minStr}'" : "${minStr}'";
+      return h > 0 ? "${h}h$minStr'" : "$minStr'";
     }
 
     int getTotalSeconds() => stats.total.values.values.fold(0, (a, b) => a + b);
@@ -116,10 +116,11 @@ class StatisticsScreen extends StatelessWidget {
                           Builder(
                             builder: (context) {
                               final songSeconds = stats.songSeconds;
-                              if (songSeconds.isEmpty)
+                              if (songSeconds.isEmpty) {
                                 return const Center(
                                   child: Text('No song data'),
                                 );
+                              }
                               final sorted =
                                   songSeconds.entries.toList()..sort(
                                     (a, b) => b.value.compareTo(a.value),
@@ -171,10 +172,11 @@ class StatisticsScreen extends StatelessWidget {
                           Builder(
                             builder: (context) {
                               final catStats = stats.total.values;
-                              if (catStats.isEmpty)
+                              if (catStats.isEmpty) {
                                 return const Center(
                                   child: Text('No category data'),
                                 );
+                              }
                               final sorted =
                                   catStats.entries.toList()..sort(
                                     (a, b) => b.value.compareTo(a.value),
@@ -231,13 +233,15 @@ class StatisticsScreen extends StatelessWidget {
                             (y) => Builder(
                               builder: (context) {
                                 final yearStats = stats.years[y];
-                                if (yearStats == null)
+                                if (yearStats == null) {
                                   return Center(child: Text('No data for $y'));
+                                }
                                 final catStats = yearStats.total.values;
-                                if (catStats.isEmpty)
+                                if (catStats.isEmpty) {
                                   return Center(
                                     child: Text('No category data for $y'),
                                   );
+                                }
                                 final sorted =
                                     catStats.entries.toList()..sort(
                                       (a, b) => b.value.compareTo(a.value),

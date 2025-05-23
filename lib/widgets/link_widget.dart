@@ -21,7 +21,7 @@ class LinkWidget extends StatelessWidget {
   final String? highlightQuery;
   final bool readOnly;
 
-  LinkWidget({
+  const LinkWidget({
     super.key,
     required this.link,
     required this.onOpenViewer,

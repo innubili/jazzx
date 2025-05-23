@@ -39,25 +39,19 @@ class _YouTubePlayerWidgetState extends State<YouTubePlayerWidget> {
     final videoId = extractYouTubeVideoId(widget.youtubeUrl);
     _controller?.close();
     log.info('YTP: ${DateTime.now()} - initializing YouTubePlayerWidget');
-    final newController = YoutubePlayerController(
-      initialVideoId: videoId,
+    final newController = YoutubePlayerController.fromVideoId(
+      videoId: videoId,
       params: YoutubePlayerParams(
-        autoPlay: true,
         mute: kIsWeb, // Mute if running on web for reliable auto-play
         showFullscreenButton: true,
         showControls: true,
         strictRelatedVideos: true,
       ),
+      autoPlay: true,
     );
     _controller = newController;
 
-    _playTimer?.cancel();
-    _playTimer = Timer(const Duration(milliseconds: 20), () {
-      if (mounted && _controller == newController) {
-        //log.info('YTP: ${DateTime.now()} - playing YouTubePlayerWidget');
-        _controller?.play();
-      }
-    });
+    // No need to call play(); autoPlay handles it.
   }
 
   @override
@@ -89,7 +83,7 @@ class _YouTubePlayerWidgetState extends State<YouTubePlayerWidget> {
           child:
               _controller == null
                   ? const SizedBox.shrink()
-                  : YoutubePlayerIFrame(controller: _controller!),
+                  : YoutubePlayer(controller: _controller!),
         ),
       ],
     );

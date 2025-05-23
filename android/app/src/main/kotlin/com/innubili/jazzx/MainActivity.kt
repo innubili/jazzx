@@ -1,4 +1,4 @@
-package com.example.jazzx_app
+package com.innubili.jazzx
 
 import io.flutter.embedding.android.FlutterActivity
 

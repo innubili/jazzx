@@ -253,6 +253,7 @@ Statistics updateStatisticsIncremental({
     total: CategoryStats(values: total),
     years: years,
     songSeconds: songSeconds,
-    sessionCount: existingStats != null ? existingStats.sessionCount + 1 : 1,
+    sessionCount:
+        existingStats.sessionCount > 0 ? existingStats.sessionCount + 1 : 1,
   );
 }

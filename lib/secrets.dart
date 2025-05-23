@@ -1,5 +1,11 @@
 // ignore: constant_identifier_names
-const String APP_GOOGLE_API_KEY = 'AIzaSyDaijaL5PCJ-3yPduDWMo-MOF0-4Cg_Ffk';
+const String APP_GOOGLE_API_KEY = 'AIzaSyDeYZ3JKvU3uUAmL1Zxd53kgNWoIppyPBE';
+// macOS/iOS Google OAuth Client ID
+const String googleClientIdMacOS = '824026860782-teeq0tqc8jfveh4vth5k3m09il8f8h31.apps.googleusercontent.com';
+const String googleClientSecretMacOS = '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';
+const List<String> googleRedirectUrisMacOS = [
+  'http://localhost',
+];
 // ignore: constant_identifier_names
 const String SPOTIFY_CLIENT_ID = '81de91d3bb264357b6b73a58137a08c2';
 // ignore: constant_identifier_names
