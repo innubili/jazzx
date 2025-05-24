@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'dart:math' as math;
 
 /// Animated singing JazzX logo widget
 class AppLogoSing extends StatefulWidget {
