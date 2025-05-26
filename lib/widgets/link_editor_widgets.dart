@@ -207,11 +207,13 @@ class LinkCategoryPicker extends StatelessWidget {
 class LinkKindPicker extends StatelessWidget {
   final Set<LinkKind> selected;
   final ValueChanged<Set<LinkKind>> onChanged;
+  final Set<LinkKind>? allowedKinds; // New: restrict selectable kinds
 
   const LinkKindPicker({
     super.key,
     required this.selected,
     required this.onChanged,
+    this.allowedKinds,
   });
 
   Widget _iconFor(LinkKind kind, bool isSelected) {
@@ -265,6 +267,7 @@ class LinkKindPicker extends StatelessWidget {
       LinkKind.iReal,
       LinkKind.media,
     ];
+    final allowed = allowedKinds ?? kinds.toSet();
 
     return Center(
       child: ToggleButtons(
@@ -272,6 +275,7 @@ class LinkKindPicker extends StatelessWidget {
         isSelected: kinds.map((k) => selected.contains(k)).toList(),
         onPressed: (index) {
           final kind = kinds[index];
+          if (!allowed.contains(kind)) return; // Prevent selection if not allowed
           // Single-select: only one kind can be selected at a time
           final newSet = <LinkKind>{kind};
           onChanged(newSet);
@@ -280,22 +284,27 @@ class LinkKindPicker extends StatelessWidget {
         selectedColor: Colors.white,
         fillColor: Colors.deepPurple,
         color: Colors.grey.shade700,
+        disabledColor: Colors.grey.shade400,
         children:
             kinds.map((kind) {
               final isSelected = selected.contains(kind);
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _iconFor(kind, isSelected),
-                  const SizedBox(height: 4),
-                  Text(
-                    _labelFor(kind),
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: isSelected ? Colors.white : Colors.grey.shade700,
+              final isEnabled = allowed.contains(kind);
+              return Opacity(
+                opacity: isEnabled ? 1.0 : 0.4,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _iconFor(kind, isSelected),
+                    const SizedBox(height: 4),
+                    Text(
+                      _labelFor(kind),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isSelected ? Colors.white : Colors.grey.shade700,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }).toList(),
       ),

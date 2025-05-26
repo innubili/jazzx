@@ -29,7 +29,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _updatePreferences(
-    BuildContext context,
     ProfilePreferences prefs, {
     ProfilePreferences Function(ProfilePreferences)? update,
   }) async {
@@ -80,7 +79,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     setState(() {});
                     if (!mounted) return;
                     _updatePreferences(
-                      context,
                       profile.preferences,
                       update: (prefs) => prefs.copyWith(name: val),
                     );
@@ -106,7 +104,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           });
                           if (!mounted) return;
                           _updatePreferences(
-                            context,
                             profile.preferences,
                             update:
                                 (prefs) => prefs.copyWith(
@@ -120,12 +117,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: const Icon(Icons.add),
                       tooltip: 'Add Instrument',
                       onPressed: () async {
-                        if (!mounted) return;
+                        // Cache context and other values before async operation
+                        final currentContext = context;
+                        final currentProfile = profile;
+                        final currentMounted = mounted;
+
+                        if (!currentMounted) return;
+
                         final controller = TextEditingController();
                         final instrument = await showDialog<String>(
-                          context: context,
-                          builder:
-                              (context) => AlertDialog(
+                          context: currentContext,
+                          builder: (dialogContext) => AlertDialog(
                                 title: const Text('Add Instrument'),
                                 content: TextField(
                                   controller: controller,
@@ -136,38 +138,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                                 actions: [
                                   TextButton(
-                                    onPressed: () => Navigator.pop(context),
+                                    onPressed: () => Navigator.pop(dialogContext),
                                     child: const Text('Cancel'),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      if (mounted) {
-                                        Navigator.pop(context, controller.text);
-                                      }
+                                      Navigator.pop(dialogContext, controller.text);
                                     },
                                     child: const Text('Add'),
                                   ),
                                 ],
                               ),
                         );
-                        if (instrument != null && instrument.isNotEmpty) {
-                          setState(() {
-                            final updated = List<String>.from(
-                              selectedInstruments,
-                            );
-                            updated.add(instrument);
-                            _editedInstruments = updated;
-                          });
-                          if (!mounted) return;
-                          _updatePreferences(
-                            context,
-                            profile.preferences,
-                            update:
-                                (prefs) => prefs.copyWith(
-                                  instruments: _editedInstruments,
-                                ),
+
+                        if (!mounted) return;
+                        if (instrument == null || instrument.isEmpty) return;
+
+                        setState(() {
+                          final updated = List<String>.from(
+                            selectedInstruments,
                           );
-                        }
+                          updated.add(instrument);
+                          _editedInstruments = updated;
+                        });
+
+                        if (!mounted) return;
+                        _updatePreferences(
+                          currentProfile.preferences,
+                          update: (prefs) => prefs.copyWith(
+                            instruments: _editedInstruments,
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -182,7 +183,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     setState(() {});
                     if (!mounted) return;
                     _updatePreferences(
-                      context,
                       profile.preferences,
                       update: (prefs) => prefs.copyWith(teacher: val),
                     );
@@ -205,7 +205,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     setState(() => _editedMetronomeEnabled = val);
                     if (!mounted) return;
                     _updatePreferences(
-                      context,
                       profile.preferences,
                       update: (prefs) => prefs.copyWith(metronomeEnabled: val),
                     );
@@ -224,7 +223,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       setState(() {});
                       if (!mounted) return;
                       _updatePreferences(
-                        context,
                         profile.preferences,
                         update:
                             (prefs) =>
@@ -249,7 +247,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     setState(() => _editedWarmupEnabled = val);
                     if (!mounted) return;
                     _updatePreferences(
-                      context,
                       profile.preferences,
                       update: (prefs) => prefs.copyWith(warmupEnabled: val),
                     );
@@ -272,7 +269,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       setState(() {});
                       if (!mounted) return;
                       _updatePreferences(
-                        context,
                         profile.preferences,
                         update:
                             (prefs) => prefs.copyWith(
@@ -301,7 +297,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       setState(() {});
                       if (!mounted) return;
                       _updatePreferences(
-                        context,
                         profile.preferences,
                         update:
                             (prefs) =>
@@ -325,7 +320,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     setState(() => _editedAutoPause = val);
                     if (!mounted) return;
                     _updatePreferences(
-                      context,
                       profile.preferences,
                       update: (prefs) => prefs.copyWith(autoPause: val),
                     );
@@ -347,7 +341,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       setState(() {});
                       if (!mounted) return;
                       _updatePreferences(
-                        context,
                         profile.preferences,
                         update:
                             (prefs) => prefs.copyWith(
@@ -376,7 +369,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       setState(() {});
                       if (!mounted) return;
                       _updatePreferences(
-                        context,
                         profile.preferences,
                         update:
                             (prefs) => prefs.copyWith(

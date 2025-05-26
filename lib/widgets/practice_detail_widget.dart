@@ -9,7 +9,6 @@ import 'song_picker_sheet.dart';
 import 'multi_song_picker_sheet.dart';
 import '../screens/link_search_screen.dart';
 
-
 import 'link_widget.dart'; // Import LinkWidget
 import 'link_editor_widgets.dart' show LinkConfirmationDialog;
 
@@ -79,11 +78,15 @@ class _PracticeDetailWidgetState extends State<PracticeDetailWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (widget.category.allowsNote)
-              _NoteTextField(note: widget.note, onNoteChanged: widget.onNoteChanged),
+              _NoteTextField(
+                note: widget.note,
+                onNoteChanged: widget.onNoteChanged,
+              ),
             if (widget.category.allowsNote) const SizedBox(height: 16),
 
             // Song Picker for newsong
-            if (widget.category == PracticeCategory.newsong && widget.category.allowsSongs)
+            if (widget.category == PracticeCategory.newsong &&
+                widget.category.allowsSongs)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -109,13 +112,13 @@ class _PracticeDetailWidgetState extends State<PracticeDetailWidget> {
                               .toSet();
                       final selectedSongTitle =
                           await showModalBottomSheet<String>(
-                        context: context,
-                        isScrollControlled: true,
-                        builder:
-                            (context) => SongPickerSheet(
-                          bookmarkedTitles: userSongTitles,
-                        ),
-                      );
+                            context: context,
+                            isScrollControlled: true,
+                            builder:
+                                (context) => SongPickerSheet(
+                                  bookmarkedTitles: userSongTitles,
+                                ),
+                          );
                       if (selectedSongTitle != null &&
                           selectedSongTitle.isNotEmpty) {
                         widget.onSongsChanged([selectedSongTitle]);
@@ -125,11 +128,13 @@ class _PracticeDetailWidgetState extends State<PracticeDetailWidget> {
                   ),
                 ],
               ),
-            if (widget.category == PracticeCategory.newsong && widget.category.allowsSongs)
+            if (widget.category == PracticeCategory.newsong &&
+                widget.category.allowsSongs)
               const SizedBox(height: 16),
 
             // Repertoire Multi Song Picker
-            if (widget.category == PracticeCategory.repertoire && widget.category.allowsSongs)
+            if (widget.category == PracticeCategory.repertoire &&
+                widget.category.allowsSongs)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -143,16 +148,16 @@ class _PracticeDetailWidgetState extends State<PracticeDetailWidget> {
                     onPressed: () async {
                       final selectedTitles =
                           await showModalBottomSheet<List<String>>(
-                        context: context,
-                        isScrollControlled: true,
-                        builder:
-                            (context) => MultiSongPickerSheet(
-                          initialSelection: widget.songs,
-                          onSongsSelected:
-                              (selected) =>
-                                  Navigator.pop(context, selected),
-                        ),
-                      );
+                            context: context,
+                            isScrollControlled: true,
+                            builder:
+                                (context) => MultiSongPickerSheet(
+                                  initialSelection: widget.songs,
+                                  onSongsSelected:
+                                      (selected) =>
+                                          Navigator.pop(context, selected),
+                                ),
+                          );
 
                       if (selectedTitles != null) {
                         widget.onSongsChanged(selectedTitles);
@@ -179,11 +184,20 @@ class _PracticeDetailWidgetState extends State<PracticeDetailWidget> {
                       onOpenViewer: () => _handleOpenViewer(link.key),
                       onCloseViewer: () => _handleCloseViewer(link.key),
                       onUpdated: (updatedLink) {
-                        final newLinks = widget.links.map((l) => l.key == updatedLink.key ? updatedLink : l).toList();
+                        final newLinks =
+                            widget.links
+                                .map(
+                                  (l) =>
+                                      l.key == updatedLink.key
+                                          ? updatedLink
+                                          : l,
+                                )
+                                .toList();
                         widget.onLinksChanged(newLinks);
                       },
                       onDelete: () {
-                        final newLinks = List<Link>.from(widget.links)..remove(link);
+                        final newLinks = List<Link>.from(widget.links)
+                          ..remove(link);
                         widget.onLinksChanged(newLinks);
                       },
                       highlightQuery: null,
@@ -191,28 +205,38 @@ class _PracticeDetailWidgetState extends State<PracticeDetailWidget> {
                   ),
                   TextButton(
                     onPressed: () async {
-                      final params = practiceCategoryLinkSearchSchema[widget.category] ?? LinkSearchParams(query: '', initialKind: LinkKind.youtube, initialCategory: LinkCategory.other);
-                      final selectedLink = await Navigator.of(context).push<Link>(
+                      final params =
+                          practiceCategoryLinkSearchSchema[widget.category] ??
+                          LinkSearchParams(
+                            query: '',
+                            initialKind: LinkKind.youtube,
+                            initialCategory: LinkCategory.other,
+                          );
+                      final selectedLink = await Navigator.of(
+                        context,
+                      ).push<Link>(
                         MaterialPageRoute(
-                          builder: (ctx) => LinkSearchScreen(
-                            query: params.query,
-                            initialKind: params.initialKind,
-                            initialCategory: params.initialCategory,
-                            onSelected: (selected) {
-                              Navigator.pop(ctx, selected);
-                            },
-                          ),
+                          builder:
+                              (ctx) => LinkSearchScreen(
+                                query: params.query,
+                                initialKind: params.initialKind,
+                                initialCategory: params.initialCategory,
+                                onSelected: (selected) {
+                                  Navigator.pop(ctx, selected);
+                                },
+                              ),
                         ),
                       );
                       if (selectedLink != null) {
+                        if (!mounted) return;
                         final confirmed = await showDialog<Link>(
-                          context: context,
+                          context: this.context,
                           builder: (_) => LinkConfirmationDialog(
                             initialLink: selectedLink,
                           ),
                         );
-
                         if (confirmed != null) {
+                          if (!mounted) return;
                           final updatedLinks = [...widget.links, confirmed];
                           widget.onLinksChanged(updatedLinks);
                         }

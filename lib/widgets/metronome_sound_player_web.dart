@@ -1,36 +1,23 @@
-import 'dart:async';
-import 'dart:js' as js;
+// Web implementation of metronome sound player (no-op)
+// This is a placeholder as web support is not actively maintained
+
 import 'metronome_sound_player.dart';
 
+/// No-op implementation for web platform
 class MetronomeSoundPlayerImpl implements MetronomeSoundPlayer {
   @override
-  Future<void> init() async {}
+  Future<void> init() async {
+    // No initialization needed for no-op implementation
+  }
 
   @override
-  Future<void> dispose() async {}
+  Future<void> dispose() async {
+    // No cleanup needed for no-op implementation
+  }
 
   @override
   Future<void> play({required bool isDownbeat, double volume = 1.0}) async {
-    final freq = isDownbeat ? 660 : 880;
-    final duration = 5; // ms
-    // Volume: scale to 0.25 for web, adjust if needed
-    final webGain = (volume * 0.25).toStringAsFixed(3);
-    js.context.callMethod('eval', [
-      """
-      (function() {
-        var ctx = window.audioCtx || (window.audioCtx = new (window.AudioContext || window.webkitAudioContext)());
-        var o = ctx.createOscillator();
-        var g = ctx.createGain();
-        o.type = 'square';
-        o.frequency.value = $freq;
-        g.gain.value = $webGain;
-        o.connect(g);
-        g.connect(ctx.destination);
-        var now = ctx.currentTime;
-        o.start(now);
-        o.stop(now + $duration / 1000.0);
-      })();
-      """,
-    ]);
+    // No sound will be played in the web version
+    // This is a deliberate no-op as web support is not actively maintained
   }
 }

@@ -386,6 +386,7 @@ class _SongWidgetState extends State<SongWidget> {
                     ),
               );
               if (confirm == true) {
+                if (!mounted) return;
                 final userProfileProvider = Provider.of<UserProfileProvider>(
                   context,
                   listen: false,
@@ -534,17 +535,18 @@ class _SongWidgetState extends State<SongWidget> {
                 );
 
                 if (confirmed != null) {
+                  if (!mounted) return;
+                  final userProfileProvider = Provider.of<UserProfileProvider>(
+                    context,
+                    listen: false,
+                  );
+                  userProfileProvider.addSongLink(_editedSong.title, confirmed);
                   setState(() {
                     _editedSong = _editedSong.copyWith(
                       links: [..._editedSong.links, confirmed],
                     );
                   });
                   // Optionally update provider for persistence
-                  final userProfileProvider = Provider.of<UserProfileProvider>(
-                    context,
-                    listen: false,
-                  );
-                  userProfileProvider.addSongLink(_editedSong.title, confirmed);
                 }
               },
             ),

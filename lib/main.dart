@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -8,15 +8,16 @@ import 'firebase_options.dart';
 import 'utils/utils.dart';
 import 'utils/firebase_web_persistence.dart';
 import 'services/firebase_service.dart';
+import 'services/sharing_intent_service.dart';
+import 'models/user_profile.dart';
 import 'providers/user_profile_provider.dart';
 import 'providers/jazz_standards_provider.dart';
 import 'providers/irealpro_provider.dart';
-import 'models/user_profile.dart';
-
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
-// import 'screens/google_signin_screen.dart';
 import 'screens/session_screen.dart';
+import 'models/session.dart';
+import 'screens/session_review_screen.dart';
 import 'screens/metronome_screen.dart';
 import 'screens/user_songs_screen.dart';
 import 'screens/jazz_standards_screen.dart';
@@ -26,6 +27,10 @@ import 'screens/about_screen.dart';
 import 'screens/statistics_screen.dart';
 import 'screens/session_summary_screen.dart';
 import 'screens/admin_screen.dart';
+import 'models/link.dart';
+import 'widgets/link_editor_widgets.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,16 +39,22 @@ void main() async {
   log.info('🔥 Starting app initialization...');
 
   try {
-    log.info('Firebase.apps before init: count = [33m${Firebase.apps.length}[39m, names = [33m${Firebase.apps.map((a) => a.name).toList()}[39m');
+    log.info(
+      'Firebase.apps before init: count = [33m${Firebase.apps.length}[39m, names = [33m${Firebase.apps.map((a) => a.name).toList()}[39m',
+    );
     if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
       log.info('✅ Firebase initialized (${kIsWeb ? "Web" : "Non-Web"})');
     } else {
-      log.info('✅ Firebase already initialized (${kIsWeb ? "Web" : "Non-Web"})');
+      log.info(
+        '✅ Firebase already initialized (${kIsWeb ? "Web" : "Non-Web"})',
+      );
     }
-    log.info('Firebase.apps after init: count = [33m${Firebase.apps.length}[39m, names = [33m${Firebase.apps.map((a) => a.name).toList()}[39m');
+    log.info(
+      'Firebase.apps after init: count = [33m${Firebase.apps.length}[39m, names = [33m${Firebase.apps.map((a) => a.name).toList()}[39m',
+    );
     await setWebFirebasePersistence();
     await FirebaseService().ensureInitialized();
     runApp(const JazzXApp());
@@ -72,6 +83,7 @@ class JazzXApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => IRealProProvider()),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'JazzX (Debug)',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(primarySwatch: Colors.deepPurple),
@@ -108,9 +120,79 @@ class _AuthGateState extends State<AuthGate> {
   UserProfile? _userProfile;
   bool _isLoading = false;
   bool _dataLoaded = false;
+  String? _pendingSharedLink; // <-- NEW: store pending link
 
   @override
   void initState() {
+    // Check for draft session after user profile loaded
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final profileProvider = context.read<UserProfileProvider>();
+      final profile = profileProvider.profile;
+      final draftSessionJson = profile?.preferences.draftSession;
+      if (draftSessionJson != null) {
+        final draftSession = Session.fromJson(
+          Map<String, dynamic>.from(draftSessionJson),
+        );
+        final action = await showDialog<String>(
+          context: context,
+          builder:
+              (ctx) => AlertDialog(
+                title: const Text('Uncompleted Session Found'),
+                content: const Text(
+                  'You have an uncompleted session. Would you like to continue editing it or discard it?',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop('discard'),
+                    child: const Text('Discard'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(ctx).pop('edit'),
+                    child: const Text('Edit'),
+                  ),
+                ],
+              ),
+        );
+        if (action == 'edit') {
+          if (mounted) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder:
+                    (_) => SessionReviewScreen(
+                          sessionId: draftSession.started.toString(),
+                          session: draftSession,
+                          manualEntry: true,
+                          editRecordedSession: true,
+                        ),
+              ),
+            );
+          }
+        } else if (action == 'discard') {
+          // Remove draftSession from preferences
+          final prefs = profile!.preferences;
+          final newPrefs = prefs.copyWith(draftSession: null);
+          await profileProvider.saveUserPreferences(newPrefs);
+        }
+      }
+    });
+
+    // Listen for sharing intents (Android/iOS)
+    SharingIntentService().listen(
+      onLink: (link) {
+        showLinkDialog(link);
+      },
+      onMedia: (files) {
+        log.info('SharingIntentService().listen() > TODO: Handle files');
+      },
+    );
+    SharingIntentService().fetchInitial(
+      onLink: (link) {
+        showLinkDialog(link);
+      },
+      onMedia: (files) {
+        log.info('SharingIntentService().fetchInitial() > TODO: Handle files');
+      },
+    );
     super.initState();
     FirebaseAuth.instance.authStateChanges().listen((user) {
       log.info(
@@ -214,6 +296,58 @@ class _AuthGateState extends State<AuthGate> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    // If there's a pending shared link, show it now
+    if (_pendingSharedLink != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showLinkDialog(_pendingSharedLink!);
+      });
+    }
+
     return const SessionScreen();
+  }
+
+  LinkKind detectLinkKind(String url) {
+    final lower = url.toLowerCase();
+    if (lower.contains('youtube.com') || lower.contains('youtu.be')) {
+      return LinkKind.youtube;
+    } else if (lower.contains('spotify.com')) {
+      return LinkKind.spotify;
+    } else if (lower.contains('ireal') || lower.contains('irealpro')) {
+      return LinkKind.iReal;
+    } else if (lower.contains('skool.com')) {
+      return LinkKind.skool;
+    } else if (lower.contains('soundslice.com')) {
+      return LinkKind.soundslice;
+    } else if (lower.endsWith('.mp3') ||
+        lower.endsWith('.wav') ||
+        lower.endsWith('.m4a')) {
+      return LinkKind.media;
+    }
+    return LinkKind.media;
+  }
+
+  void showLinkDialog(String url) {
+    final context = navigatorKey.currentState?.overlay?.context;
+    if (context == null || ModalRoute.of(context)?.isCurrent != true) {
+      // UI not ready, queue the link
+      _pendingSharedLink = url;
+      return;
+    }
+    final link = Link(
+      link: url,
+      name: '',
+      kind: detectLinkKind(url),
+      key: '',
+      category: LinkCategory.other,
+      isDefault: false,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (ctx) => LinkConfirmationDialog(initialLink: link),
+      );
+    });
+    _pendingSharedLink = null;
   }
 }

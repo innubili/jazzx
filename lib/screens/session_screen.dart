@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../utils/session_utils.dart';
+import '../utils/draft_utils.dart';
 
 import '../widgets/metronome_controller.dart';
 import '../widgets/practice_timer_widget.dart';
@@ -87,24 +88,69 @@ class _SessionScreenState extends State<SessionScreen> {
   @override
   void initState() {
     super.initState();
-    // Set the session ID when the session is created
     sessionId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final profile =
         Provider.of<UserProfileProvider>(context, listen: false).profile;
+    final prefs = profile?.preferences;
+    final draft = prefs?.draftSession;
     final lastSession = profile?.sessions[profile.preferences.lastSessionId];
 
-    _resetSessionData();
-
-    if (lastSession != null) {
-      for (final cat in PracticeCategory.values) {
-        final lastCat = lastSession.categories[cat];
-        if (lastCat != null) {
-          sessionData.categories[cat] = SessionCategory(
-            time: 0,
-            note: lastCat.note,
-            bpm: lastCat.bpm,
-            songs: lastCat.songs,
+    // If a draft exists, prompt user to resume or discard
+    if (draft != null && draft.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final resume = await showDialog<bool>(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: const Text('Resume Draft Session?'),
+                content: const Text(
+                  'You have an unfinished session. Would you like to resume or discard it?',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text('Discard'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text('Resume'),
+                  ),
+                ],
+              ),
+        );
+        if (!mounted) return;
+        if (resume == true) {
+          setState(() {
+            sessionData = Session.fromJson(draft);
+            _activeMode = null;
+            _queuedMode = null;
+            _hasStartedFirstPractice = false;
+            _isWarmup = false;
+            _isOnBreak = false;
+            _practiceElapsedSeconds = 0;
+          });
+        } else {
+          // Discard draft
+          final provider = Provider.of<UserProfileProvider>(
+            context,
+            listen: false,
           );
+          provider.saveUserPreferences(prefs!.copyWith(draftSession: {}));
+        }
+      });
+    } else {
+      _resetSessionData();
+      if (lastSession != null) {
+        for (final cat in PracticeCategory.values) {
+          final lastCat = lastSession.categories[cat];
+          if (lastCat != null) {
+            sessionData.categories[cat] = SessionCategory(
+              time: 0,
+              note: lastCat.note,
+              bpm: lastCat.bpm,
+              songs: lastCat.songs,
+            );
+          }
         }
       }
     }
@@ -129,7 +175,7 @@ class _SessionScreenState extends State<SessionScreen> {
       _queuedMode = null;
       _hasStartedFirstPractice = false;
       _isWarmup = false;
-      _isOnBreak = false; // Initialize _isOnBreak to false
+      _isOnBreak = false;
       _practiceElapsedSeconds = 0;
     });
 
@@ -186,6 +232,7 @@ class _SessionScreenState extends State<SessionScreen> {
       _setCategoryTimeAndBpmFromTimer(
         PracticeCategory.exercise,
       ); // Use a valid category for logic, but actual warmup values go to top-level fields
+      saveDraftSession(context, sessionData); // Save draft on warmup complete
     }
   }
 
@@ -283,6 +330,7 @@ class _SessionScreenState extends State<SessionScreen> {
       startFrom: previousTime,
       countDown: false,
     );
+    saveDraftSession(context, sessionData); // Save draft on timer start
 
     setState(() {
       _hasStartedFirstPractice = true;
@@ -465,6 +513,7 @@ class _SessionScreenState extends State<SessionScreen> {
     _practiceMonitorTimer?.cancel();
     // Track time of manual pause
     _lastManualPauseTime = DateTime.now();
+    saveDraftSession(context, sessionData); // Save draft on pause/stop
   }
 
   void _resumePracticeSession() {
@@ -547,11 +596,19 @@ class _SessionScreenState extends State<SessionScreen> {
       ),
     );
     // Handle result: if user did not save, resume session
+    if (!mounted) return;
+    final profileProvider = Provider.of<UserProfileProvider>(
+      context,
+      listen: false,
+    );
+    final prefs = profileProvider.profile?.preferences;
     if (result == 'resume') {
       _resumePracticeSession();
     } else if (result == 'end') {
-      // Optionally reset state or show post-session prompt
-      // (Handled in review screen)
+      // Clear the draft when session is completed
+      if (prefs != null) {
+        profileProvider.saveUserPreferences(prefs.copyWith(draftSession: {}));
+      }
     }
   }
 
@@ -851,7 +908,8 @@ class _SessionScreenState extends State<SessionScreen> {
                               isTablet
                                   ? mediaQuery.size.width *
                                       0.125 // 1/8 for tablet
-                                  : mediaQuery.size.width * 0.20; // 1/5 for phone
+                                  : mediaQuery.size.width *
+                                      0.20; // 1/5 for phone
                           return SizedBox(
                             width: cardWidth,
                             height: double.infinity,
@@ -1008,6 +1066,7 @@ class _SessionScreenState extends State<SessionScreen> {
   void dispose() {
     _practiceMonitorTimer?.cancel();
     _breakTimer?.cancel();
+    saveDraftSession(context, sessionData);
     super.dispose();
   }
 }

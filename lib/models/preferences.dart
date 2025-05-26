@@ -22,6 +22,7 @@ const List<String> Instruments = [
 ];
 
 class ProfilePreferences {
+  final Map<String, dynamic>? draftSession;
   final bool darkMode;
   final int exerciseBpm;
   final List<String> instruments;
@@ -43,6 +44,7 @@ class ProfilePreferences {
 
   ProfilePreferences({
     required this.darkMode,
+    this.draftSession,
     required this.exerciseBpm,
     required this.instruments,
     required this.admin,
@@ -63,6 +65,7 @@ class ProfilePreferences {
   factory ProfilePreferences.fromJson(Map<String, dynamic> json) {
     return ProfilePreferences(
       darkMode: json['darkMode'] ?? false,
+      draftSession: json['draftSession'], // may be null
       exerciseBpm: json['exerciseBpm'] ?? 100,
       instruments: List<String>.from(json['instruments'] ?? []),
       admin: json['admin'] ?? false,
@@ -83,6 +86,7 @@ class ProfilePreferences {
 
   Map<String, dynamic> toJson() => {
     'darkMode': darkMode,
+    if (draftSession != null) 'draftSession': draftSession,
     'exerciseBpm': exerciseBpm,
     'instruments': instruments,
     'admin': admin,
@@ -123,6 +127,7 @@ class ProfilePreferences {
 
   ProfilePreferences copyWith({
     bool? darkMode,
+    Map<String, dynamic>? draftSession,
     int? exerciseBpm,
     List<String>? instruments,
     bool? admin,
@@ -141,6 +146,7 @@ class ProfilePreferences {
   }) {
     return ProfilePreferences(
       darkMode: darkMode ?? this.darkMode,
+      draftSession: draftSession ?? this.draftSession,
       exerciseBpm: exerciseBpm ?? this.exerciseBpm,
       instruments: instruments ?? this.instruments,
       admin: admin ?? this.admin,

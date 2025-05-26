@@ -8,6 +8,7 @@ import '../widgets/session_date_time_picker.dart';
 import '../widgets/session_app_bar_actions.dart';
 import '../utils/session_utils.dart';
 import '../utils/utils.dart';
+import '../utils/draft_utils.dart';
 
 class SessionReviewScreen extends StatefulWidget {
   final String sessionId;
@@ -86,6 +87,10 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
     final provider = Provider.of<UserProfileProvider>(context, listen: false);
     await provider.saveSessionWithId(widget.sessionId, updated);
     log.info('SessionReviewScreen saved: ${_editableSession.asLogString()}');
+
+    if (!mounted) return;
+    await clearDraftSession(provider);
+
     if (!mounted) return;
     // Prompt for next action
     final action = await showDialog<String>(
@@ -187,6 +192,12 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
             ),
       );
       if (!mounted) return false;
+      if (discard == true) {
+        // User chose to discard changes, clear the draft session
+        if (!mounted) return false; 
+        final provider = Provider.of<UserProfileProvider>(context, listen: false); // Fetch provider
+        await clearDraftSession(provider); // Pass provider instance
+      }
       return discard ?? false;
     }
     return true;
@@ -245,10 +256,11 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
     return PopScope(
       onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) return;
+        final navigator = Navigator.of(context);
         final shouldPop = await _onWillPop();
         if (shouldPop && mounted) {
           // If edits were not saved, signal to resume session
-          Navigator.of(context).pop('resume');
+          navigator.pop('resume');
         }
       },
       child: Scaffold(
@@ -257,9 +269,10 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () async {
+              final navigator = Navigator.of(context);
               final shouldPop = await _onWillPop();
               if (!mounted) return;
-              if (shouldPop) Navigator.of(context).maybePop();
+              if (shouldPop) navigator.maybePop();
             },
           ),
           title: Text(_editMode ? 'Session (edit)' : 'Session'),
@@ -271,29 +284,47 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
               onSave: () => _saveEdit(_editableSession),
               onEdit: _startEdit,
               onDelete: () async {
+                // Get all necessary dependencies before any async operations
+                final navigator = Navigator.of(context);
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+                final provider = Provider.of<UserProfileProvider>(
+                  context,
+                  listen: false,
+                );
+                
+                // Show confirmation dialog
                 final confirm = await showDialog<bool>(
                   context: context,
-                  builder:
-                      (context) => ConfirmDialog(
-                        title: 'Delete this session?',
-                        content:
-                            'Are you sure you want to delete this session? This cannot be undone.',
-                        onConfirm: () => Navigator.of(context).pop(true),
-                        onCancel: () => Navigator.of(context).pop(false),
-                      ),
+                  builder: (context) => ConfirmDialog(
+                    title: 'Delete this session?',
+                    content:
+                        'Are you sure you want to delete this session? This cannot be undone.',
+                    onConfirm: () => Navigator.of(context).pop(true),
+                    onCancel: () => Navigator.of(context).pop(false),
+                  ),
                 );
+                
+                // Handle dialog result
                 if (!mounted) return;
-                if (confirm == true) {
-                  final provider = Provider.of<UserProfileProvider>(
-                    context,
-                    listen: false,
-                  );
+                if (confirm != true) return;
+                
+                try {
                   await provider.removeSessionById(widget.sessionId);
+                  
                   if (!mounted) return;
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  await clearDraftSession(provider);
+
+                  if (!mounted) return;
+                  navigator.pop();
+                  scaffoldMessenger.showSnackBar(
                     const SnackBar(content: Text('Session deleted.')),
                   );
+                } catch (e) {
+                  if (mounted) {
+                    scaffoldMessenger.showSnackBar(
+                      SnackBar(content: Text('Error deleting session: $e')),
+                    );
+                  }
                 }
               },
             ),
@@ -358,6 +389,9 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
                   setState(() {
                     _editableSession = updatedSession;
                   });
+                },
+                onSaveDraft: (session) {
+                  saveDraftSession(context, session);
                 },
                 sessionDateTimeString:
                     '${_formatSessionDate(_editableSession.ended)} ${_formatSessionTime(_editableSession.ended)}',

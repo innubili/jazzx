@@ -21,7 +21,8 @@ dependencies:
 
   # Other plugins (update as needed)
   provider: ^6.1.1
-  # file_picker: ^6.1.1
+  receive_sharing_intent: ^1.6.6
+  file_picker: ^10.1.9
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.7
   google_fonts: ^6.2.1

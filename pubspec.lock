@@ -137,6 +137,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
+  cross_file:
+    dependency: transitive
+    description:
+      name: cross_file
+      sha256: "7caf6a750a0c04effbb52a676dce9a4a592e10ad35c34d6d2d0e4811160d5670"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.4+2"
   crypto:
     dependency: transitive
     description:
@@ -177,6 +185,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
+  file_picker:
+    dependency: "direct main"
+    description:
+      name: file_picker
+      sha256: "77f8e81d22d2a07d0dee2c62e1dda71dc1da73bf43bb2d45af09727406167964"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.1.9"
   firebase_auth:
     dependency: "direct main"
     description:
@@ -278,6 +294,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      sha256: f948e346c12f8d5480d2825e03de228d0eb8c3a737e4cdaa122267b89c022b5e
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.28"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -576,6 +600,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.5"
+  receive_sharing_intent:
+    dependency: "direct main"
+    description:
+      name: receive_sharing_intent
+      sha256: ec76056e4d258ad708e76d85591d933678625318e411564dcb9059048ca3a593
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.8.1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -745,10 +777,10 @@ packages:
     dependency: transitive
     description:
       name: vector_graphics_compiler
-      sha256: "1b4b9e706a10294258727674a340ae0d6e64a7231980f9f9a3d12e4b42407aad"
+      sha256: "557a315b7d2a6dbb0aaaff84d857967ce6bdc96a63dc6ee2a57ce5a6ee5d3331"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.16"
+    version: "1.1.17"
   vector_math:
     dependency: transitive
     description:
@@ -805,6 +837,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.22.0"
+  win32:
+    dependency: transitive
+    description:
+      name: win32
+      sha256: "329edf97fdd893e0f1e3b9e88d6a0e627128cc17cc316a8d67fda8f1451178ba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.13.0"
   xdg_directories:
     dependency: transitive
     description:

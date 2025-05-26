@@ -79,7 +79,7 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
                   ).standards;
               final userSongs = profileProvider.profile?.songs ?? {};
 
-              String? newTitle = await showDialog<String>(
+              await showDialog(
                 context: context,
                 builder: (context) {
                   final controller = TextEditingController();
@@ -135,8 +135,14 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
                                 isValid
                                     ? () {
                                       final trimmed = controller.text.trim();
-                                      final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
-                                      final newSong = Song.getDefault(trimmed).copyWith(added: now);
+                                      final now =
+                                          DateTime.now()
+                                              .toUtc()
+                                              .millisecondsSinceEpoch ~/
+                                          1000;
+                                      final newSong = Song.getDefault(
+                                        trimmed,
+                                      ).copyWith(added: now);
                                       profileProvider.addSong(newSong);
                                       Navigator.of(context).pop();
                                       setState(() {
@@ -170,8 +176,6 @@ class _UserSongsScreenState extends State<UserSongsScreen> {
                   );
                 },
               );
-
-              if (newTitle == null) return;
             },
           ),
           IconButton(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/link.dart';
 import 'link_editor_widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SearchBarWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -72,12 +73,74 @@ class SearchBarWidget extends StatelessWidget {
     onQueryChanged(updated);
   }
 
-  void _handleKindChange(Set<LinkKind> kinds) {
+  void _handleKindChange(BuildContext context, Set<LinkKind> kinds) {
+    final kind = kinds.first;
+    // Prepare the query
+    final query = controller.text.trim();
+    // Launch external app or picker based on kind
+    switch (kind) {
+      case LinkKind.youtube:
+        _launchExternalApp(context, 'https://www.youtube.com/results?search_query=${Uri.encodeComponent(query)}');
+        break;
+      case LinkKind.spotify:
+        _launchExternalApp(context, 'spotify:search:${Uri.encodeComponent(query)}');
+        break;
+      case LinkKind.media:
+        _launchFilePicker(context);
+        break;
+      // Add other kinds as needed
+      default:
+        break;
+    }
+    // Optionally keep updating selectedKinds if needed
     onKindsChanged(kinds);
+  }
+
+  void _launchExternalApp(BuildContext context, String url) async {
+    // Uses url_launcher (already in pubspec.yaml)
+    try {
+      final uri = Uri.parse(url);
+      // ignore: use_build_context_synchronously
+      if (!await canLaunchUrl(uri)) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch external app.')),
+        );
+        return;
+      }
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to launch: $e')),
+      );
+    }
+  }
+
+  void _launchFilePicker(BuildContext context) async {
+    // TODO: file_picker is commented out in pubspec.yaml. Uncomment it and run `flutter pub get` to enable file picking.
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('File picker is not enabled. Please enable file_picker in pubspec.yaml.')),
+    );
+    // Example code if file_picker is enabled:
+    // import 'package:file_picker/file_picker.dart';
+    // try {
+    //   final result = await FilePicker.platform.pickFiles();
+    //   if (result != null && result.files.isNotEmpty) {
+    //     // Handle the picked file
+    //     final file = result.files.first;
+    //     // Do something with file.path
+    //   }
+    // } catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Failed to pick file: $e')),
+    //   );
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
+    final allowedKinds = _allowedKindsFor(selectedCategory);
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -111,7 +174,11 @@ class SearchBarWidget extends StatelessWidget {
           const SizedBox(height: 12),
           Text('Sources:', style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 4),
-          LinkKindPicker(selected: selectedKinds, onChanged: _handleKindChange),
+          LinkKindPicker(
+          selected: selectedKinds,
+          onChanged: (kinds) => _handleKindChange(context, kinds),
+          allowedKinds: allowedKinds,
+        ),
         ],
       ),
     );

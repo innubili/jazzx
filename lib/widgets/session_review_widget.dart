@@ -17,6 +17,7 @@ class SessionReviewWidget extends StatefulWidget {
   final String? sessionDateTimeString;
   final void Function(Session session)? onSessionChanged;
   final bool editRecordedSession;
+  final void Function(Session session)? onSaveDraft;
 
   const SessionReviewWidget({
     super.key,
@@ -30,6 +31,7 @@ class SessionReviewWidget extends StatefulWidget {
     this.sessionDateTimeString,
     this.onSessionChanged,
     this.editRecordedSession = false,
+    this.onSaveDraft,
   });
 
   @override
@@ -59,7 +61,6 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final disableDateTimeEdit = widget.editRecordedSession;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -111,10 +112,25 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
               editMode: widget.editMode,
               onSessionChanged: _updateSession,
               expandedCategory: _expandedCategory,
-              onExpand: (cat) {
+              onExpand: (categoryTapped) {
+                final PracticeCategory? oldExpandedCategory = _expandedCategory;
                 setState(() {
-                  _expandedCategory = _expandedCategory == cat ? null : cat;
+                  if (_expandedCategory == categoryTapped) {
+                    _expandedCategory = null; // Toggle: collapse
+                  } else {
+                    _expandedCategory = categoryTapped; // Expand new, implicitly collapse old
+                  }
                 });
+
+                // If oldExpandedCategory was not null AND it's different from the new _expandedCategory,
+                // then oldExpandedCategory was collapsed.
+                if (oldExpandedCategory != null && oldExpandedCategory != _expandedCategory) {
+                  // Check if the collapsed category has time > 0
+                  final categoryData = _editedSession.categories[oldExpandedCategory];
+                  if ((categoryData?.time ?? 0) > 0) {
+                    widget.onSaveDraft?.call(_editedSession);
+                  }
+                }
               },
               editRecordedSession: widget.editRecordedSession,
               manualEntry: widget.editMode && !widget.editRecordedSession,
@@ -132,35 +148,7 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
   }
 
-  String _formatSessionDate(int ended) {
-    int ts = ended;
-    final dt = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
-    return '${dt.day.toString().padLeft(2, '0')}-${_monthName(dt.month)}-${dt.year}';
-  }
-
-  String _formatSessionTime(int ended) {
-    int ts = ended;
-    final dt = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
-    return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
-  }
-
-  String _monthName(int month) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return months[month - 1];
-  }
+  // Date and time formatting methods removed as they're not being used
 
   Widget _buildAddCategoryChips() {
     if (!widget.editMode) return const SizedBox.shrink();
@@ -225,9 +213,15 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
           isEditing
               ? InkWell(
                 onTap: () {
+                  final bool oldWarmupExpanded = _warmupExpanded;
                   setState(() {
                     _warmupExpanded = !_warmupExpanded;
                   });
+                  if (oldWarmupExpanded && !_warmupExpanded) { // Just collapsed
+                    if ((_editedSession.warmup?.time ?? 0) > 0) {
+                      widget.onSaveDraft?.call(_editedSession);
+                    }
+                  }
                 },
                 child: AnimatedCrossFade(
                   crossFadeState:

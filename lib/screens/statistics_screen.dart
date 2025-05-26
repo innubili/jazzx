@@ -25,9 +25,6 @@ class StatisticsScreen extends StatelessWidget {
     }
 
     int getTotalSeconds() => stats.total.values.values.fold(0, (a, b) => a + b);
-    int getTotalSessions() => context.select<UserProfileProvider, int>(
-      (p) => p.profile?.sessions.length ?? 0,
-    );
     int getTotalSongs() => context.select<UserProfileProvider, int>(
       (p) => p.profile?.songs.length ?? 0,
     );
