@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../utils/session_utils.dart';
 import '../utils/draft_utils.dart';
+import '../models/user_profile.dart';
 
 import '../widgets/metronome_controller.dart';
 import '../widgets/practice_timer_widget.dart';
@@ -34,6 +35,7 @@ class _SessionScreenState extends State<SessionScreen> {
   bool _hasStartedFirstPractice = false;
   bool _isWarmup = false;
   bool _isOnBreak = false; // Added this variable
+  bool _isLoadingSession = true; // <-- ADDED: Loading flag
 
   late Session sessionData;
 
@@ -89,86 +91,90 @@ class _SessionScreenState extends State<SessionScreen> {
   void initState() {
     super.initState();
     sessionId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    final profile =
-        Provider.of<UserProfileProvider>(context, listen: false).profile;
-    final prefs = profile?.preferences;
+    final profileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+    final prefs = profileProvider.profile?.preferences;
     final draft = prefs?.draftSession;
-    final lastSession = profile?.sessions[profile.preferences.lastSessionId];
 
-    // If a draft exists, prompt user to resume or discard
     if (draft != null && draft.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         final resume = await showDialog<bool>(
           context: context,
-          builder:
-              (context) => AlertDialog(
-                title: const Text('Resume Draft Session?'),
-                content: const Text(
-                  'You have an unfinished session. Would you like to resume or discard it?',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text('Discard'),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text('Resume'),
-                  ),
-                ],
+          builder: (context) => AlertDialog(
+            title: const Text('Resume Draft Session?'),
+            content: const Text(
+              'You have an unfinished session. Would you like to resume or discard it?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Discard'),
               ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Resume'),
+              ),
+            ],
+          ),
         );
         if (!mounted) return;
+
         if (resume == true) {
-          setState(() {
-            sessionData = Session.fromJson(draft);
-            _activeMode = null;
-            _queuedMode = null;
-            _hasStartedFirstPractice = false;
-            _isWarmup = false;
-            _isOnBreak = false;
-            _practiceElapsedSeconds = 0;
+          _resetSessionData(); // Set SessionScreen to a default valid state first.
+          if (mounted) {
+            setState(() { _isLoadingSession = false; });
+          }
+
+          // Defer navigation to another post-frame callback
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            final Session sessionToResume = Session.fromJson(draft);
+            final String draftSessionId = sessionToResume.started.toString(); 
+            final DateTime draftInitialDateTime = DateTime.fromMillisecondsSinceEpoch(sessionToResume.started * 1000);
+
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => SessionReviewScreen(
+                  sessionId: draftSessionId,
+                  session: sessionToResume,
+                  manualEntry: true, 
+                  initialDateTime: draftInitialDateTime,
+                ),
+              ),
+            );
           });
         } else {
           // Discard draft
-          final provider = Provider.of<UserProfileProvider>(
-            context,
-            listen: false,
-          );
-          provider.saveUserPreferences(prefs!.copyWith(draftSession: {}));
+          if (prefs != null) {
+             profileProvider.saveUserPreferences(prefs.copyWith(draftSession: {}));
+          }
+          _resetSessionData(); 
+          if (mounted) {
+            setState(() {
+              _isLoadingSession = false; 
+            });
+          }
         }
       });
     } else {
-      _resetSessionData();
-      if (lastSession != null) {
-        for (final cat in PracticeCategory.values) {
-          final lastCat = lastSession.categories[cat];
-          if (lastCat != null) {
-            sessionData.categories[cat] = SessionCategory(
-              time: 0,
-              note: lastCat.note,
-              bpm: lastCat.bpm,
-              songs: lastCat.songs,
-            );
-          }
-        }
-      }
+      _resetSessionData(); 
+      setState(() {
+        _isLoadingSession = false; 
+      });
     }
   }
 
   void _resetSessionData() {
-    final profile =
-        Provider.of<UserProfileProvider>(context, listen: false).profile;
-    // Use first instrument or fallback to 'guitar' if none
-    final instrument =
-        (profile?.preferences.instruments.isNotEmpty ?? false)
-            ? profile!.preferences.instruments.first
-            : 'guitar';
+    final UserProfile? userProfile = Provider.of<UserProfileProvider>(context, listen: false).profile;
+    String instrument = 'guitar'; // Default instrument
+    if (userProfile != null && userProfile.preferences.instruments.isNotEmpty) {
+      instrument = userProfile.preferences.instruments.first;
+    }
 
     setState(() {
-      final sessionId = DateTime.now().millisecondsSinceEpoch;
+      // Ensure sessionId for getDefault is in seconds
+      final int newSessionIdInSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
       sessionData = Session.getDefault(
-        sessionId: sessionId,
+        sessionId: newSessionIdInSeconds, 
         instrument: instrument,
       );
       _activeMode = null;
@@ -177,6 +183,7 @@ class _SessionScreenState extends State<SessionScreen> {
       _isWarmup = false;
       _isOnBreak = false;
       _practiceElapsedSeconds = 0;
+      // _isLoadingSession = false; // Not strictly needed here if handled in initState
     });
 
     _metronomeController.stop();
@@ -664,6 +671,11 @@ class _SessionScreenState extends State<SessionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingSession) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     final title =
         _activeMode != null
             ? _isOnBreak

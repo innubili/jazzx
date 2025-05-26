@@ -307,15 +307,20 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
             onPressed:
                 warmupTime >= 300
                     ? () {
-                      final newTime = (warmupTime - 300).clamp(0, 1800);
-                      _updateSession(
-                        _editedSession.copyWith(
-                          warmup: (_editedSession.warmup ??
-                                  Warmup(time: 0, bpm: 0))
-                              .copyWith(time: newTime),
-                        ),
-                      );
-                    }
+                        final newTime = (warmupTime - 300).clamp(0, 1800);
+                        final newWarmup = (_editedSession.warmup ?? Warmup(time: 0, bpm: 0))
+                            .copyWith(time: newTime);
+                        final sessionAfterUpdate = _editedSession.copyWith(warmup: newWarmup);
+
+                        _updateSession(sessionAfterUpdate);
+
+                        final calculatedDuration = (newWarmup.time) +
+                            _editedSession.categories.values.fold(0, (sum, cat) => sum + (cat.time));
+
+                        if (calculatedDuration > 0) {
+                          widget.onSaveDraft?.call(_editedSession);
+                        }
+                      }
                     : null,
           ),
           Text(
@@ -326,12 +331,18 @@ class _SessionReviewWidgetState extends State<SessionReviewWidget> {
             icon: const Icon(Icons.add),
             onPressed: () {
               final newTime = (warmupTime + 300).clamp(0, 1800);
-              _updateSession(
-                _editedSession.copyWith(
-                  warmup: (_editedSession.warmup ?? Warmup(time: 0, bpm: 0))
-                      .copyWith(time: newTime),
-                ),
-              );
+              final newWarmup = (_editedSession.warmup ?? Warmup(time: 0, bpm: 0))
+                  .copyWith(time: newTime);
+              final sessionAfterUpdate = _editedSession.copyWith(warmup: newWarmup);
+
+              _updateSession(sessionAfterUpdate);
+
+              final calculatedDuration = (newWarmup.time) +
+                  _editedSession.categories.values.fold(0, (sum, cat) => sum + (cat.time));
+
+              if (calculatedDuration > 0) {
+                widget.onSaveDraft?.call(_editedSession);
+              }
             },
           ),
         ],

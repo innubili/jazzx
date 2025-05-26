@@ -1,40 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/user_profile_provider.dart';
 import '../models/session.dart';
-import '../utils/utils.dart';
+import '../providers/user_profile_provider.dart';
+import '../utils/utils.dart'; // For log
 
-/// Saves the current session as a draft in user preferences if not ended.
-/// This is reusable for SessionScreen and SessionReviewScreen.
-void saveDraftSession(BuildContext context, Session session) {
+/// Saves the current session as a draft in user preferences if it has content.
+Future<void> saveDraftSession(BuildContext context, Session session) async {
   final profileProvider = Provider.of<UserProfileProvider>(
     context,
     listen: false,
   );
   final prefs = profileProvider.profile?.preferences;
-  String s = 'saveDraftSession ${session.asLogString()}';
-  bool done = false;
+  final String logPrefix = 'saveDraftSession ${session.asLogString()}';
 
   if (prefs != null) {
-    if (session.ended == 0 && session.duration == 0) {
-      profileProvider.saveUserPreferences(
+    // Skip saving ONLY if the session has no timed content (warmup or categories).
+    // session.duration should reflect the sum of warmup and all category times.
+    if (session.duration == 0) {
+      log.info('$logPrefix skipped (empty or no duration)');
+      return; // Don't save if there's no duration
+    }
+
+    // If we reach here, there is content, so save the draft.
+    try {
+      await profileProvider.saveUserPreferences(
         prefs.copyWith(draftSession: session.toJson()),
       );
-      done = true;
-    } else {}
-    log.info('$s ${done ? 'done' : 'skipped'}');
+      log.info('$logPrefix done');
+    } catch (e) {
+      log.severe('$logPrefix failed: $e');
+    }
+  } else {
+    log.warning('$logPrefix skipped (no preferences found)');
   }
 }
 
 /// Clears the draft session from user preferences.
-Future<void> clearDraftSession(UserProfileProvider profileProvider) async {
-  final prefs = profileProvider.profile?.preferences;
+Future<void> clearDraftSession(UserProfileProvider provider) async {
+  final prefs = provider.profile?.preferences;
   if (prefs != null) {
-    await profileProvider.saveUserPreferences(
-      prefs.copyWith(draftSession: null),
-    );
-    log.info('Cleared draft session via clearDraftSession utility.');
+    // Create a new UserPreferences object with draftSession set to null
+    final clearedPrefs = prefs.copyWith(draftSession: null);
+    await provider.saveUserPreferences(clearedPrefs);
+    log.info('clearDraftSession done');
   } else {
-    log.warning('Attempted to clear draft session, but preferences were null.');
+    log.warning('clearDraftSession skipped (no preferences found)');
   }
 }

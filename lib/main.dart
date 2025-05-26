@@ -225,12 +225,18 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   Future<void> _loadInitialData() async {
-    if (!mounted || _isLoading || _userProfile != null) return;
+    log.info('🏁 [AuthGate._loadInitialData] Entered. Mounted: $mounted, isLoading: $_isLoading, _userProfile != null: ${_userProfile != null}');
+    if (!mounted || _isLoading || _userProfile != null) {
+      log.warning('🚪 [AuthGate._loadInitialData] Exiting early due to guard conditions. Mounted: $mounted, isLoading: $_isLoading, _userProfile != null: ${_userProfile != null}');
+      return;
+    }
 
+    log.info('⏳ [AuthGate._loadInitialData] Proceeding to set _isLoading = true.');
     setState(() {
       _isLoading = true;
     });
 
+    log.info('🚀 [AuthGate._loadInitialData] Starting try block for data fetching.');
     try {
       final results = await Future.wait([
         FirebaseService().loadJazzStandards(),
