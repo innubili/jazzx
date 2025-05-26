@@ -845,48 +845,27 @@ class _SessionScreenState extends State<SessionScreen> {
                   // Action Buttons
                   Padding(
                     padding: const EdgeInsets.only(
-                      bottom: 6, // Reduced from 16
+                      bottom: 6,
                       left: 16,
                       right: 16,
                     ),
                     child: LayoutBuilder(
                       builder: (context, constraints) {
-                        final mediaQuery = MediaQuery.of(context);
-                        final isTablet = mediaQuery.size.shortestSide >= 600;
+                        final double buttonRowHeight = constraints.maxWidth / 4;
 
-                        // --- PORTRAIT ---
-
-                        final cardHeight =
-                            isTablet
-                                ? mediaQuery.size.height *
-                                    0.1 // 1/10 for tablet
-                                : mediaQuery.size.height *
-                                    0.1; // 1/10 for phone
-                        return Card(
-                          elevation: 0, // No elevation for flat appearance
-                          shadowColor: Colors.transparent, // No shadow
-                          color: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Padding(
-                            padding:
-                                EdgeInsets
-                                    .zero, // Inner padding set to 0 for Action Buttons Card
-                            child: SizedBox(
-                              height: cardHeight,
-                              width: double.infinity,
-                              child: PracticeModeButtonsWidget(
-                                activeMode: _activeMode?.name,
-                                queuedMode: _queuedMode?.name,
-                                onModeSelected: (mode) {
-                                  final category = mode.tryToPracticeCategory();
-                                  if (category != null) {
-                                    _startPractice(category);
-                                  }
-                                },
-                              ),
-                            ),
+                        return SizedBox(
+                          height: buttonRowHeight,
+                          width: constraints.maxWidth,
+                          child: PracticeModeButtonsWidget(
+                            activeMode: _activeMode?.name,
+                            queuedMode: _queuedMode?.name,
+                            onModeSelected: (mode) {
+                              final category = mode.tryToPracticeCategory();
+                              if (category != null) {
+                                _startPractice(category);
+                              }
+                            },
+                            orientation: Orientation.portrait,
                           ),
                         );
                       },
@@ -912,19 +891,11 @@ class _SessionScreenState extends State<SessionScreen> {
                       padding: EdgeInsets.zero, // No inner padding
                       child: LayoutBuilder(
                         builder: (context, constraints) {
-                          final mediaQuery = MediaQuery.of(context);
-                          final isTablet = mediaQuery.size.shortestSide >= 600;
+                          final double buttonColumnWidth = constraints.maxHeight / 4;
 
-                          // --- LANDSCAPE ---
-                          final cardWidth =
-                              isTablet
-                                  ? mediaQuery.size.width *
-                                      0.125 // 1/8 for tablet
-                                  : mediaQuery.size.width *
-                                      0.20; // 1/5 for phone
                           return SizedBox(
-                            width: cardWidth,
-                            height: double.infinity,
+                            width: buttonColumnWidth, // Key change for landscape
+                            height: constraints.maxHeight, // Use full available height
                             child: PracticeModeButtonsWidget(
                               activeMode: _activeMode?.name,
                               queuedMode: _queuedMode?.name,
@@ -932,6 +903,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                 final category = mode.tryToPracticeCategory();
                                 if (category != null) _startPractice(category);
                               },
+                              orientation: isPortrait ? Orientation.portrait : Orientation.landscape,
                             ),
                           );
                         },
