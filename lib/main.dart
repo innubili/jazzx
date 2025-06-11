@@ -159,11 +159,11 @@ class _AuthGateState extends State<AuthGate> {
               MaterialPageRoute(
                 builder:
                     (_) => SessionReviewScreen(
-                          sessionId: draftSession.started.toString(),
-                          session: draftSession,
-                          manualEntry: true,
-                          editRecordedSession: true,
-                        ),
+                      sessionId: draftSession.started.toString(),
+                      session: draftSession,
+                      manualEntry: true,
+                      editRecordedSession: true,
+                    ),
               ),
             );
           }
@@ -215,6 +215,24 @@ class _AuthGateState extends State<AuthGate> {
       '🔍 maybeLoadInitialData: _currentUser=${_currentUser?.uid} _userProfile=${_userProfile != null} _isLoading=$_isLoading',
     );
 
+    // --- Test A1.mp3 playback ---
+    /*
+    final player = AudioPlayer();
+    player
+        .play(AssetSource('sounds/A1.mp3'))
+        .then((_) {
+          log.info('🎉 [AUDIO_TEST] A1.mp3 playback initiated successfully.');
+        })
+        .catchError((error) {
+          log.severe('🔥 [AUDIO_TEST] Error playing A1.mp3: $error');
+        })
+        .whenComplete(() {
+          player.dispose();
+          log.info('🎧 [AUDIO_TEST] Player disposed for A1.mp3.');
+        });
+    */
+    // --- End Test A1.mp3 playback ---
+
     if (_currentUser == null) return;
     if (_isLoading || _userProfile != null) {
       log.info('🚫 Skipping initial data load.');
@@ -225,18 +243,26 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   Future<void> _loadInitialData() async {
-    log.info('🏁 [AuthGate._loadInitialData] Entered. Mounted: $mounted, isLoading: $_isLoading, _userProfile != null: ${_userProfile != null}');
+    log.info(
+      '🏁 [AuthGate._loadInitialData] Entered. Mounted: $mounted, isLoading: $_isLoading, _userProfile != null: ${_userProfile != null}',
+    );
     if (!mounted || _isLoading || _userProfile != null) {
-      log.warning('🚪 [AuthGate._loadInitialData] Exiting early due to guard conditions. Mounted: $mounted, isLoading: $_isLoading, _userProfile != null: ${_userProfile != null}');
+      log.warning(
+        '🚪 [AuthGate._loadInitialData] Exiting early due to guard conditions. Mounted: $mounted, isLoading: $_isLoading, _userProfile != null: ${_userProfile != null}',
+      );
       return;
     }
 
-    log.info('⏳ [AuthGate._loadInitialData] Proceeding to set _isLoading = true.');
+    log.info(
+      '⏳ [AuthGate._loadInitialData] Proceeding to set _isLoading = true.',
+    );
     setState(() {
       _isLoading = true;
     });
 
-    log.info('🚀 [AuthGate._loadInitialData] Starting try block for data fetching.');
+    log.info(
+      '🚀 [AuthGate._loadInitialData] Starting try block for data fetching.',
+    );
     try {
       final results = await Future.wait([
         FirebaseService().loadJazzStandards(),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'metronome_controller.dart';
 import '../utils/utils.dart';
@@ -30,6 +31,7 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
   final List<DateTime> _tapTimes = [];
 
   late final MetronomeSoundPlayer _soundPlayer;
+  bool _isSoundPlayerReady = false;
 
   Stopwatch? _stopwatch;
 
@@ -99,7 +101,23 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
     _parseTimeSignature();
     _parseBitsPattern();
     _soundPlayer = createMetronomeSoundPlayer();
-    _soundPlayer.init();
+    _initializeSoundPlayer();
+
+    // Temporary test for direct asset loading
+    log.info('[DIAGNOSTIC] Attempting to load tack.mp3 directly...');
+    rootBundle.load('assets/sounds/tack.mp3').then((data) {
+      log.info('[DIAGNOSTIC] SUCCESS: tack.mp3 loaded directly, size: ${data.lengthInBytes}');
+    }).catchError((error) {
+      log.info('[DIAGNOSTIC] ERROR: tack.mp3 failed to load directly: $error');
+    });
+
+    log.info('[DIAGNOSTIC] Attempting to load tick.mp3 directly...');
+    rootBundle.load('assets/sounds/tick.mp3').then((data) {
+      log.info('[DIAGNOSTIC] SUCCESS: tick.mp3 loaded directly, size: ${data.lengthInBytes}');
+    }).catchError((error) {
+      log.info('[DIAGNOSTIC] ERROR: tick.mp3 failed to load directly: $error');
+    });
+
     _stopwatch = Stopwatch();
   }
 
@@ -115,6 +133,14 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
 
   // Public Method to start the metronome
   void startMetronome() {
+    // Guard to ensure sound player is ready
+    if (!_isSoundPlayerReady) {
+      log.info('[METRONOME_WIDGET] Attempted to start metronome, but sound player is not ready yet.');
+      // Optionally, inform the user or queue the start request.
+      // For now, we just prevent starting if not ready.
+      return;
+    }
+
     _timer?.cancel();
     tickCount = 0;
     _stopwatch?.reset();
@@ -312,6 +338,19 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
     required bool isDownbeat,
   }) async {
     await _soundPlayer.play(isDownbeat: isDownbeat, volume: volume);
+  }
+
+  Future<void> _initializeSoundPlayer() async {
+    log.info('[METRONOME_WIDGET] Initializing sound player...');
+    await _soundPlayer.init();
+    if (mounted) {
+      setState(() {
+        _isSoundPlayerReady = true;
+      });
+      log.info('[METRONOME_WIDGET] Sound player initialized and ready.');
+    } else {
+      log.info('[METRONOME_WIDGET] Sound player initialized, but widget no longer mounted.');
+    }
   }
 
   @override

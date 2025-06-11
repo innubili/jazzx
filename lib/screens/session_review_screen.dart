@@ -391,7 +391,8 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
                   });
                 },
                 onSaveDraft: (session) {
-                  saveDraftSession(context, session);
+                  final profileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+                  saveDraftSession(profileProvider, session);
                 },
                 sessionDateTimeString:
                     '${_formatSessionDate(_editableSession.ended)} ${_formatSessionTime(_editableSession.ended)}',

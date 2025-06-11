@@ -1,5 +1,17 @@
 import 'package:logging/logging.dart';
-import 'package:flutter/foundation.dart';
+
+final log = Logger('JazzX');
+
+String logBuffer = '';
+
+const maxLogBufferLength = 100000;
+
+// Helper to get time in HH:mm:ss.SSS format
+String _shortTime(DateTime dt) {
+  String iso =
+      dt.toIso8601String(); // e.g., 2023-10-27T10:30:55.123Z or 2023-10-27T10:30:55.123
+  return iso.substring(11, 23); // Extracts HH:mm:ss.SSS
+}
 
 T? enumFromString<T extends Enum>(
   String? value,
@@ -13,15 +25,54 @@ T? enumFromString<T extends Enum>(
   );
 }
 
-final log = Logger('JazzX');
+void defLog(String message) {
+  logBuffer += '\n${_shortTime(DateTime.now())} $message';
+}
+
+void defLogErr(String message) {
+  logBuffer += '\n${_shortTime(DateTime.now())} ERROR: $message';
+}
+
+void defLogClear() {
+  logBuffer = '';
+}
+
+void defLogShow() {
+  log.info('\t=== BUFFERED LOG start... ===');
+  while (logBuffer.length > 1000) {
+    log.info(logBuffer.substring(0, 1000));
+    logBuffer = logBuffer.substring(1000);
+  }
+  if (logBuffer.isNotEmpty) {
+    log.info(logBuffer);
+  }
+  log.info('\t=== ...end BUFFERED LOG ===');
+  defLogClear(); // Keep clear commented for now, or clear based on button press logic
+}
 
 void setupLogging() {
   Logger.root.level = Level.ALL; // Log everything
-  Logger.root.onRecord.listen((record) {
-    debugPrint(
-      '[${record.level.name}] ${record.loggerName}: ${record.message}',
-    );
-  });
+  Logger.root.onRecord.listen(
+    (record) {
+      // ignore: avoid_print
+      print(
+        '${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}',
+      );
+      if (record.error != null) {
+        // ignore: avoid_print
+        print('  ERROR: ${record.error}');
+      }
+      if (record.stackTrace != null) {
+        // ignore: avoid_print
+        print('  STACKTRACE:\n${record.stackTrace}');
+      }
+    },
+    onError: (Object error, StackTrace stackTrace) {
+      // This handles errors from the stream itself, or within the listen callback.
+      // ignore: avoid_print
+      print('[SEVERE] Error in logging system listener: $error\n$stackTrace');
+    },
+  );
 }
 
 String sanitizeLinkKey(String url) {

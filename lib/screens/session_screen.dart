@@ -30,6 +30,8 @@ class _SessionScreenState extends State<SessionScreen> {
   final PracticeTimerController _timerController = PracticeTimerController();
   final MetronomeController _metronomeController = MetronomeController();
 
+  UserProfileProvider? _userProfileProvider; // <-- ADDED
+
   PracticeCategory? _activeMode;
   PracticeCategory? _queuedMode;
   bool _hasStartedFirstPractice = false;
@@ -91,8 +93,8 @@ class _SessionScreenState extends State<SessionScreen> {
   void initState() {
     super.initState();
     sessionId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    final profileProvider = Provider.of<UserProfileProvider>(context, listen: false);
-    final prefs = profileProvider.profile?.preferences;
+    final initialProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+    final prefs = initialProfileProvider.profile?.preferences;
     final draft = prefs?.draftSession;
 
     if (draft != null && draft.isNotEmpty) {
@@ -120,39 +122,13 @@ class _SessionScreenState extends State<SessionScreen> {
 
         if (resume == true) {
           _resetSessionData(); // Set SessionScreen to a default valid state first.
-          if (mounted) {
-            setState(() { _isLoadingSession = false; });
-          }
-
-          // Defer navigation to another post-frame callback
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted) return;
-            final Session sessionToResume = Session.fromJson(draft);
-            final String draftSessionId = sessionToResume.started.toString(); 
-            final DateTime draftInitialDateTime = DateTime.fromMillisecondsSinceEpoch(sessionToResume.started * 1000);
-
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => SessionReviewScreen(
-                  sessionId: draftSessionId,
-                  session: sessionToResume,
-                  manualEntry: true, 
-                  initialDateTime: draftInitialDateTime,
-                ),
-              ),
-            );
-          });
+          // No need to call saveDraftSession(context, sessionData) here as we are loading or discarding.
         } else {
           // Discard draft
           if (prefs != null) {
-             profileProvider.saveUserPreferences(prefs.copyWith(draftSession: {}));
+             initialProfileProvider.saveUserPreferences(prefs.copyWith(draftSession: {}));
           }
           _resetSessionData(); 
-          if (mounted) {
-            setState(() {
-              _isLoadingSession = false; 
-            });
-          }
         }
       });
     } else {
@@ -163,8 +139,14 @@ class _SessionScreenState extends State<SessionScreen> {
     }
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+  }
+
   void _resetSessionData() {
-    final UserProfile? userProfile = Provider.of<UserProfileProvider>(context, listen: false).profile;
+    final UserProfile? userProfile = _userProfileProvider?.profile; // Use stored provider
     String instrument = 'guitar'; // Default instrument
     if (userProfile != null && userProfile.preferences.instruments.isNotEmpty) {
       instrument = userProfile.preferences.instruments.first;
@@ -239,7 +221,9 @@ class _SessionScreenState extends State<SessionScreen> {
       _setCategoryTimeAndBpmFromTimer(
         PracticeCategory.exercise,
       ); // Use a valid category for logic, but actual warmup values go to top-level fields
-      saveDraftSession(context, sessionData); // Save draft on warmup complete
+      if (_userProfileProvider != null) {
+        saveDraftSession(_userProfileProvider!, sessionData); // Save draft on warmup complete
+      }
     }
   }
 
@@ -253,7 +237,7 @@ class _SessionScreenState extends State<SessionScreen> {
     }
 
     final profile =
-        Provider.of<UserProfileProvider>(context, listen: false).profile;
+        _userProfileProvider?.profile;
     final shouldWarmup =
         !_hasStartedFirstPractice &&
         (profile?.preferences.warmupEnabled ?? false) &&
@@ -306,7 +290,7 @@ class _SessionScreenState extends State<SessionScreen> {
   void _startPracticeMode(PracticeCategory mode) {
     _debugPrintSessionData('before START PRACTICE');
     final profile =
-        Provider.of<UserProfileProvider>(context, listen: false).profile;
+        _userProfileProvider?.profile;
     int effectiveWarmupTime =
         (profile?.preferences.warmupEnabled ?? false) && mode.canWarmup
             ? (profile?.preferences.warmupTime ?? 0)
@@ -337,7 +321,9 @@ class _SessionScreenState extends State<SessionScreen> {
       startFrom: previousTime,
       countDown: false,
     );
-    saveDraftSession(context, sessionData); // Save draft on timer start
+    if (_userProfileProvider != null) {
+      saveDraftSession(_userProfileProvider!, sessionData); // Save draft on timer start
+    }
 
     setState(() {
       _hasStartedFirstPractice = true;
@@ -378,7 +364,7 @@ class _SessionScreenState extends State<SessionScreen> {
     _debugPrintSessionData('startPracticeMonitor');
     _practiceMonitorTimer?.cancel();
     final profile =
-        Provider.of<UserProfileProvider>(context, listen: false).profile;
+        _userProfileProvider?.profile;
     int logCounter = 0;
     if (profile?.preferences.autoPause ?? false) {
       _practiceMonitorTimer = Timer.periodic(const Duration(seconds: 1), (
@@ -520,7 +506,9 @@ class _SessionScreenState extends State<SessionScreen> {
     _practiceMonitorTimer?.cancel();
     // Track time of manual pause
     _lastManualPauseTime = DateTime.now();
-    saveDraftSession(context, sessionData); // Save draft on pause/stop
+    if (_userProfileProvider != null) {
+      saveDraftSession(_userProfileProvider!, sessionData); // Save draft on pause/stop
+    }
   }
 
   void _resumePracticeSession() {
@@ -604,17 +592,14 @@ class _SessionScreenState extends State<SessionScreen> {
     );
     // Handle result: if user did not save, resume session
     if (!mounted) return;
-    final profileProvider = Provider.of<UserProfileProvider>(
-      context,
-      listen: false,
-    );
-    final prefs = profileProvider.profile?.preferences;
+    final profileProvider = _userProfileProvider;
+    final prefs = profileProvider?.profile?.preferences;
     if (result == 'resume') {
       _resumePracticeSession();
     } else if (result == 'end') {
       // Clear the draft when session is completed
       if (prefs != null) {
-        profileProvider.saveUserPreferences(prefs.copyWith(draftSession: {}));
+        profileProvider?.saveUserPreferences(prefs.copyWith(draftSession: {}));
       }
     }
   }
@@ -1048,9 +1033,20 @@ class _SessionScreenState extends State<SessionScreen> {
 
   @override
   void dispose() {
+    log.info('JazzX: SessionScreen dispose called.');
     _practiceMonitorTimer?.cancel();
     _breakTimer?.cancel();
-    saveDraftSession(context, sessionData);
+
+    // Save draft session if it has content and is not empty
+    if (sessionData.duration > 0) {
+      // Check if _userProfileProvider is not null before using it.
+      if (_userProfileProvider != null) {
+        saveDraftSession(_userProfileProvider!, sessionData); // NEW CALL
+      } else {
+        log.warning('JazzX: _userProfileProvider is null in dispose. Cannot save draft.');
+      }
+    }
+
     super.dispose();
   }
 }

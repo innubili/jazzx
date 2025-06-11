@@ -1,15 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 import '../models/session.dart';
 import '../providers/user_profile_provider.dart';
 import '../utils/utils.dart'; // For log
 
 /// Saves the current session as a draft in user preferences if it has content.
-Future<void> saveDraftSession(BuildContext context, Session session) async {
-  final profileProvider = Provider.of<UserProfileProvider>(
-    context,
-    listen: false,
-  );
+Future<void> saveDraftSession(UserProfileProvider profileProvider, Session session) async {
   final prefs = profileProvider.profile?.preferences;
   final String logPrefix = 'saveDraftSession ${session.asLogString()}';
 
