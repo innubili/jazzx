@@ -79,6 +79,11 @@ stateDiagram-v2
     SessionActive_Break_Running : Auto-pause Break\n(Running)
     SessionCompletedState : Session Complete\n(Review/Save)
 ```
+**Note on State Representation:** The `SessionBloc` in the code uses a single `SessionActive` state class. The more granular states shown in this diagram (e.g., `SessionActive_Warmup_Paused`, `SessionActive_Practice_Running`) are represented within the `SessionActive` state using boolean flags:
+- `isInWarmup`: `true` for `_Warmup_` states.
+- `isPaused`: `true` for `_Paused` states.
+- `isOnBreak`: `true` for `_Break_` states.
+- `timerIsRunning`: `true` for `_Running` states (when `isPaused` is `false`).
 
 ### State Transition Events Reference
 
@@ -88,9 +93,9 @@ stateDiagram-v2
 | `SessionLoaded` | App Startup | Resume existing/aborted session | SessionInitial | SessionActive_Practice_Paused |
 | `TimerStartPressed` | Timer Start/Resume Button | Start or resume current phase | Any Paused State | Corresponding Running State |
 | `SessionPaused` | Timer Pause Button | Pause current activity | Any Running State | Corresponding Paused State |
-| `TimerSkipPressed` | Timer Skip Button | Skip current phase (warmup/break) | Warmup/Break States | SessionActive_Practice_Running |
+| `TimerSkipPressed` | Timer Skip Button | Skip current phase (warmup/break). Triggers `SessionWarmupSkipped` or `SessionBreakSkipped` in BLoC. | Warmup/Break States | `SessionActive` (Practice Running, after warmup/break logic) |
 | `SessionCategoryChanged` | Category Selection | Change practice category (always pauses) | Any Active State | Paused State |
-| `SessionAutoPauseChanged(true)` | Auto-pause System | Trigger break after interval | SessionActive_Practice_Running | SessionActive_Break_Paused |
+| `SessionAutoPauseChanged`  | Auto-pause System / UI Event | Sets `isOnBreak` flag in `SessionActive`. If practice is active, UI/system should then trigger a pause. Results in `SessionActive` with `isPaused=true`, `isOnBreak=true`. | `SessionActive` (Practice Running) | `SessionActive` (with `isPaused=true`, `isOnBreak=true`)                 |
 | `SessionCompleted` | Session Done Button | Complete and finalize session | Any Active State | SessionCompletedState |
 | `SessionDiscarded` | Discard Button | Cancel and discard session | Any Active State | SessionInitial |
 
@@ -117,11 +122,10 @@ stateDiagram-v2
 **State**: NO SessionBloc state instantiated (not even SessionInitial)
 
 **Draft Session Check**:
-1. **Check user preferences** for existing 'draft' session
+1. **Check user preferences** for existing 'draft' session (`draftSessionJson`).
 2. **If draft session found**:
-   - Show dialog: "Continue with previous session or discard it?"
-   - **Continue**: Load draft session → SessionActive state
-   - **Discard**: Delete draft, proceed to clean startup
+   - If `draftSessionJson['_shouldContinue'] == true` (set when app is backgrounded during an active session), the session is automatically prepared for continuation. The `SessionScreen` loads this draft, leading to a `SessionActive` state.
+   - Otherwise, if a draft exists but `_shouldContinue` is not true, it's typically ignored during automatic startup recovery (it might be manually loadable via other UI, but that's not part of this flow). Proceed to clean startup.
 3. **If no draft session**: Proceed to clean startup
 
 ### App Startup (Clean - No Draft Session)
@@ -212,6 +216,8 @@ session.warmup = Warmup {
 - Resuming practice (after any pause) ALWAYS resets auto-pause timer to full interval
 - Warmup time does NOT count toward auto-pause interval
 
+**Note**: These auto-pause rules describe the intended behavior of the overall system, including the UI/external monitoring logic. `SessionBloc` itself primarily responds to events like `SessionAutoPauseChanged` and `SessionPaused` triggered by this logic.
+
 **Available Practice Categories** (time-tracking categories):
 - **Exercise** (selected in this example)
 - **New Song**
@@ -229,8 +235,7 @@ session.warmup = Warmup {
 1. User toggles start/pause button
 2. User changes practice mode
 3. User clicks "session done"
-4. Auto-break INTERVAL elapsed (20 min)
-   - Timer starts counting DOWN from auto-break duration (5 min)
+4. Auto-break INTERVAL elapsed (e.g., 20 min), which should trigger `SessionAutoPauseChanged(true)` event, followed by a `SessionPaused` event (usually from UI/external logic) to pause practice and enter the break state (`SessionActive` with `isOnBreak=true, isPaused=true`).
 
 **Important**: When session pauses, currently elapsed time is saved in current category.
 **Critical Rule**: If pause is due to category change, save time in currentCategory BEFORE changing its value.
@@ -239,7 +244,7 @@ session.warmup = Warmup {
 
 **Session RESUME Triggers**:
 1. User toggles start/pause button
-2. Auto-break TIME elapsed (5 min break completed)
+2. Auto-break TIME elapsed (e.g., 5 min break completed), which ideally would automatically resume practice. Currently, this may require user interaction (e.g., pressing resume) or enhancements in `SessionBloc`'s `_startTimerTicker` for full automation (see 'Note on `SessionBloc` Timer Logic').
 
 ### Auto-Break System Details
 **Auto-Break Watcher**:
@@ -247,24 +252,23 @@ session.warmup = Warmup {
 - Tracks cumulative active practice time
 - Triggers break when interval reached (20 min)
 
-**Auto-Break Flow**:
-```
-Active Practice (counting up)
-→ (20 min active time elapsed) →
-Session PAUSES automatically
-→ Break Timer (counting down from 5 min)
-→ (5 min break completed) →
-Session RESUMES automatically
-```
+### Auto-Break System in Practice
 
-**State Changes**:
-```
-SessionActive { isOnBreak: false, isPaused: false }
-→ (20 min active elapsed) →
-SessionActive { isOnBreak: true, isPaused: true }
-→ (5 min break elapsed) →
-SessionActive { isOnBreak: false, isPaused: false }
-```
+The current system relies on a combination of `SessionBloc` state and UI/external logic:
+
+1.  **Interval Detection**: An external mechanism (e.g., within the UI or a separate service) monitors the active practice time.
+2.  **Triggering Auto-Pause**: When the defined practice interval (e.g., 20 minutes) is reached, this external mechanism should:
+    a.  Dispatch a `SessionAutoPauseChanged(true)` event to the `SessionBloc`. This sets the `isOnBreak` flag to `true`.
+    b.  Dispatch a `SessionPaused` (or `TimerStopPressed`) event to pause the practice. The state becomes `SessionActive(isPaused: true, isOnBreak: true)`.
+3.  **Break Phase**:
+    *   The UI should now display that the session is on a break.
+    *   To start the break timer: The user typically presses a "Start" button. This dispatches `TimerStartPressed`. The `PracticeTimerDisplayWidget` and `SessionBloc` would need to ensure this starts a *countdown* for the break duration.
+    *   To skip the break: The user can press a "Skip" button, dispatching `TimerSkipPressed`, which leads to `SessionBreakSkipped` in the BLoC, effectively ending the break and resuming practice.
+4.  **Break Completion**:
+    *   If a break countdown timer is running, its completion (reaching 00:00) should ideally trigger an automatic resumption of practice. Currently, the `SessionBloc`'s `_startTimerTicker` does not explicitly handle break completion to auto-resume practice. This would require UI intervention (e.g., user pressing "Resume Practice") or enhancements to the BLoC.
+
+**Note on `SessionBloc` Timer Logic:**
+The `_startTimerTicker` method in `SessionBloc` is responsible for the 1-second updates of the `timerDisplaySeconds`. Its countdown completion logic (`if (newDisplaySeconds <= 0)`) is currently only explicitly tied to completing warmups (`if (currentState.isInWarmup)`). Adapting this for automatic break completion and resumption would require additional conditions and event dispatches within `_startTimerTicker`.
 
 ### 5. Session Completion
 **Triggers**:
@@ -425,7 +429,7 @@ NO STATE → AddManualSessionButton → Date/Time Picker → SessionReviewScreen
 ### UI Integration - COMPLETED ✅
 
 #### 1. Auto-Save Integration ✅
-- **Periodic auto-save** every 30 seconds during active sessions
+- **Periodic auto-save** (e.g., every 60 seconds as implemented in `SessionScreen`) during active, non-paused sessions.
 - **Draft session saving** to user preferences
 - **Automatic session recovery** on app restart
 
