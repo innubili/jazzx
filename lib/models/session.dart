@@ -152,7 +152,10 @@ class Session {
       catMap.putIfAbsent(cat, () => SessionCategory(time: 0));
     }
     return Session(
-      started: safeJson['strted'] ?? 0,
+      started:
+          safeJson['started'] ??
+          safeJson['strted'] ??
+          0, // Try 'started' first, fallback to 'strted' for backward compatibility
       duration: safeJson['duration'] ?? 0,
       ended: safeJson['ended'] ?? 0,
       instrument: safeJson['instrument'] ?? '',
@@ -163,7 +166,7 @@ class Session {
 
   Map<String, dynamic> toJson() {
     return {
-      'strted': started,
+      'started': started, // Use correct field name
       'duration': duration,
       'ended': ended,
       'instrument': instrument,
@@ -176,7 +179,7 @@ class Session {
   }
 
   Session copyWith({
-    int? strted,
+    int? started,
     int? duration,
     int? ended,
     String? instrument,
@@ -184,7 +187,7 @@ class Session {
     Warmup? warmup,
   }) {
     return Session(
-      started: strted ?? started,
+      started: started ?? this.started,
       duration: duration ?? this.duration,
       ended: ended ?? this.ended,
       instrument: instrument ?? this.instrument,
@@ -194,10 +197,18 @@ class Session {
   }
 
   Session copyWithCategory(PracticeCategory category, SessionCategory data) {
-    final newCategories = Map<PracticeCategory, SessionCategory>.from(
-      categories,
-    );
-    newCategories[category] = data;
+    // Optimize: Only create new map if the category data actually changed
+    final existingData = categories[category];
+    if (existingData == data) {
+      return this; // Return same instance if no change
+    }
+
+    // Use more efficient map copying for large sessions
+    final newCategories = <PracticeCategory, SessionCategory>{};
+    for (final entry in categories.entries) {
+      newCategories[entry.key] = entry.key == category ? data : entry.value;
+    }
+
     return Session(
       started: started,
       duration: duration,
@@ -211,6 +222,7 @@ class Session {
   static Session getDefault({
     required int sessionId,
     String instrument = 'guitar',
+    Session? lastSession,
   }) => Session(
     started: sessionId,
     duration: 0,
@@ -218,11 +230,38 @@ class Session {
     instrument: instrument,
     warmup: null,
     categories: {
-      for (final cat in PracticeCategory.values) cat: SessionCategory(time: 0),
+      for (final cat in PracticeCategory.values)
+        cat: _createCategoryWithInheritance(cat, lastSession),
     },
   );
 
-  /// Returns a pretty-printed log string matching FirebaseService session log format.
+  /// Creates a SessionCategory with inherited data from last session (but time = 0)
+  static SessionCategory _createCategoryWithInheritance(
+    PracticeCategory category,
+    Session? lastSession,
+  ) {
+    if (lastSession?.categories[category] != null) {
+      final lastCategory = lastSession!.categories[category]!;
+      // Copy note, links, songs, bpm but reset time to 0
+      return SessionCategory(
+        time: 0, // Always reset time for new session
+        note: lastCategory.note,
+        bpm: lastCategory.bpm,
+        songs:
+            lastCategory.songs != null
+                ? Map<String, int>.from(lastCategory.songs!)
+                : null,
+        links:
+            lastCategory.links != null
+                ? List<Link>.from(lastCategory.links!)
+                : null,
+      );
+    }
+    // No last session or category doesn't exist - create empty
+    return SessionCategory(time: 0);
+  }
+
+  /// Returns a pretty-printed log string with detailed session information.
   String asLogString() {
     // Format sessionId (UNIX timestamp in seconds) to DD-MMM-YYYY HH:mm:ss
     final ts = int.tryParse(id);
@@ -247,10 +286,20 @@ class Session {
           '${dt.day.toString().padLeft(2, '0')}-${months[dt.month - 1]}-${dt.year} '
           '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
     }
-    return 'Session[$id] ($humanReadable)';
+
+    // Format category times
+    final categoryTimes = categories.entries
+        .map((e) => '${e.key.name}:${intSecondsToHHmmss(e.value.time)}')
+        .join(', ');
+
+    final warmupTime =
+        warmup != null ? intSecondsToHHmmss(warmup!.time) : '00:00:00';
+    final totalTime = intSecondsToHHmmss(duration);
+
+    return 'Session[$id] ($humanReadable) | Warmup:$warmupTime | Categories:[$categoryTimes] | Total:$totalTime';
   }
 
   @override
   String toString() =>
-      'Session\n\t$instrument\n\twup:(${intSecondsToHHmm(warmup?.time ?? 0)})\n\tcategories:\n\t${categories.map((k, v) => MapEntry(k.name, v))})';
+      'Session\n\t$instrument\n\twup:(${intSecondsToHHmmss(warmup?.time ?? 0)})\n\tcategories:\n\t${categories.map((k, v) => MapEntry(k.name, v))})';
 }

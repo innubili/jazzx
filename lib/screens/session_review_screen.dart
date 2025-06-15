@@ -9,6 +9,7 @@ import '../widgets/session_app_bar_actions.dart';
 import '../utils/session_utils.dart';
 import '../utils/utils.dart';
 import '../utils/draft_utils.dart';
+import 'session_screen.dart';
 
 class SessionReviewScreen extends StatefulWidget {
   final String sessionId;
@@ -92,7 +93,14 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
     await clearDraftSession(provider);
 
     if (!mounted) return;
-    // Prompt for next action
+
+    // If this is a draft session being edited, skip the dialog and navigate to SessionsLog
+    if (widget.editRecordedSession) {
+      Navigator.of(context).pushReplacementNamed('/session-log');
+      return;
+    }
+
+    // For regular sessions, show the "Session Saved" dialog
     final action = await showDialog<String>(
       context: context,
       builder:
@@ -194,8 +202,11 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
       if (!mounted) return false;
       if (discard == true) {
         // User chose to discard changes, clear the draft session
-        if (!mounted) return false; 
-        final provider = Provider.of<UserProfileProvider>(context, listen: false); // Fetch provider
+        if (!mounted) return false;
+        final provider = Provider.of<UserProfileProvider>(
+          context,
+          listen: false,
+        ); // Fetch provider
         await clearDraftSession(provider); // Pass provider instance
       }
       return discard ?? false;
@@ -260,19 +271,37 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
         final shouldPop = await _onWillPop();
         if (shouldPop && mounted) {
           // If edits were not saved, signal to resume session
-          navigator.pop('resume');
+          if (navigator.canPop()) {
+            navigator.pop('resume');
+          } else {
+            // No route to pop to, navigate to SessionScreen
+            navigator.pushReplacement(
+              MaterialPageRoute(builder: (_) => const SessionScreen()),
+            );
+          }
         }
       },
       child: Scaffold(
         appBar: AppBar(
           centerTitle: false,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: Icon(
+              widget.editRecordedSession ? Icons.delete : Icons.arrow_back,
+            ),
             onPressed: () async {
               final navigator = Navigator.of(context);
               final shouldPop = await _onWillPop();
               if (!mounted) return;
-              if (shouldPop) navigator.maybePop();
+              if (shouldPop) {
+                if (navigator.canPop()) {
+                  navigator.pop('resume');
+                } else {
+                  // No route to pop to, navigate to SessionScreen
+                  navigator.pushReplacement(
+                    MaterialPageRoute(builder: (_) => const SessionScreen()),
+                  );
+                }
+              }
             },
           ),
           title: Text(_editMode ? 'Session (edit)' : 'Session'),
@@ -291,26 +320,27 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
                   context,
                   listen: false,
                 );
-                
+
                 // Show confirmation dialog
                 final confirm = await showDialog<bool>(
                   context: context,
-                  builder: (context) => ConfirmDialog(
-                    title: 'Delete this session?',
-                    content:
-                        'Are you sure you want to delete this session? This cannot be undone.',
-                    onConfirm: () => Navigator.of(context).pop(true),
-                    onCancel: () => Navigator.of(context).pop(false),
-                  ),
+                  builder:
+                      (context) => ConfirmDialog(
+                        title: 'Delete this session?',
+                        content:
+                            'Are you sure you want to delete this session? This cannot be undone.',
+                        onConfirm: () => Navigator.of(context).pop(true),
+                        onCancel: () => Navigator.of(context).pop(false),
+                      ),
                 );
-                
+
                 // Handle dialog result
                 if (!mounted) return;
                 if (confirm != true) return;
-                
+
                 try {
                   await provider.removeSessionById(widget.sessionId);
-                  
+
                   if (!mounted) return;
                   await clearDraftSession(provider);
 
@@ -391,7 +421,10 @@ class _SessionReviewScreenState extends State<SessionReviewScreen> {
                   });
                 },
                 onSaveDraft: (session) {
-                  final profileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+                  final profileProvider = Provider.of<UserProfileProvider>(
+                    context,
+                    listen: false,
+                  );
                   saveDraftSession(profileProvider, session);
                 },
                 sessionDateTimeString:

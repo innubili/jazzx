@@ -75,11 +75,12 @@ class ProfilePreferences {
       teacher: json['teacher'] ?? '',
       warmupBpm: json['warmupBpm'] ?? 80,
       warmupEnabled: json['warmupEnabled'] ?? true,
-      warmupTime: json['warmupTime'] ?? 300,
+      warmupTime: json['warmupTime'] ?? 1200, // Default 20 minutes
       lastSessionId: json['lastSessionId'] ?? '',
       autoPause: json['autoPause'] ?? false,
-      pauseIntervalTime: json['pauseIntervalTime'] ?? 1800,
-      pauseDurationTime: json['pauseDurationTime'] ?? 240,
+      pauseIntervalTime:
+          json['pauseIntervalTime'] ?? 1200, // Default 20 minutes
+      pauseDurationTime: json['pauseDurationTime'] ?? 300, // Default 5 minutes
       statisticsDirty: json['statisticsDirty'] ?? false,
     );
   }
@@ -116,11 +117,11 @@ class ProfilePreferences {
       teacher: '',
       warmupBpm: 80,
       warmupEnabled: true,
-      warmupTime: 300,
+      warmupTime: 1200, // Default 20 minutes
       lastSessionId: '',
       autoPause: false,
-      pauseIntervalTime: 1800,
-      pauseDurationTime: 240,
+      pauseIntervalTime: 1200, // Default 20 minutes
+      pauseDurationTime: 300, // Default 5 minutes
       statisticsDirty: false,
     );
   }
@@ -143,10 +144,12 @@ class ProfilePreferences {
     int? pauseIntervalTime,
     int? pauseDurationTime,
     bool? statisticsDirty,
+    bool clearDraftSession = false,
   }) {
     return ProfilePreferences(
       darkMode: darkMode ?? this.darkMode,
-      draftSession: draftSession ?? this.draftSession,
+      draftSession:
+          clearDraftSession ? null : (draftSession ?? this.draftSession),
       exerciseBpm: exerciseBpm ?? this.exerciseBpm,
       instruments: instruments ?? this.instruments,
       admin: admin ?? this.admin,

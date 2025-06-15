@@ -1,23 +1,39 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../utils/session_utils.dart';
-import '../utils/draft_utils.dart';
-import '../models/user_profile.dart';
 
-import '../widgets/metronome_controller.dart';
-import '../widgets/practice_timer_widget.dart';
-import '../widgets/metronome_widget.dart';
+// TARGET LAYOUT PROPORTIONS:
+//
+// PORTRAIT MODE:
+// - App bar: 5%
+// - Session pane: 36%
+// - Practice details: 48%
+// - Practice mode buttons: 10%
+//
+// LANDSCAPE MODE:
+// - App bar (on top): 100%
+// - Practice mode buttons: 8% (left)
+// - Session pane: 50% (center)
+// - Practice details: 35% (right)
+
 import '../widgets/practice_mode_buttons_widget.dart';
 import '../widgets/practice_detail_widget.dart';
-import '../widgets/main_drawer.dart'; //
-import '../providers/user_profile_provider.dart';
+import '../widgets/main_drawer.dart';
 import '../models/practice_category.dart';
-import '../models/session.dart';
-//import '../screens/session_summary_screen.dart';
+import '../models/link.dart';
 import '../screens/session_review_screen.dart';
-import '../utils/utils.dart';
 import '../widgets/add_manual_session_button.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/session_bloc.dart';
+import '../models/session.dart';
+import '../providers/user_profile_provider.dart';
+import '../utils/draft_utils.dart';
+import 'package:collection/collection.dart';
+import '../widgets/practice_timer_display_widget.dart';
+import '../widgets/metronome_widget.dart';
+import '../widgets/metronome_controller.dart';
+
+import 'dart:async';
+import '../core/logging/app_loggers.dart';
+import '../utils/utils.dart';
 
 class SessionScreen extends StatefulWidget {
   const SessionScreen({super.key});
@@ -27,1026 +43,1013 @@ class SessionScreen extends StatefulWidget {
 }
 
 class _SessionScreenState extends State<SessionScreen> {
-  final PracticeTimerController _timerController = PracticeTimerController();
-  final MetronomeController _metronomeController = MetronomeController();
-
-  UserProfileProvider? _userProfileProvider; // <-- ADDED
-
-  PracticeCategory? _activeMode;
-  PracticeCategory? _queuedMode;
-  bool _hasStartedFirstPractice = false;
-  bool _isWarmup = false;
-  bool _isOnBreak = false; // Added this variable
-  bool _isLoadingSession = true; // <-- ADDED: Loading flag
-
-  late Session sessionData;
-
-  Timer? _practiceMonitorTimer;
-  Timer? _breakTimer;
-  int _practiceElapsedSeconds = 0;
-  int _breakTimeRemaining = 0;
-
-  DateTime? _warmupStartTime;
-  int _lastWarmupElapsed = 0;
-  DateTime? _breakStartTime;
-  int _lastBreakElapsed = 0;
-  bool _breakSkipped = false;
-
-  // Track the session ID (seconds since epoch, used as unique identifier everywhere)
-  late int sessionId;
-
-  DateTime? _lastManualPauseTime;
-
-  String _timestamp() {
-    final now = DateTime.now();
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    final monthStr = months[now.month - 1];
-    return '${now.year.toString().padLeft(4, '0')}-'
-        '$monthStr-'
-        '${now.day.toString().padLeft(2, '0')} '
-        '${now.hour.toString().padLeft(2, '0')}:'
-        '${now.minute.toString().padLeft(2, '0')}:'
-        '${now.second.toString().padLeft(2, '0')}';
-  }
-
-  void _debugPrintSessionData([String context = '']) {
-    log.info(
-      '[${_timestamp()}] JazzX: [SESSION DATA${context.isNotEmpty ? ' - $context' : ''}]:\n'
-      '${prettyPrintJson(sessionData.toJson())}',
-    );
-  }
+  late final SessionBloc _bloc;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
-    sessionId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    final initialProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
-    final prefs = initialProfileProvider.profile?.preferences;
-    final draft = prefs?.draftSession;
+    AppLoggers.system.info('SessionScreen initState called');
 
-    if (draft != null && draft.isNotEmpty) {
+    try {
+      _bloc = SessionBloc();
+      AppLoggers.system.info('SessionBloc created successfully');
+
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        final resume = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Resume Draft Session?'),
-            content: const Text(
-              'You have an unfinished session. Would you like to resume or discard it?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Discard'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Resume'),
-              ),
-            ],
-          ),
-        );
         if (!mounted) return;
 
-        if (resume == true) {
-          _resetSessionData(); // Set SessionScreen to a default valid state first.
-          // No need to call saveDraftSession(context, sessionData) here as we are loading or discarding.
-        } else {
-          // Discard draft
-          if (prefs != null) {
-             initialProfileProvider.saveUserPreferences(prefs.copyWith(draftSession: {}));
-          }
-          _resetSessionData(); 
-        }
+        AppLoggers.system.info('SessionScreen postFrameCallback executing');
+
+        // Use proper BLoC architecture - let BLoC handle initialization
+        _bloc.add(SessionInitialize());
+        AppLoggers.system.info('SessionInitialize event added to bloc');
+
+        setState(() {
+          _initialized = true;
+        });
+        AppLoggers.system.info('SessionScreen initialization completed');
       });
-    } else {
-      _resetSessionData(); 
-      setState(() {
-        _isLoadingSession = false; 
-      });
+    } catch (e, stack) {
+      AppLoggers.error.error(
+        'SessionScreen initState failed',
+        error: e.toString(),
+        stackTrace: stack.toString(),
+      );
     }
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
-  }
-
-  void _resetSessionData() {
-    final UserProfile? userProfile = _userProfileProvider?.profile; // Use stored provider
-    String instrument = 'guitar'; // Default instrument
-    if (userProfile != null && userProfile.preferences.instruments.isNotEmpty) {
-      instrument = userProfile.preferences.instruments.first;
-    }
-
-    setState(() {
-      // Ensure sessionId for getDefault is in seconds
-      final int newSessionIdInSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      sessionData = Session.getDefault(
-        sessionId: newSessionIdInSeconds, 
-        instrument: instrument,
-      );
-      _activeMode = null;
-      _queuedMode = null;
-      _hasStartedFirstPractice = false;
-      _isWarmup = false;
-      _isOnBreak = false;
-      _practiceElapsedSeconds = 0;
-      // _isLoadingSession = false; // Not strictly needed here if handled in initState
-    });
-
-    _metronomeController.stop();
-    _timerController.reset?.call();
-  }
-
-  void _setCategoryTimeAndBpmFromTimer(PracticeCategory category) {
-    final currentBpm = _metronomeController.bpm;
-    final elapsed = _timerController.getElapsedSeconds();
-    if (category == PracticeCategory.exercise ||
-        category == PracticeCategory.newsong ||
-        category == PracticeCategory.repertoire ||
-        category == PracticeCategory.lesson ||
-        category == PracticeCategory.theory ||
-        category == PracticeCategory.video ||
-        category == PracticeCategory.gig ||
-        category == PracticeCategory.fun) {
-      final cat = sessionData.categories[category];
-      if (cat != null) {
-        sessionData = sessionData.copyWithCategory(
-          category,
-          cat.copyWith(time: elapsed, bpm: currentBpm),
-        );
-      }
-    } else if (_isWarmup) {
-      // Store warmup time and bpm at top level
-      sessionData = sessionData.copyWith(
-        warmup: Warmup(time: elapsed, bpm: currentBpm),
-      );
-    }
-  }
-
-  void _onCountComplete() {
-    _metronomeController.stop();
-    if (_queuedMode != null) {
-      _startPracticeMode(_queuedMode!);
-    }
-    // Save elapsed warmup time if we just finished warmup
-    if (_isWarmup) {
-      int elapsedWarmup = 0;
-      if (_warmupStartTime != null) {
-        elapsedWarmup = DateTime.now().difference(_warmupStartTime!).inSeconds;
-        _lastWarmupElapsed = elapsedWarmup;
-      } else {
-        elapsedWarmup = sessionData.warmup?.time ?? 0;
-        _lastWarmupElapsed = elapsedWarmup;
-      }
-      sessionData = sessionData.copyWith(
-        warmup:
-            sessionData.warmup?.copyWith(time: elapsedWarmup) ??
-            Warmup(time: elapsedWarmup, bpm: _metronomeController.bpm),
-      );
-      _setCategoryTimeAndBpmFromTimer(
-        PracticeCategory.exercise,
-      ); // Use a valid category for logic, but actual warmup values go to top-level fields
-      if (_userProfileProvider != null) {
-        saveDraftSession(_userProfileProvider!, sessionData); // Save draft on warmup complete
-      }
-    }
-  }
-
-  void _startPractice(PracticeCategory mode) {
-    if (_activeMode != null) {
-      final elapsed = _timerController.getElapsedSeconds();
-      log.info(
-        '[${_timestamp()}] JazzX: STOP PRACTICE: category=${_activeMode?.name}, elapsed=$elapsed',
-      );
-      _stopPractice(elapsed);
-    }
-
-    final profile =
-        _userProfileProvider?.profile;
-    final shouldWarmup =
-        !_hasStartedFirstPractice &&
-        (profile?.preferences.warmupEnabled ?? false) &&
-        mode.canWarmup;
-
-    if (shouldWarmup) {
-      sessionData = sessionData.copyWith(
-        warmup: Warmup(
-          time:
-              sessionData.warmup?.time ??
-              (profile?.preferences.warmupTime ?? 300),
-          bpm: profile?.preferences.warmupBpm ?? 80,
-        ),
-      );
-      final metronomeOn = profile?.preferences.metronomeEnabled ?? true;
-
-      setState(() {
-        _queuedMode = mode;
-        _activeMode = null;
-        _isWarmup = true;
-        _warmupStartTime = DateTime.now(); // Track warmup start
-      });
-      log.info(
-        '[${_timestamp()}] JazzX: START WARMUP:\n'
-        '${prettyPrintJson({
-          'event': 'START WARMUP',
-          'category': mode.name,
-          'warmup': {'time': sessionData.warmup?.time ?? (profile?.preferences.warmupTime ?? 300), 'bpm': sessionData.warmup?.bpm ?? 0},
-        })}',
-      );
-
-      if (metronomeOn) {
-        _metronomeController.setBpm(sessionData.warmup?.bpm ?? 80);
-        _metronomeController.start();
-      }
-
-      _timerController.reset?.call();
-      _timerController.startCount?.call(
-        startFrom:
-            sessionData.warmup?.time ??
-            (profile?.preferences.warmupTime ?? 300),
-        countDown: true,
-      );
-      return;
-    }
-
-    _startPracticeMode(mode);
-  }
-
-  void _startPracticeMode(PracticeCategory mode) {
-    _debugPrintSessionData('before START PRACTICE');
-    final profile =
-        _userProfileProvider?.profile;
-    int effectiveWarmupTime =
-        (profile?.preferences.warmupEnabled ?? false) && mode.canWarmup
-            ? (profile?.preferences.warmupTime ?? 0)
-            : 0;
-    int pauseInterval =
-        profile?.preferences.autoPause ?? false
-            ? (profile?.preferences.pauseIntervalTime ?? 0)
-            : 0;
-    int pauseDuration =
-        profile?.preferences.autoPause ?? false
-            ? (profile?.preferences.pauseDurationTime ?? 0)
-            : 0;
-    // --- Fix 1: Use lastWarmupElapsed if available ---
-    int elapsedWarmup =
-        _lastWarmupElapsed > 0
-            ? _lastWarmupElapsed
-            : (sessionData.warmup?.time ?? 0);
-    log.info(
-      '[${_timestamp()}] JazzX: START PRACTICE:\n'
-      '${prettyPrintJson({'event': 'START PRACTICE', 'category': mode.name, 'previousTime': sessionData.categories[mode]?.time ?? 0, 'warmup': _isWarmup, 'break': _isOnBreak, 'autoPause': profile?.preferences.autoPause ?? false, 'effectiveWarmupTime': effectiveWarmupTime, 'pauseIntervalSeconds': pauseInterval, 'pauseDurationSeconds': pauseDuration, 'elapsedWarmup': elapsedWarmup})}',
-    );
-    _debugPrintSessionData('after START PRACTICE');
-    _metronomeController.stop();
-    final previousTime = sessionData.categories[mode]?.time ?? 0;
-
-    _timerController.reset?.call();
-    _timerController.startCount?.call(
-      startFrom: previousTime,
-      countDown: false,
-    );
-    if (_userProfileProvider != null) {
-      saveDraftSession(_userProfileProvider!, sessionData); // Save draft on timer start
-    }
-
-    setState(() {
-      _hasStartedFirstPractice = true;
-      _activeMode = mode;
-      _queuedMode = null;
-      _isWarmup = false;
-      _isOnBreak = false;
-      _practiceElapsedSeconds = 0;
-    });
-
-    _startPracticeMonitor();
-  }
-
-  void _skipWarmup() {
-    // --- Fix 1: Accurate elapsedWarmup on skip ---
-    int elapsedWarmup = 0;
-    if (_warmupStartTime != null) {
-      elapsedWarmup = DateTime.now().difference(_warmupStartTime!).inSeconds;
-      _lastWarmupElapsed = elapsedWarmup;
-    } else {
-      elapsedWarmup = sessionData.warmup?.time ?? 0;
-      _lastWarmupElapsed = elapsedWarmup;
-    }
-    sessionData = sessionData.copyWith(
-      warmup:
-          sessionData.warmup?.copyWith(time: elapsedWarmup) ??
-          Warmup(time: elapsedWarmup, bpm: _metronomeController.bpm),
-    );
-    _setCategoryTimeAndBpmFromTimer(PracticeCategory.exercise);
-    log.info(
-      '[${_timestamp()}] JazzX: SKIP WARMUP:\n'
-      '${prettyPrintJson({'event': 'SKIP WARMUP', 'category': _queuedMode?.name, 'elapsedWarmup': elapsedWarmup})}',
-    );
-    _onCountComplete();
-  }
-
-  void _startPracticeMonitor() {
-    _debugPrintSessionData('startPracticeMonitor');
-    _practiceMonitorTimer?.cancel();
-    final profile =
-        _userProfileProvider?.profile;
-    int logCounter = 0;
-    if (profile?.preferences.autoPause ?? false) {
-      _practiceMonitorTimer = Timer.periodic(const Duration(seconds: 1), (
-        timer,
-      ) {
-        if (_isOnBreak || _isWarmup || _activeMode == null) return;
-        _practiceElapsedSeconds++;
-        logCounter++;
-        // For display/logging, always use cat.time + _practiceElapsedSeconds
-        final cat = sessionData.categories[_activeMode!];
-        final totalElapsed = (cat?.time ?? 0) + _practiceElapsedSeconds;
-        final pauseIntervalSec = profile?.preferences.pauseIntervalTime ?? 0;
-        final remainingUntilPause = pauseIntervalSec - _practiceElapsedSeconds;
-        final elapsedWarmup =
-            _lastWarmupElapsed > 0
-                ? _lastWarmupElapsed
-                : (sessionData.warmup?.time ?? 0);
-        // Diagnostic logging for auto-pause debug
-        //log.info('[${_timestamp()}] JazzX: DEBUG auto-pause: _practiceElapsedSeconds=$_practiceElapsedSeconds, pauseIntervalSec=$pauseIntervalSec, willTriggerBreak=${_practiceElapsedSeconds >= pauseIntervalSec}');
-        if (logCounter % 15 == 0) {
-          final formattedTotal = _formatDuration(
-            Duration(seconds: totalElapsed),
-          );
-          log.info(
-            '[${_timestamp()}] JazzX: SESSION RUNNING:\n'
-            '${prettyPrintJson({'event': 'SESSION RUNNING', 'category': _activeMode?.name, 'elapsed': _practiceElapsedSeconds, 'totalElapsed': totalElapsed, 'warmup': _isWarmup, 'break': _isOnBreak, 'autoPause': profile?.preferences.autoPause ?? false, 'remainingUntilPauseSeconds': remainingUntilPause, 'elapsedWarmup': elapsedWarmup})}',
-          );
-          log.info(
-            '[${_timestamp()}] JazzX: ELAPSED (cat.time + _practiceElapsedSeconds = $formattedTotal)',
-          );
-          _debugPrintSessionData('SESSION RUNNING');
-        }
-        if (_practiceElapsedSeconds >= pauseIntervalSec) {
-          log.info(
-            '[${_timestamp()}] JazzX: AUTO-PAUSE TRIGGERED: _practiceElapsedSeconds=$_practiceElapsedSeconds, pauseIntervalSec=$pauseIntervalSec',
-          );
-          _triggerBreak(profile?.preferences.pauseDurationTime ?? 0);
-        }
-      });
-    }
-  }
-
-  void _triggerBreak(int breakSeconds) {
-    // Before going on break, accumulate time for the current category
-    if (_activeMode != null && !_isOnBreak) {
-      final cat = sessionData.categories[_activeMode!];
-      if (cat != null) {
-        sessionData = sessionData.copyWithCategory(
-          _activeMode!,
-          cat.copyWith(time: cat.time + _practiceElapsedSeconds),
-        );
-      }
-    }
-    _breakStartTime = DateTime.now();
-    _breakSkipped = false;
-    log.info(
-      '[${_timestamp()}] JazzX: TRIGGER BREAK:\n'
-      '${prettyPrintJson({'event': 'TRIGGER BREAK', 'category': _activeMode?.name, 'breakSeconds': breakSeconds, 'elapsed': _practiceElapsedSeconds})}',
-    );
-    _practiceMonitorTimer?.cancel();
-    setState(() {
-      _isOnBreak = true;
-      _breakTimeRemaining = breakSeconds;
-      _practiceElapsedSeconds = 0; // Reset for next segment
-    });
-    _timerController.reset?.call();
-    _timerController.startCount?.call(
-      startFrom: _breakTimeRemaining,
-      countDown: true,
-    );
-    _breakTimer?.cancel();
-    _breakTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!_isOnBreak) {
-        timer.cancel();
-        return;
-      }
-      setState(() {
-        _breakTimeRemaining--;
-      });
-    });
-    log.info(
-      '[${_timestamp()}] JazzX: SESSION PAUSED (BREAK):\n'
-      '${prettyPrintJson({'event': 'SESSION PAUSED', 'category': _activeMode?.name, 'breakSeconds': breakSeconds, 'elapsed': _practiceElapsedSeconds})}',
-    );
-  }
-
-  void _skipBreak() {
-    if (_isOnBreak) {
-      // --- Fix 2: Track break elapsed and mark skipped ---
-      int breakElapsed = 0;
-      if (_breakStartTime != null) {
-        breakElapsed = DateTime.now().difference(_breakStartTime!).inSeconds;
-        _lastBreakElapsed = breakElapsed;
-      } else {
-        breakElapsed = 0;
-        _lastBreakElapsed = breakElapsed;
-      }
-      _breakSkipped = true;
-      log.info(
-        '[${_timestamp()}] JazzX: SKIP BREAK: category=${_activeMode?.name}, breakTime=$_breakTimeRemaining, breakElapsed=$breakElapsed',
-      );
-      _endBreak();
-    }
-  }
-
-  void _endBreak() {
-    int breakElapsed = _lastBreakElapsed;
-    log.info(
-      '[${_timestamp()}] JazzX: END BREAK: category=${_activeMode?.name}, breakTime=$_breakTimeRemaining, breakElapsed=$breakElapsed, skipped=$_breakSkipped',
-    );
-    _breakTimer?.cancel();
-    setState(() {
-      _isOnBreak = false;
-      _practiceElapsedSeconds = 0; // Reset for next segment
-    });
-    final currentTime = _timerController.getElapsedSeconds();
-    _timerController.reset?.call();
-    _timerController.startCount?.call(startFrom: currentTime, countDown: false);
-    _startPracticeMonitor();
-  }
-
-  void _pausePracticeSession() {
-    // When user manually pauses, accumulate time for the current category
-    if (_activeMode != null) {
-      final cat = sessionData.categories[_activeMode!];
-      if (cat != null) {
-        sessionData = sessionData.copyWithCategory(
-          _activeMode!,
-          cat.copyWith(time: cat.time + _practiceElapsedSeconds),
-        );
-      }
-    }
-    log.info(
-      '[${_timestamp()}] JazzX: SESSION PAUSED (USER):\n'
-      '${prettyPrintJson({'event': 'SESSION PAUSED (USER)', 'category': _activeMode?.name, 'elapsed': _practiceElapsedSeconds})}',
-    );
-    _debugPrintSessionData('SESSION PAUSED');
-    _practiceElapsedSeconds = 0;
-    _practiceMonitorTimer?.cancel();
-    // Track time of manual pause
-    _lastManualPauseTime = DateTime.now();
-    if (_userProfileProvider != null) {
-      saveDraftSession(_userProfileProvider!, sessionData); // Save draft on pause/stop
-    }
-  }
-
-  void _resumePracticeSession() {
-    // On resume, do not change cat.time, just reset elapsed segment
-    final now = DateTime.now();
-    bool resetAutoPause = false;
-    if (_lastManualPauseTime != null &&
-        now.difference(_lastManualPauseTime!).inSeconds > 60) {
-      resetAutoPause = true;
-      log.info(
-        '[${_timestamp()}] JazzX: AUTO-PAUSE TIMER RESET after manual pause > 60s',
-      );
-    }
-    log.info(
-      '[${_timestamp()}] JazzX: SESSION RESUMED (USER):\n'
-      '${prettyPrintJson({'event': 'SESSION RESUMED (USER)', 'category': _activeMode?.name, 'elapsed': _practiceElapsedSeconds, 'resetAutoPause': resetAutoPause})}',
-    );
-    _debugPrintSessionData('SESSION RESUMED');
-    _practiceElapsedSeconds = 0;
-    if (resetAutoPause) {
-      // Reset the auto-pause countdown
-      _practiceElapsedSeconds = 0;
-    }
-    _lastManualPauseTime = null;
-    _startPracticeMonitor();
-  }
-
-  void _stopPractice(int elapsedSeconds) {
-    _metronomeController.stop();
-    if (_activeMode != null) {
-      // Save both time and BPM for the active practice category
-      final cat = sessionData.categories[_activeMode!];
-      if (cat != null) {
-        sessionData = sessionData.copyWithCategory(
-          _activeMode!,
-          cat.copyWith(time: cat.time + _practiceElapsedSeconds),
-        );
-      }
-    }
-    int totalPractice = 0;
-    sessionData.categories.forEach((_, cat) {
-      totalPractice += cat.time;
-    });
-    int totalWarmup = sessionData.warmup?.time ?? 0;
-    sessionData = sessionData.copyWith(
-      duration: totalPractice + totalWarmup,
-      ended: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-    );
-  }
-
-  Future<void> _onSessionDone() async {
-    _pausePracticeSession(); // Only pause, do not stop
-    // Do NOT call _stopPractice here
-    sessionData = recalculateSessionFields(sessionData);
-    final session = sessionData;
-    final initialDateTime = DateTime.fromMillisecondsSinceEpoch(
-      sessionId * 1000,
-    );
-
-    log.info(
-      '[Session Done] Navigating to SessionReviewScreen with sessionId: '
-      '\u001b[35m$sessionId\u001b[0m'
-      ' (${sessionIdToReadableString(sessionId.toString())}),'
-      ' initialDateTime: $initialDateTime, session: '
-      '${session.toJson()}',
-    );
-
-    // Await result from review screen
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (_) => SessionReviewScreen(
-              sessionId: sessionId.toString(),
-              session: session,
-              manualEntry: false,
-              initialDateTime: initialDateTime,
-              editRecordedSession: true,
-            ),
-      ),
-    );
-    // Handle result: if user did not save, resume session
-    if (!mounted) return;
-    final profileProvider = _userProfileProvider;
-    final prefs = profileProvider?.profile?.preferences;
-    if (result == 'resume') {
-      _resumePracticeSession();
-    } else if (result == 'end') {
-      // Clear the draft when session is completed
-      if (prefs != null) {
-        profileProvider?.saveUserPreferences(prefs.copyWith(draftSession: {}));
-      }
-    }
-  }
-
-  // Fix: _buildHeader must return a Widget (Column), not void
-  Widget _buildHeader(String title, bool isTimerEnabled) {
-    return Column(
-      children: [
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        PracticeTimerInherited(
-          accumulatedTime: sessionData.categories[_activeMode]?.time ?? 0,
-          child: PracticeTimerWidget(
-            practiceCategory: _activeMode?.name ?? _queuedMode?.name ?? "",
-            controller: _timerController,
-            onStopped: _stopPractice,
-            onCountComplete: _isOnBreak ? _endBreak : _onCountComplete,
-            onSessionDone: _onSessionDone,
-            enabled: isTimerEnabled,
-            onPause: _pausePracticeSession,
-            onResume: _resumePracticeSession,
-            leftButton:
-                _isWarmup
-                    ? IconButton(
-                      icon: const Icon(Icons.skip_next),
-                      onPressed: _skipWarmup,
-                    )
-                    : _isOnBreak
-                    ? IconButton(
-                      icon: const Icon(Icons.skip_next),
-                      onPressed: _skipBreak,
-                    )
-                    : null,
-          ),
-        ),
-        const SizedBox(height: 16),
-        MetronomeWidget(controller: _metronomeController),
-      ],
-    );
-  }
-
-  // Helper to format seconds as HH:mm:ss
-  String _formatDuration(Duration d) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = twoDigits(d.inHours);
-    final minutes = twoDigits(d.inMinutes.remainder(60));
-    final seconds = twoDigits(d.inSeconds.remainder(60));
-    return '$hours:$minutes:$seconds';
+  void dispose() {
+    AppLoggers.system.info('SessionScreen disposing');
+    _bloc.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoadingSession) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+    AppLoggers.system.info(
+      'SessionScreen build called, initialized: $_initialized',
+    );
+
+    if (!_initialized) {
+      AppLoggers.system.info('SessionScreen showing loading indicator');
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    final title =
-        _activeMode != null
-            ? _isOnBreak
-                ? "${_activeMode!.name.capitalize()} (Break)"
-                : _activeMode!.name.capitalize()
-            : _queuedMode != null
-            ? "${_queuedMode!.name.capitalize()} (Warmup)"
-            : "Select a practice mode";
 
-    final isTimerEnabled = _activeMode != null || _queuedMode != null;
+    AppLoggers.system.info('SessionScreen showing main content');
+    return BlocProvider.value(value: _bloc, child: const _SessionScreenView());
+  }
+}
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: const Text('Session'),
-        actions: [
-          AddManualSessionButton(
-            onManualSessionCreated: (sessionDateTime) {
-              final sessionId = sessionDateTime.millisecondsSinceEpoch ~/ 1000;
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder:
-                      (_) => SessionReviewScreen(
-                        sessionId: sessionId.toString(),
-                        session: null, // Will be handled in SessionReviewScreen
-                        manualEntry: true,
-                        initialDateTime: sessionDateTime,
-                      ),
+class _SessionScreenView extends StatefulWidget {
+  const _SessionScreenView();
+
+  @override
+  State<_SessionScreenView> createState() => _SessionScreenViewState();
+}
+
+class _SessionScreenViewState extends State<_SessionScreenView> {
+  late final MetronomeController _metronomeController;
+  Timer? _autoSaveTimer;
+
+  Timer? _debouncedSaveTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _metronomeController = MetronomeController();
+
+    // Start auto-save timer (save every 60 seconds during active session - less frequent)
+    _autoSaveTimer = Timer.periodic(const Duration(seconds: 60), (timer) {
+      _performAutoSave();
+    });
+  }
+
+  @override
+  void dispose() {
+    _autoSaveTimer?.cancel();
+    _debouncedSaveTimer?.cancel();
+    super.dispose();
+  }
+
+  void _performAutoSave() {
+    final sessionBloc = context.read<SessionBloc>();
+    final currentState = sessionBloc.state;
+
+    // Only auto-save for active sessions that haven't been completed
+    if (currentState is SessionActive && !currentState.isPaused) {
+      // Use debounced save to avoid excessive state emissions
+      _debouncedSaveTimer?.cancel();
+      _debouncedSaveTimer = Timer(const Duration(milliseconds: 500), () {
+        if (!mounted) return;
+
+        // Use proper BLoC architecture - let BLoC handle auto-save and draft logic
+        sessionBloc.add(SessionAutoSaveWithDraft());
+      });
+    }
+  }
+
+  /// Consolidated practice mode button handler to avoid code duplication
+  /// between portrait and landscape modes
+  Widget _buildPracticeModeButtons(
+    BuildContext context,
+    PracticeCategory currentPracticeCategory,
+    Orientation orientation,
+  ) {
+    return PracticeModeButtonsWidget(
+      currentPracticeCategory: currentPracticeCategory.name,
+      queuedMode: null, // Add queued mode logic if needed
+      orientation: orientation,
+    );
+  }
+
+  /// Handle SessionInitializeState - check for draft sessions to continue
+  void _handleSessionInitializeState(
+    BuildContext context,
+    SessionInitializeState state,
+  ) async {
+    final sessionBloc = context.read<SessionBloc>();
+    final userProfileProvider = context.read<UserProfileProvider>();
+
+    AppLoggers.system.info(
+      'SessionInitializeState handled - checking for draft session to continue',
+    );
+
+    // Check if there's a draft session marked for continuation
+    final profile = userProfileProvider.profile;
+    final draftSessionJson = profile?.preferences.draftSession;
+
+    if (draftSessionJson != null &&
+        draftSessionJson['_shouldContinue'] == true) {
+      AppLoggers.system.info('Found draft session marked for continuation');
+
+      try {
+        // Remove the continuation flag and create session object
+        final cleanDraftJson = Map<String, dynamic>.from(draftSessionJson);
+        cleanDraftJson.remove('_shouldContinue');
+        final draftSession = Session.fromJson(cleanDraftJson);
+
+        // Clear the draft session from preferences
+        final prefs = profile!.preferences;
+        final newPrefs = prefs.copyWith(clearDraftSession: true);
+        await userProfileProvider.saveUserPreferences(newPrefs);
+
+        // Load the draft session into the bloc
+        sessionBloc.add(SessionLoaded(draftSession));
+
+        AppLoggers.system.info('Draft session loaded successfully');
+      } catch (e) {
+        AppLoggers.error.error(
+          'Failed to load draft session',
+          error: e.toString(),
+        );
+        // If loading fails, just transition to initial state
+        sessionBloc.add(SessionLoaded(null));
+      }
+    } else {
+      AppLoggers.system.info(
+        'No draft session to continue - transitioning to SessionInitial',
+      );
+      // No draft session to continue, just transition to initial state
+      sessionBloc.add(SessionLoaded(null));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Check for draft sessions immediately when BlocListener is created
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final sessionBloc = context.read<SessionBloc>();
+      final currentState = sessionBloc.state;
+
+      // If we're in SessionInitializeState, trigger the draft session check
+      if (currentState is SessionInitializeState) {
+        AppLoggers.system.info(
+          'BlocListener created, triggering draft session check',
+        );
+        // Manually trigger the listener logic
+        _handleSessionInitializeState(context, currentState);
+      }
+    });
+
+    return BlocListener<SessionBloc, SessionState>(
+      listener: (context, state) async {
+        // Handle SessionSavedState - perform actual save and navigation
+        if (state is SessionSavedState) {
+          final userProfileProvider = context.read<UserProfileProvider>();
+          final navigator = Navigator.of(context);
+          final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+          try {
+            // Save the session
+            await userProfileProvider.saveSessionWithId(
+              state.session.started.toString(),
+              state.session,
+            );
+
+            // Clear any draft session
+            await clearDraftSession(userProfileProvider);
+
+            if (context.mounted) {
+              // Navigate to statistics screen
+              navigator.pushReplacementNamed('/statistics');
+            }
+          } catch (e) {
+            // Handle save error
+            if (context.mounted) {
+              scaffoldMessenger.showSnackBar(
+                SnackBar(
+                  content: Text('Error saving session: $e'),
+                  backgroundColor: Colors.red,
                 ),
               );
-            },
-          ),
-        ],
-      ),
-      drawer: const MainDrawer(),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isPortrait = constraints.maxHeight > constraints.maxWidth;
+            }
+          }
+        }
+        // Handle SessionAutoSaveWithDraftState - perform draft save
+        else if (state is SessionAutoSaveWithDraftState) {
+          final userProfileProvider = context.read<UserProfileProvider>();
+          final session = state.session;
 
-          if (isPortrait) {
-            // Portrait: visually modernized layout
-            return SafeArea(
-              child: Column(
-                children: [
-                  // Header
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    child: _buildHeader(title, isTimerEnabled),
-                  ),
-                  // Main Content Area
-                  Expanded(
-                    child: Center(
-                      child: Card(
-                        elevation: 4,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4, // Reduced from 8
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8, // Reduced from 20
-                            horizontal: 16, // Reduced from 20
-                          ),
-                          child:
-                              _activeMode != null
-                                  ? PracticeDetailWidget(
-                                    category: _activeMode!,
-                                    time:
-                                        sessionData
-                                            .categories[_activeMode!]
-                                            ?.time ??
-                                        0,
-                                    note:
-                                        sessionData
-                                            .categories[_activeMode!]
-                                            ?.note ??
-                                        '',
-                                    songs:
-                                        sessionData
-                                            .categories[_activeMode!]
-                                            ?.songs
-                                            ?.keys
-                                            .toList() ??
-                                        [],
-                                    links:
-                                        sessionData
-                                            .categories[_activeMode!]
-                                            ?.links ??
-                                        [],
-                                    onTimeChanged: (val) {
-                                      final cat =
-                                          sessionData
-                                              .categories[_activeMode!] ??
-                                          SessionCategory(time: 0);
-                                      setState(() {
-                                        sessionData = sessionData
-                                            .copyWithCategory(
-                                              _activeMode!,
-                                              cat.copyWith(time: val),
-                                            );
-                                      });
-                                    },
-                                    onNoteChanged: (val) {
-                                      final cat =
-                                          sessionData
-                                              .categories[_activeMode!] ??
-                                          SessionCategory(time: 0);
-                                      setState(() {
-                                        sessionData = sessionData
-                                            .copyWithCategory(
-                                              _activeMode!,
-                                              cat.copyWith(note: val),
-                                            );
-                                      });
-                                    },
-                                    onSongsChanged: (songs) {
-                                      final cat =
-                                          sessionData
-                                              .categories[_activeMode!] ??
-                                          SessionCategory(time: 0);
-                                      setState(() {
-                                        sessionData = sessionData
-                                            .copyWithCategory(
-                                              _activeMode!,
-                                              cat.copyWith(
-                                                songs: {
-                                                  for (var s in songs) s: 1,
-                                                },
-                                              ),
-                                            );
-                                      });
-                                    },
-                                    onLinksChanged: (links) {
-                                      final cat =
-                                          sessionData
-                                              .categories[_activeMode!] ??
-                                          SessionCategory(time: 0);
-                                      setState(() {
-                                        sessionData = sessionData
-                                            .copyWithCategory(
-                                              _activeMode!,
-                                              cat.copyWith(links: links),
-                                            );
-                                      });
-                                    },
-                                  )
-                                  : Center(
-                                    child: Text(
-                                      'Select a practice mode to begin',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium
-                                          ?.copyWith(color: Colors.grey),
-                                    ),
-                                  ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Action Buttons
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: 6,
-                      left: 16,
-                      right: 16,
-                    ),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final double buttonRowHeight = constraints.maxWidth / 4;
+          // Save draft only if session has content and hasn't ended
+          if (session.ended == 0) {
+            saveDraftSession(userProfileProvider, session);
+          }
+        }
+        // Handle SessionInitializeState - check for draft sessions
+        else if (state is SessionInitializeState) {
+          _handleSessionInitializeState(context, state);
+        }
+      },
+      child: BlocBuilder<SessionBloc, SessionState>(
+        builder: (context, state) {
+          // Timer initialization is handled by onResume callback
+          // Don't automatically reset timer on every state change
 
-                        return SizedBox(
-                          height: buttonRowHeight,
-                          width: constraints.maxWidth,
-                          child: PracticeModeButtonsWidget(
-                            activeMode: _activeMode?.name,
-                            queuedMode: _queuedMode?.name,
-                            onModeSelected: (mode) {
-                              final category = mode.tryToPracticeCategory();
-                              if (category != null) {
-                                _startPractice(category);
-                              }
-                            },
-                            orientation: Orientation.portrait,
-                          ),
-                        );
-                      },
-                    ),
+          // SessionInitializeState is handled by BlocListener above
+          // No fallback needed - BlocListener should handle all cases
+
+          if (state is SessionLoading) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (state is SessionInitial) {
+            // Show full session screen layout but with timer disabled and no practice mode selected
+            return Scaffold(
+              appBar: AppBar(
+                centerTitle: false,
+                title: const Text('Session'),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      // Manual entry logic here
+                    },
                   ),
                 ],
               ),
-            );
-          } else {
-            // Landscape or web: visually modernized layout
-            return SafeArea(
-              child: Row(
-                children: [
-                  // Sidebar Buttons
-                  Card(
-                    elevation: 0, // No elevation for flat appearance
-                    shadowColor: Colors.transparent, // No shadow
-                    color: Colors.transparent, // Transparent background
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.zero, // No inner padding
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final double buttonColumnWidth = constraints.maxHeight / 4;
+              drawer: const MainDrawer(),
+              body: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isPortrait =
+                      constraints.maxHeight > constraints.maxWidth;
+                  final title = 'Select your practice to start';
 
-                          return SizedBox(
-                            width: buttonColumnWidth, // Key change for landscape
-                            height: constraints.maxHeight, // Use full available height
-                            child: PracticeModeButtonsWidget(
-                              activeMode: _activeMode?.name,
-                              queuedMode: _queuedMode?.name,
-                              onModeSelected: (mode) {
-                                final category = mode.tryToPracticeCategory();
-                                if (category != null) _startPractice(category);
-                              },
-                              orientation: isPortrait ? Orientation.portrait : Orientation.landscape,
+                  if (isPortrait) {
+                    return SafeArea(
+                      child: Column(
+                        children: [
+                          // --- Session Pane (flexible, 36% of available space) ---
+                          Expanded(
+                            flex: 36,
+                            child: Padding(
+                              padding: const EdgeInsets.all(.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Title
+                                  Text(
+                                    title,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  // Practice Timer Widget (disabled)
+                                  Flexible(
+                                    flex: 3,
+                                    child: PracticeTimerDisplayWidget(
+                                      enabled:
+                                          false, // Disabled until mode selected
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  // Metronome Widget
+                                  Flexible(
+                                    flex: 2,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0,
+                                      ),
+                                      child: MetronomeWidget(
+                                        controller: _metronomeController,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  // Main Content
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
                           ),
-                          child: _buildHeader(title, isTimerEnabled),
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Card(
-                              elevation: 4,
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 4, // Reduced from 8
+                          // --- Practice Category Details (flexible, 48% of available space) ---
+                          Expanded(
+                            flex: 48,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: 16.0,
+                                right: 16.0,
+                                top: 0.0,
+                                bottom: 4.0,
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8, // Reduced from 20
-                                  horizontal: 16, // Reduced from 20
+                              child: Card(
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
-                                child:
-                                    _activeMode != null
-                                        ? PracticeDetailWidget(
-                                          category: _activeMode!,
-                                          time:
-                                              sessionData
-                                                  .categories[_activeMode!]
-                                                  ?.time ??
-                                              0,
-                                          note:
-                                              sessionData
-                                                  .categories[_activeMode!]
-                                                  ?.note ??
-                                              '',
-                                          songs:
-                                              sessionData
-                                                  .categories[_activeMode!]
-                                                  ?.songs
-                                                  ?.keys
-                                                  .toList() ??
-                                              [],
-                                          links:
-                                              sessionData
-                                                  .categories[_activeMode!]
-                                                  ?.links ??
-                                              [],
-                                          onTimeChanged: (val) {
-                                            final cat =
-                                                sessionData
-                                                    .categories[_activeMode!] ??
-                                                SessionCategory(time: 0);
-                                            setState(() {
-                                              sessionData = sessionData
-                                                  .copyWithCategory(
-                                                    _activeMode!,
-                                                    cat.copyWith(time: val),
-                                                  );
-                                            });
-                                          },
-                                          onNoteChanged: (val) {
-                                            final cat =
-                                                sessionData
-                                                    .categories[_activeMode!] ??
-                                                SessionCategory(time: 0);
-                                            setState(() {
-                                              sessionData = sessionData
-                                                  .copyWithCategory(
-                                                    _activeMode!,
-                                                    cat.copyWith(note: val),
-                                                  );
-                                            });
-                                          },
-                                          onSongsChanged: (songs) {
-                                            final cat =
-                                                sessionData
-                                                    .categories[_activeMode!] ??
-                                                SessionCategory(time: 0);
-                                            setState(() {
-                                              sessionData = sessionData
-                                                  .copyWithCategory(
-                                                    _activeMode!,
-                                                    cat.copyWith(
-                                                      songs: {
-                                                        for (var s in songs)
-                                                          s: 1,
-                                                      },
-                                                    ),
-                                                  );
-                                            });
-                                          },
-                                          onLinksChanged: (links) {
-                                            final cat =
-                                                sessionData
-                                                    .categories[_activeMode!] ??
-                                                SessionCategory(time: 0);
-                                            setState(() {
-                                              sessionData = sessionData
-                                                  .copyWithCategory(
-                                                    _activeMode!,
-                                                    cat.copyWith(links: links),
-                                                  );
-                                            });
-                                          },
-                                        )
-                                        : Center(
-                                          child: Text(
-                                            'Select a practice mode to begin',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium
-                                                ?.copyWith(color: Colors.grey),
-                                          ),
-                                        ),
+                                child: Center(
+                                  child: Text(
+                                    'Select your practice to start',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(color: Colors.grey),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                          // --- Practice Mode Buttons (flexible, 10% of available space) ---
+                          Expanded(
+                            flex: 10,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                                vertical: 4.0,
+                              ),
+                              child: PracticeModeButtonsWidget(
+                                currentPracticeCategory: null, // No selection
+                                queuedMode: null,
+                                orientation: Orientation.portrait,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    // Landscape mode: App bar at top, then 3 horizontally stacked panes
+                    return SafeArea(
+                      child: Row(
+                        children: [
+                          // --- Practice Mode Buttons (left, 8% width) ---
+                          SizedBox(
+                            width: constraints.maxWidth * 0.08,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: PracticeModeButtonsWidget(
+                                currentPracticeCategory: null, // No selection
+                                queuedMode: null,
+                                orientation: Orientation.landscape,
+                              ),
+                            ),
+                          ),
+                          // --- Session Pane (center, 50% width) ---
+                          SizedBox(
+                            width: constraints.maxWidth * 0.50,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  // Title
+                                  Text(
+                                    title,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  // Practice Timer Widget (disabled)
+                                  PracticeTimerDisplayWidget(
+                                    enabled:
+                                        false, // Disabled until mode selected
+                                  ),
+                                  const SizedBox(height: 12),
+                                  // Metronome Widget
+                                  MetronomeWidget(
+                                    controller: _metronomeController,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          // --- Practice Category Details (right, 35% width) ---
+                          SizedBox(
+                            width: constraints.maxWidth * 0.35,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Card(
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Select your practice to start',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(color: Colors.grey),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
               ),
             );
           }
+          if (state is SessionActive) {
+            // Removed unused local variable 'session' (was: final session = state.session;)
+            final isOnBreak = state.isOnBreak;
+            final isInWarmup = state.isInWarmup;
+            final currentPracticeCategory = state.currentPracticeCategory;
+
+            // Determine the target category for display during warmup
+            final displayCategory =
+                isInWarmup
+                    ? (state.targetPracticeCategory ?? currentPracticeCategory)
+                    : currentPracticeCategory;
+
+            final title =
+                isInWarmup
+                    ? "${displayCategory.name.capitalize()} ${state.isPaused ? '(warmup paused)' : '(warming up...)'}"
+                    : isOnBreak
+                    ? "${currentPracticeCategory.name.capitalize()} (break)"
+                    : state.isPaused
+                    ? "${currentPracticeCategory.name.capitalize()} (paused)"
+                    : currentPracticeCategory.name.capitalize();
+
+            return Scaffold(
+              appBar: AppBar(
+                centerTitle: false,
+                title: const Text('Session'),
+                actions: [
+                  AddManualSessionButton(
+                    onManualSessionCreated: (sessionDateTime) {
+                      final sessionId =
+                          sessionDateTime.millisecondsSinceEpoch ~/ 1000;
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder:
+                              (_) => SessionReviewScreen(
+                                sessionId: sessionId.toString(),
+                                session: null,
+                                manualEntry: true,
+                                initialDateTime: sessionDateTime,
+                              ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              drawer: const MainDrawer(),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              body: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isPortrait =
+                      constraints.maxHeight > constraints.maxWidth;
+                  if (isPortrait) {
+                    // Portrait mode: 4 vertically stacked panes
+                    return SafeArea(
+                      child: Column(
+                        children: [
+                          // --- Session Pane (flexible, 36% of available space) ---
+                          Expanded(
+                            flex: 36,
+                            child: Padding(
+                              padding: const EdgeInsets.all(.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Title
+                                  Text(
+                                    title,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  // const SizedBox(height: 8),
+                                  // Practice Timer Widget
+                                  Flexible(
+                                    flex: 3,
+                                    child: PracticeTimerDisplayWidget(
+                                      enabled: true,
+                                      showSkipButton:
+                                          state.isInWarmup || state.isOnBreak,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ), // Small gap between timer and metronome
+                                  // Metronome Widget
+                                  Flexible(
+                                    flex: 2,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0,
+                                      ),
+                                      child: MetronomeWidget(
+                                        controller: _metronomeController,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          // --- Practice Category Details (flexible, 48% of available space) ---
+                          Expanded(
+                            flex: 48,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: 16.0,
+                                right: 16.0,
+                                top:
+                                    0.0, // Reduced top padding to close gap with metronome
+                                bottom: 4.0,
+                              ),
+                              child: Card(
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                    horizontal: 16,
+                                  ),
+                                  child:
+                                      state
+                                                  .session
+                                                  .categories[currentPracticeCategory] !=
+                                              null
+                                          ? PracticeDetailWidget(
+                                            category: currentPracticeCategory,
+                                            time:
+                                                state
+                                                    .session
+                                                    .categories[currentPracticeCategory]
+                                                    ?.time ??
+                                                0,
+                                            note:
+                                                state
+                                                    .session
+                                                    .categories[currentPracticeCategory]
+                                                    ?.note ??
+                                                '',
+                                            songs:
+                                                state
+                                                    .session
+                                                    .categories[currentPracticeCategory]
+                                                    ?.songs
+                                                    ?.keys
+                                                    .toList() ??
+                                                [],
+                                            links:
+                                                state
+                                                    .session
+                                                    .categories[currentPracticeCategory]
+                                                    ?.links ??
+                                                <Link>[],
+                                            onTimeChanged:
+                                                (val) => context
+                                                    .read<SessionBloc>()
+                                                    .add(
+                                                      SessionTimeChanged(
+                                                        currentPracticeCategory,
+                                                        val,
+                                                      ),
+                                                    ),
+                                            onNoteChanged:
+                                                (val) => context
+                                                    .read<SessionBloc>()
+                                                    .add(
+                                                      SessionNoteChanged(
+                                                        currentPracticeCategory,
+                                                        val,
+                                                      ),
+                                                    ),
+                                            onSongsChanged:
+                                                (songs) => context
+                                                    .read<SessionBloc>()
+                                                    .add(
+                                                      SessionSongsChanged(
+                                                        currentPracticeCategory,
+                                                        {
+                                                          for (var s in songs)
+                                                            s: 1,
+                                                        },
+                                                      ),
+                                                    ),
+                                            onLinksChanged:
+                                                (links) => context
+                                                    .read<SessionBloc>()
+                                                    .add(
+                                                      SessionLinksChanged(
+                                                        currentPracticeCategory,
+                                                        links
+                                                            .map((l) => l.link)
+                                                            .toList(),
+                                                      ),
+                                                    ),
+                                          )
+                                          : Center(
+                                            child: Text(
+                                              'Select a practice mode to begin',
+                                              style: Theme.of(
+                                                context,
+                                              ).textTheme.titleMedium?.copyWith(
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // --- Practice Mode Buttons (flexible, 10% of available space) ---
+                          Expanded(
+                            flex: 10,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal:
+                                    20.0, // Match practice details card total padding (16+16)
+                                vertical: 4.0,
+                              ),
+                              child: _buildPracticeModeButtons(
+                                context,
+                                displayCategory, // Use displayCategory instead of currentPracticeCategory
+                                Orientation.portrait,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    // Landscape mode: App bar at top, then 3 horizontally stacked panes
+                    return SafeArea(
+                      child: Row(
+                        children: [
+                          // --- Practice Mode Buttons (left, 8% width) ---
+                          SizedBox(
+                            width: constraints.maxWidth * 0.08,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: _buildPracticeModeButtons(
+                                context,
+                                displayCategory, // Use displayCategory instead of currentPracticeCategory
+                                Orientation.landscape,
+                              ),
+                            ),
+                          ),
+                          // --- Session Pane (center, 50% width) ---
+                          SizedBox(
+                            width: constraints.maxWidth * 0.50,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  // Title
+                                  Text(
+                                    title,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  // Practice Timer Widget
+                                  PracticeTimerDisplayWidget(
+                                    enabled: true,
+                                    showSkipButton:
+                                        state.isInWarmup || state.isOnBreak,
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ), // Match spacing inside practice timer
+                                  // Metronome Widget
+                                  MetronomeWidget(
+                                    controller: _metronomeController,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          // --- Practice Category Details (right, 35% width) ---
+                          SizedBox(
+                            width: constraints.maxWidth * 0.35,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Card(
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                    horizontal: 16,
+                                  ),
+                                  child:
+                                      state
+                                                  .session
+                                                  .categories[currentPracticeCategory] !=
+                                              null
+                                          ? PracticeDetailWidget(
+                                            category: currentPracticeCategory,
+                                            time:
+                                                state
+                                                    .session
+                                                    .categories[currentPracticeCategory]
+                                                    ?.time ??
+                                                0,
+                                            note:
+                                                state
+                                                    .session
+                                                    .categories[currentPracticeCategory]
+                                                    ?.note ??
+                                                '',
+                                            songs:
+                                                state
+                                                    .session
+                                                    .categories[currentPracticeCategory]
+                                                    ?.songs
+                                                    ?.keys
+                                                    .toList() ??
+                                                [],
+                                            links:
+                                                state
+                                                    .session
+                                                    .categories[currentPracticeCategory]
+                                                    ?.links ??
+                                                <Link>[],
+                                            onTimeChanged:
+                                                (val) => context
+                                                    .read<SessionBloc>()
+                                                    .add(
+                                                      SessionTimeChanged(
+                                                        currentPracticeCategory,
+                                                        val,
+                                                      ),
+                                                    ),
+                                            onNoteChanged:
+                                                (val) => context
+                                                    .read<SessionBloc>()
+                                                    .add(
+                                                      SessionNoteChanged(
+                                                        currentPracticeCategory,
+                                                        val,
+                                                      ),
+                                                    ),
+                                            onSongsChanged:
+                                                (songs) => context
+                                                    .read<SessionBloc>()
+                                                    .add(
+                                                      SessionSongsChanged(
+                                                        currentPracticeCategory,
+                                                        {
+                                                          for (var s in songs)
+                                                            s: 1,
+                                                        },
+                                                      ),
+                                                    ),
+                                            onLinksChanged:
+                                                (links) => context
+                                                    .read<SessionBloc>()
+                                                    .add(
+                                                      SessionLinksChanged(
+                                                        currentPracticeCategory,
+                                                        links
+                                                            .map((l) => l.link)
+                                                            .toList(),
+                                                      ),
+                                                    ),
+                                          )
+                                          : Center(
+                                            child: Text(
+                                              'Select a practice mode to begin',
+                                              style: Theme.of(
+                                                context,
+                                              ).textTheme.titleMedium?.copyWith(
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+              ),
+            );
+          }
+          if (state is SessionCompletedState) {
+            // Show session completion dialog
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              if (mounted) {
+                final sessionBloc = context.read<SessionBloc>();
+                final sessionToRestore = state.session;
+                final userProfileProvider = context.read<UserProfileProvider>();
+                final dialogContext =
+                    context; // Capture context before async operations
+
+                // Determine which dialog to show based on session duration
+                final isLongSession =
+                    sessionToRestore.duration >= 300; // 5 minutes or more
+
+                String? action;
+                if (isLongSession) {
+                  // Show dialog with Continue/Save options for sessions >= 5 minutes
+                  action = await showDialog<String>(
+                    context: dialogContext,
+                    barrierDismissible: false,
+                    builder:
+                        (context) => AlertDialog(
+                          title: const Text('Session Completed'),
+                          content: Text(
+                            'Your session is complete!\n\n'
+                            'Duration: ${_formatDuration(sessionToRestore.duration)}\n'
+                            'Categories: ${_getCompletedCategoriesText(sessionToRestore)}\n\n'
+                            'What would you like to do?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed:
+                                  () => Navigator.of(context).pop('continue'),
+                              child: const Text('Continue Session'),
+                            ),
+                            ElevatedButton(
+                              onPressed:
+                                  () => Navigator.of(context).pop('save'),
+                              child: const Text('Save'),
+                            ),
+                          ],
+                        ),
+                  );
+                } else {
+                  // Show dialog with Continue/Discard options for sessions < 5 minutes
+                  action = await showDialog<String>(
+                    context: dialogContext,
+                    barrierDismissible: false,
+                    builder:
+                        (context) => AlertDialog(
+                          title: const Text('Short Session Completed'),
+                          content: Text(
+                            'Your session is complete!\n\n'
+                            'Duration: ${_formatDuration(sessionToRestore.duration)}\n'
+                            'Categories: ${_getCompletedCategoriesText(sessionToRestore)}\n\n'
+                            'This session is shorter than 5 minutes. What would you like to do?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed:
+                                  () => Navigator.of(context).pop('discard'),
+                              child: const Text('Discard'),
+                            ),
+                            ElevatedButton(
+                              onPressed:
+                                  () => Navigator.of(context).pop('continue'),
+                              child: const Text('Continue Session'),
+                            ),
+                          ],
+                        ),
+                  );
+                }
+
+                if (!mounted) return;
+
+                if (action == 'continue') {
+                  if (isLongSession) {
+                    // User wants to continue the session - restore SessionActive state
+                    sessionBloc.add(SessionLoaded(sessionToRestore));
+                  } else {
+                    // For short sessions, continue means show the normal dialog
+                    if (!mounted) return;
+
+                    final secondAction = await showDialog<String>(
+                      context: dialogContext,
+                      barrierDismissible: false,
+                      builder:
+                          (context) => AlertDialog(
+                            title: const Text('Session Completed'),
+                            content: Text(
+                              'Your session is complete!\n\n'
+                              'Duration: ${_formatDuration(sessionToRestore.duration)}\n'
+                              'Categories: ${_getCompletedCategoriesText(sessionToRestore)}\n\n'
+                              'What would you like to do?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed:
+                                    () => Navigator.of(context).pop('continue'),
+                                child: const Text('Continue Session'),
+                              ),
+                              ElevatedButton(
+                                onPressed:
+                                    () => Navigator.of(context).pop('save'),
+                                child: const Text('Save'),
+                              ),
+                            ],
+                          ),
+                    );
+
+                    if (!mounted) return;
+
+                    if (secondAction == 'continue') {
+                      // User wants to continue the session - restore SessionActive state
+                      sessionBloc.add(SessionLoaded(sessionToRestore));
+                    } else if (secondAction == 'save') {
+                      // User wants to save - trigger SessionSaved event for proper BLoC architecture
+                      sessionBloc.add(SessionSaved(sessionToRestore));
+                    }
+                  }
+                } else if (action == 'save') {
+                  // User wants to save - trigger SessionSaved event for proper BLoC architecture
+                  sessionBloc.add(SessionSaved(sessionToRestore));
+                } else if (action == 'discard') {
+                  // User wants to discard the short session
+                  AppLoggers.system.info('User chose to discard short session');
+
+                  // Clear any draft session
+                  await clearDraftSession(userProfileProvider);
+
+                  if (mounted) {
+                    // Navigate back to session screen with new uninitialized session
+                    sessionBloc.add(SessionLoaded(null));
+                  }
+                }
+              }
+            });
+            return Scaffold(
+              body: Center(
+                child: Text('Session completed. Choose your action...'),
+              ),
+            );
+          }
+          if (state is SessionError) {
+            return Scaffold(body: Center(child: Text(state.message)));
+          }
+          return const SizedBox();
         },
       ),
     );
   }
 
-  @override
-  void dispose() {
-    log.info('JazzX: SessionScreen dispose called.');
-    _practiceMonitorTimer?.cancel();
-    _breakTimer?.cancel();
+  String _formatDuration(int seconds) {
+    final hours = seconds ~/ 3600;
+    final minutes = (seconds % 3600) ~/ 60;
+    final secs = seconds % 60;
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+  }
 
-    // Save draft session if it has content and is not empty
-    if (sessionData.duration > 0) {
-      // Check if _userProfileProvider is not null before using it.
-      if (_userProfileProvider != null) {
-        saveDraftSession(_userProfileProvider!, sessionData); // NEW CALL
-      } else {
-        log.warning('JazzX: _userProfileProvider is null in dispose. Cannot save draft.');
-      }
+  String _getCompletedCategoriesText(Session session) {
+    final categories =
+        session.categories.entries
+            .where((entry) => entry.value.time > 0)
+            .map(
+              (entry) =>
+                  '${entry.key.name.capitalize()}: ${_formatDuration(entry.value.time)}',
+            )
+            .toList();
+
+    if (categories.isEmpty) {
+      return 'No practice time recorded';
     }
 
-    super.dispose();
+    return categories.join(', ');
   }
 }

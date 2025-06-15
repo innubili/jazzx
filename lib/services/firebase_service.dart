@@ -8,11 +8,14 @@ import '../models/statistics.dart';
 import '../models/session.dart';
 import '../utils/utils.dart';
 import '../utils/statistics_utils.dart';
+import '../core/monitoring/performance_monitor.dart';
 
 class FirebaseService {
   static final FirebaseService _instance = FirebaseService._internal();
   factory FirebaseService() => _instance;
   FirebaseService._internal();
+
+  final PerformanceMonitor _performanceMonitor = PerformanceMonitor();
 
   FirebaseAuth? _auth;
   FirebaseDatabase? _db;
@@ -75,32 +78,53 @@ class FirebaseService {
   }
 
   Future<UserProfile?> loadUserProfile() async {
-    await ensureInitialized();
-    final userKey = currentUserUid;
-    if (userKey == null) return null;
+    final stopwatch = Stopwatch()..start();
+    try {
+      await ensureInitialized();
+      final userKey = currentUserUid;
+      if (userKey == null) {
+        stopwatch.stop();
+        _performanceMonitor.recordNetworkCall(stopwatch.elapsed);
+        return null;
+      }
 
-    final ref = _db!.ref('users/$userKey');
-    final snapshot = await ref.get();
-    if (!snapshot.exists || snapshot.value == null) return null;
+      final ref = _db!.ref('users/$userKey');
+      final snapshot = await ref.get();
+      if (!snapshot.exists || snapshot.value == null) {
+        stopwatch.stop();
+        _performanceMonitor.recordNetworkCall(stopwatch.elapsed);
+        return null;
+      }
 
-    final rawData = normalizeFirebaseJson(snapshot.value);
-    if (rawData is! Map<String, dynamic>) return null;
+      final rawData = normalizeFirebaseJson(snapshot.value);
+      if (rawData is! Map<String, dynamic>) {
+        stopwatch.stop();
+        _performanceMonitor.recordNetworkCall(stopwatch.elapsed);
+        return null;
+      }
 
-    // Remove sessions from rawData before constructing UserProfile
-    final Map<String, dynamic> profileData = Map.of(rawData);
-    profileData.remove('sessions');
+      // Remove sessions from rawData before constructing UserProfile
+      final Map<String, dynamic> profileData = Map.of(rawData);
+      profileData.remove('sessions');
 
-    final hasValidStats = profileData['statistics'] is Map<String, dynamic>;
-    final profile = UserProfile.fromJson(userKey, profileData);
+      final hasValidStats = profileData['statistics'] is Map<String, dynamic>;
+      final profile = UserProfile.fromJson(userKey, profileData);
 
-    if (!hasValidStats) {
-      log.warning(
-        '⚠️ Missing or invalid statistics — recalculating from sessions (not loaded here)',
-      );
-      // No recalculation possible without sessions; skip or handle elsewhere
+      if (!hasValidStats) {
+        log.warning(
+          '⚠️ Missing or invalid statistics — recalculating from sessions (not loaded here)',
+        );
+        // No recalculation possible without sessions; skip or handle elsewhere
+      }
+
+      stopwatch.stop();
+      _performanceMonitor.recordNetworkCall(stopwatch.elapsed);
+      return profile;
+    } catch (e) {
+      stopwatch.stop();
+      _performanceMonitor.recordNetworkCall(stopwatch.elapsed, hasError: true);
+      rethrow;
     }
-
-    return profile;
   }
 
   Future<void> saveUserProfile(UserProfile profile) async {
@@ -394,11 +418,14 @@ class FirebaseService {
   DatabaseReference get _jazzStandardsRef => _db!.ref('jazz_standards');
 
   Future<List<Song>> loadJazzStandards() async {
-    await ensureInitialized();
+    final stopwatch = Stopwatch()..start();
     try {
+      await ensureInitialized();
       final snapshot = await _jazzStandardsRef.get();
       if (!snapshot.exists || snapshot.value == null) {
         log.warning('⚠️ No jazz standards found in Firebase');
+        stopwatch.stop();
+        _performanceMonitor.recordNetworkCall(stopwatch.elapsed);
         return [];
       }
 
@@ -407,6 +434,8 @@ class FirebaseService {
         log.warning(
           '⚠️ Unexpected format for jazz standards: ${rawData.runtimeType}',
         );
+        stopwatch.stop();
+        _performanceMonitor.recordNetworkCall(stopwatch.elapsed);
         return [];
       }
 
@@ -415,9 +444,13 @@ class FirebaseService {
         standards.add(Song.fromJson(title, Map<String, dynamic>.from(data)));
       });
 
+      stopwatch.stop();
+      _performanceMonitor.recordNetworkCall(stopwatch.elapsed);
       //log.info('✅ Loaded ${standards.length} jazz standards from Firebase');
       return standards;
     } catch (e, stack) {
+      stopwatch.stop();
+      _performanceMonitor.recordNetworkCall(stopwatch.elapsed, hasError: true);
       log.severe('💥 Failed to load jazz standards\n$e\n$stack');
       return [];
     }

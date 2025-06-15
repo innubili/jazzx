@@ -53,12 +53,13 @@ class MainDrawer extends StatelessWidget {
           icon: Icons.settings,
           onTap: () => _navigate(context, '/settings'),
         ),
-        if (isAdmin)
+        if (isAdmin) ...[
           DrawerItem(
             label: 'Admin',
             icon: Icons.admin_panel_settings,
             onTap: () => _navigate(context, '/admin'),
           ),
+        ],
         DrawerItem(
           label: 'About',
           icon: Icons.info,

@@ -52,7 +52,7 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen> {
     for (final entry in _noteControllers.entries) {
       updated[entry.key]['note'] = entry.value.text.trim();
     }
-    debugPrint('Session object: $updated'); // <-- Debug print for review
+    // Session data applied
     widget.onConfirm!(updated);
   }
 
@@ -71,7 +71,10 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen> {
             : null);
     if (session == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Session Summary'), centerTitle: false),
+        appBar: AppBar(
+          title: const Text('Session Summary'),
+          centerTitle: false,
+        ),
         body: const Center(child: Text('No session data provided.')),
       );
     }

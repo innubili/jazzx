@@ -1,4 +1,6 @@
+import 'dart:math';
 import '../models/session.dart';
+import '../models/practice_category.dart';
 import '../services/firebase_service.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -37,11 +39,12 @@ String sessionIdToReadableString(String sessionId) {
   return '$dd-$mmmm-$yyyy $hh:$mm';
 }
 
-/// Converts an integer number of seconds to a string formatted as HH:mm
-String intSecondsToHHmm(int seconds) {
+/// Converts an integer number of seconds to a string formatted as HH:mm:ss
+String intSecondsToHHmmss(int seconds) {
   final int hours = seconds ~/ 3600;
   final int minutes = (seconds % 3600) ~/ 60;
-  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+  final int secs = seconds % 60;
+  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
 }
 
 /// Converts a double number of seconds to a string formatted as HH:mm
@@ -102,5 +105,110 @@ Future<void> addStartedToAllSessionsInFirebase() async {
     final sessionId = entry.key;
     final started = int.tryParse(sessionId) ?? 0;
     await sessionsRef.child(sessionId).update({'started': started});
+  }
+}
+
+/// Creates a random draft session for testing purposes.
+///
+/// Parameters:
+/// - [totalDuration]: Either 6-10 minutes or 20-180 minutes (in seconds)
+/// - [withWarmup]: Whether to include a warmup (random 1-3 minutes if true)
+/// - [sessionId]: Optional session ID (defaults to now() - duration for realistic timeline)
+/// - [instrument]: Instrument name (defaults to 'guitar')
+///
+/// The function ensures:
+/// - At least 2 practice categories with time allocated
+/// - First category gets 1/3 of practice time, second gets 2/3
+/// - Remaining categories get 0 time
+/// - Total duration matches the specified duration
+/// - Started timestamp is set to now() - duration so session appears to have ended recently
+Session createRandomDraftSession({
+  int? totalDuration,
+  bool? withWarmup,
+  int? sessionId,
+  String instrument = 'guitar',
+}) {
+  final random = Random();
+
+  // Generate random total duration if not provided
+  final duration = totalDuration ?? _generateRandomDuration(random);
+
+  // Generate random warmup decision if not provided
+  final hasWarmup = withWarmup ?? random.nextBool();
+
+  // Calculate warmup time (1-3 minutes if enabled)
+  final warmupTime =
+      hasWarmup ? (60 + random.nextInt(120)) : 0; // 60-180 seconds
+
+  // Calculate remaining time for practice categories
+  final practiceTime = duration - warmupTime;
+
+  // Select 2 random practice categories from the ones used in PracticeModeButtonsWidget
+  final availableCategories = [
+    PracticeCategory.exercise,
+    PracticeCategory.newsong,
+    PracticeCategory.repertoire,
+    PracticeCategory.fun,
+  ];
+  availableCategories.shuffle(random);
+  final selectedCategories = availableCategories.take(2).toList();
+
+  // Allocate time: first category gets 1/3, second gets 2/3
+  final firstCategoryTime = (practiceTime * 0.33).round();
+  final secondCategoryTime = practiceTime - firstCategoryTime;
+
+  // Create categories map
+  final categories = <PracticeCategory, SessionCategory>{};
+  for (final category in PracticeCategory.values) {
+    int categoryTime = 0;
+    if (category == selectedCategories[0]) {
+      categoryTime = firstCategoryTime;
+    } else if (category == selectedCategories[1]) {
+      categoryTime = secondCategoryTime;
+    }
+
+    categories[category] = SessionCategory(
+      time: categoryTime,
+      note: categoryTime > 0 ? 'Random practice session' : null,
+      bpm: categoryTime > 0 ? (60 + random.nextInt(120)) : null, // 60-180 BPM
+    );
+  }
+
+  // Create warmup if enabled
+  final warmup =
+      hasWarmup
+          ? Warmup(
+            time: warmupTime,
+            bpm: 60 + random.nextInt(60), // 60-120 BPM for warmup
+          )
+          : null;
+
+  // Generate session ID (timestamp) - should be now() - duration for realistic timeline
+  final now = DateTime.now();
+  final id =
+      sessionId ??
+      (now.subtract(Duration(seconds: duration)).millisecondsSinceEpoch ~/
+          1000);
+
+  return Session(
+    started: id,
+    duration: duration,
+    ended: 0, // Draft session, not ended yet
+    instrument: instrument,
+    categories: categories,
+    warmup: warmup,
+  );
+}
+
+/// Generates a random duration: either 6-10 minutes or 20-180 minutes
+int _generateRandomDuration(Random random) {
+  final useShortDuration = random.nextBool();
+
+  if (useShortDuration) {
+    // 6-10 minutes (360-600 seconds)
+    return 360 + random.nextInt(241); // 360 + 0-240
+  } else {
+    // 20-180 minutes (1200-10800 seconds)
+    return 1200 + random.nextInt(9601); // 1200 + 0-9600
   }
 }

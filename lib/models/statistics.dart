@@ -1,5 +1,6 @@
 import '../utils/utils.dart';
 import 'practice_category.dart';
+import '../core/logging/app_loggers.dart';
 
 class CategoryStats {
   final Map<PracticeCategory, int> values;
@@ -24,11 +25,17 @@ class CategoryStats {
           };
           values[cat] = value;
         } else {
-          log.warning('⚠️ Skipped unknown stat category: "$key"');
+          AppLoggers.system.warning(
+            'Unknown stat category skipped',
+            metadata: {'category': key},
+          );
         }
       }
     } catch (e) {
-      log.warning('⚠️ Error parsing CategoryStats: $e');
+      AppLoggers.error.warning(
+        'Error parsing CategoryStats',
+        metadata: {'error': e.toString()},
+      );
     }
 
     return CategoryStats(values: values);
@@ -48,18 +55,20 @@ CategoryStats parseSafeStats(String key, dynamic raw) {
       final norm = normalizeMapOrList(raw);
       return CategoryStats.fromJson(Map<String, dynamic>.from(norm));
     } catch (e, stack) {
-      log.severe('💥 Failed to parse $key stats\n$e\n$stack');
+      AppLoggers.error.error(
+        'Failed to parse stats',
+        metadata: {'key': key, 'error': e.toString()},
+        stackTrace: stack.toString(),
+      );
     }
   } else if (raw is int) {
-    log.warning(
-      '⚠️ $key was legacy int value: $raw — converting to CategoryStats',
-    );
+    // Legacy int value - convert to CategoryStats
     return CategoryStats(
       values: {for (var c in PracticeCategory.values) c: 0}
         ..[PracticeCategory.exercise] = raw,
     );
   } else {
-    log.warning('⚠️ $key stats is not a map: ${raw.runtimeType}');
+    // Invalid data type - skip
   }
   return CategoryStats.empty();
 }
@@ -93,10 +102,14 @@ class MonthlyStats {
         if (day != null && value is Map) {
           days[day] = CategoryStats.fromJson(Map<String, dynamic>.from(value));
         } else {
-          log.warning('⚠️ Skipping invalid day entry: key=$key, value=$value');
+          // Skip invalid day entry
         }
       } catch (e, stack) {
-        log.severe('💥 Error parsing day entry: key=$key\n$e\n$stack');
+        AppLoggers.error.error(
+          'Error parsing day entry',
+          metadata: {'key': key, 'error': e.toString()},
+          stackTrace: stack.toString(),
+        );
       }
     }
 
@@ -123,10 +136,12 @@ class MonthlyStats {
   };
 
   MonthlyStats copy() => MonthlyStats(
-        avgDaily: CategoryStats(values: Map.of(avgDaily.values)),
-        days: days.map((k, v) => MapEntry(k, CategoryStats(values: Map.of(v.values)))),
-        total: CategoryStats(values: Map.of(total.values)),
-      );
+    avgDaily: CategoryStats(values: Map.of(avgDaily.values)),
+    days: days.map(
+      (k, v) => MapEntry(k, CategoryStats(values: Map.of(v.values))),
+    ),
+    total: CategoryStats(values: Map.of(total.values)),
+  );
 }
 
 class YearlyStats {
@@ -184,11 +199,11 @@ class YearlyStats {
   };
 
   YearlyStats copy() => YearlyStats(
-        avgDaily: CategoryStats(values: Map.of(avgDaily.values)),
-        avgMonthly: CategoryStats(values: Map.of(avgMonthly.values)),
-        total: CategoryStats(values: Map.of(total.values)),
-        months: months.map((k, v) => MapEntry(k, v.copy())),
-      );
+    avgDaily: CategoryStats(values: Map.of(avgDaily.values)),
+    avgMonthly: CategoryStats(values: Map.of(avgMonthly.values)),
+    total: CategoryStats(values: Map.of(total.values)),
+    months: months.map((k, v) => MapEntry(k, v.copy())),
+  );
 }
 
 class Statistics {
@@ -199,7 +214,6 @@ class Statistics {
   final Map<int, YearlyStats> years;
   final Map<String, int> songSeconds;
   final int sessionCount;
-
 
   Statistics({
     required this.avgDaily,
@@ -234,9 +248,7 @@ class Statistics {
           Map<String, dynamic>.from(entry.value),
         );
       } else {
-        log.warning(
-          '⚠️ Invalid year entry: key=${entry.key}, value=${entry.value.runtimeType}',
-        );
+        // Skip invalid year entry
       }
     }
 
@@ -245,7 +257,8 @@ class Statistics {
     if (songSecondsRaw is Map) {
       for (final entry in songSecondsRaw.entries) {
         final value = entry.value;
-        songSeconds[entry.key.toString()] = value is int ? value : int.tryParse(value.toString()) ?? 0;
+        songSeconds[entry.key.toString()] =
+            value is int ? value : int.tryParse(value.toString()) ?? 0;
       }
     }
 
@@ -256,7 +269,10 @@ class Statistics {
       total: total,
       years: years,
       songSeconds: songSeconds,
-      sessionCount: json['sessionCount'] is int ? json['sessionCount'] : int.tryParse(json['sessionCount']?.toString() ?? '') ?? 0,
+      sessionCount:
+          json['sessionCount'] is int
+              ? json['sessionCount']
+              : int.tryParse(json['sessionCount']?.toString() ?? '') ?? 0,
     );
   }
 

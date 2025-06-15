@@ -8,11 +8,11 @@ class MetronomeSoundPlayerImpl implements MetronomeSoundPlayer {
 
   bool _isInitialized = false;
 
-  // Corrected paths: audioplayers prepends "assets/", so we provide "sounds/filename.mp3"
+  // Use WAV files for best compatibility on Android/iOS
   final String _tickSoundPath =
-      "sounds/tick.wav"; 
+      "sounds/tick.mp3"; 
   final String _downbeatSoundPath =
-      "sounds/tack.wav"; 
+      "sounds/tack.mp3"; 
 
   @override
   Future<void> init() async {
@@ -73,7 +73,7 @@ class MetronomeSoundPlayerImpl implements MetronomeSoundPlayer {
       await player.resume();
 
       log.info(
-        '[METRONOME_AUDIO_DEBUG] play(): ${isDownbeat ? "downbeat" : "tick"} sound played/resumed.',
+        '[METRONOME_AUDIO_DEBUG] play(): ${isDownbeat ? _downbeatSoundPath : _tickSoundPath} sound played/resumed. (using .mp3)',
       );
     } catch (e) {
       log.info('[METRONOME_AUDIO_DEBUG] ERROR during play(): $e');

@@ -9,6 +9,11 @@ import 'utils/utils.dart';
 import 'utils/firebase_web_persistence.dart';
 import 'services/firebase_service.dart';
 import 'services/sharing_intent_service.dart';
+import 'core/di/service_locator.dart';
+import 'core/cache/cache_initialization_service.dart';
+// import 'core/logging/logging_service.dart';
+import 'core/logging/app_loggers.dart';
+import 'core/cache/cached_repository.dart';
 import 'models/user_profile.dart';
 import 'providers/user_profile_provider.dart';
 import 'providers/jazz_standards_provider.dart';
@@ -27,6 +32,7 @@ import 'screens/about_screen.dart';
 import 'screens/statistics_screen.dart';
 import 'screens/session_summary_screen.dart';
 import 'screens/admin_screen.dart';
+
 import 'models/link.dart';
 import 'widgets/link_editor_widgets.dart';
 
@@ -34,11 +40,23 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setupLogging();
-
-  log.info('🔥 Starting app initialization...');
 
   try {
+    // Initialize dependency injection first
+    await initializeDependencies();
+
+    // Initialize structured logging
+    final loggingService = ServiceLocator.loggingService;
+    await loggingService.initialize(
+      enablePersistence: true,
+      enableAnalytics: true,
+    );
+    AppLoggers.system.info('App initialization started');
+
+    // Initialize cache system
+    final cacheService = CacheInitializationServiceFactory.create();
+    await cacheService.initializeCache(strategy: CacheWarmingStrategy.eager);
+
     log.info(
       'Firebase.apps before init: count = [33m${Firebase.apps.length}[39m, names = [33m${Firebase.apps.map((a) => a.name).toList()}[39m',
     );
@@ -57,15 +75,18 @@ void main() async {
     );
     await setWebFirebasePersistence();
     await FirebaseService().ensureInitialized();
+
+    AppLoggers.system.info('App initialization completed successfully');
     runApp(const JazzXApp());
   } catch (e, stack) {
-    log.severe('❌ Firebase init failed: $e');
-    debugPrintStack(stackTrace: stack);
+    AppLoggers.error.fatal(
+      'App initialization failed',
+      error: e.toString(),
+      stackTrace: stack.toString(),
+    );
     runApp(
       const MaterialApp(
-        home: Scaffold(
-          body: Center(child: Text('Firebase initialization failed!')),
-        ),
+        home: Scaffold(body: Center(child: Text('App initialization failed!'))),
       ),
     );
   }
@@ -121,60 +142,12 @@ class _AuthGateState extends State<AuthGate> {
   bool _isLoading = false;
   bool _dataLoaded = false;
   String? _pendingSharedLink; // <-- NEW: store pending link
+  bool _draftSessionChecked =
+      false; // Track if we've checked for draft sessions
 
   @override
   void initState() {
-    // Check for draft session after user profile loaded
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final profileProvider = context.read<UserProfileProvider>();
-      final profile = profileProvider.profile;
-      final draftSessionJson = profile?.preferences.draftSession;
-      if (draftSessionJson != null) {
-        final draftSession = Session.fromJson(
-          Map<String, dynamic>.from(draftSessionJson),
-        );
-        final action = await showDialog<String>(
-          context: context,
-          builder:
-              (ctx) => AlertDialog(
-                title: const Text('Uncompleted Session Found'),
-                content: const Text(
-                  'You have an uncompleted session. Would you like to continue editing it or discard it?',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(ctx).pop('discard'),
-                    child: const Text('Discard'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => Navigator.of(ctx).pop('edit'),
-                    child: const Text('Edit'),
-                  ),
-                ],
-              ),
-        );
-        if (action == 'edit') {
-          if (mounted) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder:
-                    (_) => SessionReviewScreen(
-                      sessionId: draftSession.started.toString(),
-                      session: draftSession,
-                      manualEntry: true,
-                      editRecordedSession: true,
-                    ),
-              ),
-            );
-          }
-        } else if (action == 'discard') {
-          // Remove draftSession from preferences
-          final prefs = profile!.preferences;
-          final newPrefs = prefs.copyWith(draftSession: null);
-          await profileProvider.saveUserPreferences(newPrefs);
-        }
-      }
-    });
+    // Draft session handling moved to _checkForDraftSession method
 
     // Listen for sharing intents (Android/iOS)
     SharingIntentService().listen(
@@ -182,7 +155,10 @@ class _AuthGateState extends State<AuthGate> {
         showLinkDialog(link);
       },
       onMedia: (files) {
-        log.info('SharingIntentService().listen() > TODO: Handle files');
+        AppLoggers.ui.debug(
+          'Shared files received',
+          metadata: {'file_count': files.length},
+        );
       },
     );
     SharingIntentService().fetchInitial(
@@ -190,16 +166,20 @@ class _AuthGateState extends State<AuthGate> {
         showLinkDialog(link);
       },
       onMedia: (files) {
-        log.info('SharingIntentService().fetchInitial() > TODO: Handle files');
+        AppLoggers.ui.debug(
+          'Initial shared files received',
+          metadata: {'file_count': files.length},
+        );
       },
     );
     super.initState();
     FirebaseAuth.instance.authStateChanges().listen((user) {
-      log.info(
-        '⚡ authStateChanges fired with user: ${user?.uid}, mounted: $mounted',
-      );
-      if (!mounted) return;
       if (user?.uid != _currentUser?.uid) {
+        AppLoggers.auth.info(
+          'User authentication state changed',
+          metadata: {'user_id': user?.uid, 'mounted': mounted},
+        );
+        if (!mounted) return;
         setState(() {
           _currentUser = user;
           _userProfile = null;
@@ -211,58 +191,19 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   void _maybeLoadInitialData() {
-    log.info(
-      '🔍 maybeLoadInitialData: _currentUser=${_currentUser?.uid} _userProfile=${_userProfile != null} _isLoading=$_isLoading',
-    );
-
-    // --- Test A1.mp3 playback ---
-    /*
-    final player = AudioPlayer();
-    player
-        .play(AssetSource('sounds/A1.mp3'))
-        .then((_) {
-          log.info('🎉 [AUDIO_TEST] A1.mp3 playback initiated successfully.');
-        })
-        .catchError((error) {
-          log.severe('🔥 [AUDIO_TEST] Error playing A1.mp3: $error');
-        })
-        .whenComplete(() {
-          player.dispose();
-          log.info('🎧 [AUDIO_TEST] Player disposed for A1.mp3.');
-        });
-    */
-    // --- End Test A1.mp3 playback ---
-
     if (_currentUser == null) return;
-    if (_isLoading || _userProfile != null) {
-      log.info('🚫 Skipping initial data load.');
-      return;
-    }
+    if (_isLoading || _userProfile != null) return;
 
     _loadInitialData();
   }
 
   Future<void> _loadInitialData() async {
-    log.info(
-      '🏁 [AuthGate._loadInitialData] Entered. Mounted: $mounted, isLoading: $_isLoading, _userProfile != null: ${_userProfile != null}',
-    );
-    if (!mounted || _isLoading || _userProfile != null) {
-      log.warning(
-        '🚪 [AuthGate._loadInitialData] Exiting early due to guard conditions. Mounted: $mounted, isLoading: $_isLoading, _userProfile != null: ${_userProfile != null}',
-      );
-      return;
-    }
+    if (!mounted || _isLoading || _userProfile != null) return;
 
-    log.info(
-      '⏳ [AuthGate._loadInitialData] Proceeding to set _isLoading = true.',
-    );
     setState(() {
       _isLoading = true;
     });
 
-    log.info(
-      '🚀 [AuthGate._loadInitialData] Starting try block for data fetching.',
-    );
     try {
       final results = await Future.wait([
         FirebaseService().loadJazzStandards(),
@@ -277,9 +218,10 @@ class _AuthGateState extends State<AuthGate> {
         context.read<JazzStandardsProvider>().setJazzStandards({
           for (var song in jazzStandards) song.title: song.toJson(),
         });
-        log.info('✅ Jazz standards loaded: ${jazzStandards.length}');
-      } else {
-        log.warning('⚠️ No jazz standards loaded');
+        AppLoggers.system.info(
+          'Jazz standards loaded',
+          metadata: {'count': jazzStandards.length},
+        );
       }
 
       _userProfile = results[1] as UserProfile?;
@@ -290,25 +232,37 @@ class _AuthGateState extends State<AuthGate> {
         await context.read<UserProfileProvider>().loadInitialSessionsPage(
           pageSize: 100,
         );
-        log.info(
-          '✅ Profile loaded: ${_userProfile!.preferences.name}'
-          '\n\t\t -sessions[${_userProfile!.sessions.length}]'
-          '\n\t\t -songs[${_userProfile!.songs.length}]'
-          '\n\t\t -videos[${_userProfile!.videos.length}]'
-          '\n\t\t -statistics[${_userProfile!.statistics.years.length} years]',
+        AppLoggers.system.info(
+          'User profile loaded',
+          metadata: {
+            'user_name': _userProfile!.preferences.name,
+            'sessions_count': _userProfile!.sessions.length,
+            'songs_count': _userProfile!.songs.length,
+            'videos_count': _userProfile!.videos.length,
+            'statistics_years': _userProfile!.statistics.years.length,
+          },
         );
-      } else {
-        log.warning('⚠️ No profile found');
       }
 
       if (mounted) {
         setState(() {
           _dataLoaded = true;
         });
+        AppLoggers.system.info(
+          'AuthGate data loading completed',
+          metadata: {
+            'is_loading': _isLoading,
+            'data_loaded': _dataLoaded,
+            'user_profile_not_null': _userProfile != null,
+          },
+        );
       }
     } catch (e, stack) {
-      log.severe('❌ Error during initial data load: $e');
-      debugPrintStack(stackTrace: stack);
+      AppLoggers.error.error(
+        'Initial data load failed',
+        error: e.toString(),
+        stackTrace: stack.toString(),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -320,11 +274,26 @@ class _AuthGateState extends State<AuthGate> {
 
   @override
   Widget build(BuildContext context) {
+    AppLoggers.system.debug(
+      'AuthGate build method called',
+      metadata: {
+        'current_user_null': _currentUser == null,
+        'is_loading': _isLoading,
+        'data_loaded': _dataLoaded,
+        'user_profile_not_null': _userProfile != null,
+        'draft_session_checked': _draftSessionChecked,
+      },
+    );
+
     if (_currentUser == null) {
       return const LoginScreen();
     }
 
     if (_isLoading || !_dataLoaded) {
+      AppLoggers.system.debug(
+        'AuthGate showing loading spinner',
+        metadata: {'is_loading': _isLoading, 'data_loaded': _dataLoaded},
+      );
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
@@ -335,6 +304,48 @@ class _AuthGateState extends State<AuthGate> {
       });
     }
 
+    // Check for draft session synchronously
+    if (!_draftSessionChecked) {
+      AppLoggers.system.info('AuthGate checking for draft session');
+      final profileProvider = context.read<UserProfileProvider>();
+      final profile = profileProvider.profile;
+      final draftSessionJson = profile?.preferences.draftSession;
+
+      AppLoggers.system.info(
+        'Draft session check result',
+        metadata: {
+          'has_draft_session': draftSessionJson != null,
+          'draft_session_keys': draftSessionJson?.keys.toList(),
+        },
+      );
+
+      if (draftSessionJson != null) {
+        // Show draft session dialog screen
+        AppLoggers.system.info('Showing draft session screen');
+        return _buildDraftSessionScreen(draftSessionJson);
+      } else {
+        // No draft session, mark as checked and continue to SessionScreen
+        AppLoggers.system.info('No draft session found, marking as checked');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() {
+              _draftSessionChecked = true;
+            });
+          }
+        });
+      }
+    }
+
+    AppLoggers.system.info(
+      'AuthGate navigating to SessionScreen',
+      metadata: {
+        'user_id': _currentUser?.uid,
+        'user_name': _userProfile?.preferences.name,
+      },
+    );
+
+    // Return SessionScreen - no draft session found or already handled
+    AppLoggers.system.info('Navigating to SessionScreen');
     return const SessionScreen();
   }
 
@@ -356,6 +367,253 @@ class _AuthGateState extends State<AuthGate> {
       return LinkKind.media;
     }
     return LinkKind.media;
+  }
+
+  /// Build the draft session dialog screen
+  Widget _buildDraftSessionScreen(Map<String, dynamic> draftSessionJson) {
+    try {
+      final draftSession = Session.fromJson(draftSessionJson);
+
+      // Check if session is recent (within 15 minutes) for Continue option
+      final now = DateTime.now();
+      final sessionDate = DateTime.fromMillisecondsSinceEpoch(
+        draftSession.started * 1000, // Convert seconds to milliseconds
+      );
+      final timeDifference = now.difference(sessionDate);
+      final isRecent = timeDifference.inMinutes <= 15;
+
+      AppLoggers.system.info(
+        'Draft session time analysis',
+        metadata: {
+          'session_date': sessionDate.toIso8601String(),
+          'current_time': now.toIso8601String(),
+          'time_difference_minutes': timeDifference.inMinutes,
+          'time_difference_hours': timeDifference.inHours,
+          'time_difference_days': timeDifference.inDays,
+          'is_recent': isRecent,
+          'show_continue_button': isRecent,
+        },
+      );
+
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Card(
+              elevation: 8,
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Uncompleted Session Found',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'You have an uncompleted session from ${_formatSessionDateTime(sessionDate)}.',
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Duration: ${_formatDurationHuman(draftSession.duration)}',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'What would you like to do?',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                          onPressed:
+                              () => _handleDraftSessionAction(
+                                'discard',
+                                draftSession,
+                              ),
+                          child: const Text('Discard'),
+                        ),
+                        if (isRecent)
+                          ElevatedButton(
+                            onPressed:
+                                () => _handleDraftSessionAction(
+                                  'continue',
+                                  draftSession,
+                                ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text('Continue'),
+                          ),
+                        ElevatedButton(
+                          onPressed:
+                              () => _handleDraftSessionAction(
+                                'edit',
+                                draftSession,
+                              ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: const Text('Edit'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    } catch (e) {
+      // If draft session is corrupted, clear it and show SessionScreen
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _clearCorruptedDraftSession();
+      });
+
+      return const Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Fixing corrupted session data...'),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  /// Handle draft session action (continue, edit, discard)
+  Future<void> _handleDraftSessionAction(
+    String action,
+    Session draftSession,
+  ) async {
+    final profileProvider = context.read<UserProfileProvider>();
+    final profile = profileProvider.profile!;
+
+    if (action == 'continue') {
+      AppLoggers.system.info('User chose to continue draft session');
+
+      // Mark the draft session as "to be continued" by adding a flag
+      final prefs = profile.preferences;
+      final updatedDraftSession = Map<String, dynamic>.from(
+        draftSession.toJson(),
+      );
+      updatedDraftSession['_shouldContinue'] = true;
+
+      final newPrefs = prefs.copyWith(draftSession: updatedDraftSession);
+      await profileProvider.saveUserPreferences(newPrefs);
+
+      // Mark as checked and rebuild to show SessionScreen which will load the draft session
+      setState(() {
+        _draftSessionChecked = true;
+      });
+    } else if (action == 'edit') {
+      AppLoggers.system.info('User chose to edit draft session');
+      // Save the session and navigate to SessionReviewScreen
+      await profileProvider.saveSessionWithId(
+        draftSession.started.toString(),
+        draftSession,
+      );
+
+      // Clear the draft session
+      final prefs = profile.preferences;
+      final newPrefs = prefs.copyWith(clearDraftSession: true);
+      await profileProvider.saveUserPreferences(newPrefs);
+
+      // Mark as checked first
+      if (mounted) {
+        setState(() {
+          _draftSessionChecked = true;
+        });
+      }
+
+      // Navigate to SessionReviewScreen with proper navigation stack
+      if (mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder:
+                (_) => SessionReviewScreen(
+                  sessionId: draftSession.started.toString(),
+                  session: draftSession,
+                  editRecordedSession: true,
+                ),
+          ),
+        );
+      }
+    } else if (action == 'discard') {
+      AppLoggers.system.info('User chose to discard draft session');
+      // Clear the draft session
+      final prefs = profile.preferences;
+      AppLoggers.system.info(
+        'Before clearing draft session',
+        metadata: {'has_draft_session': prefs.draftSession != null},
+      );
+
+      final newPrefs = prefs.copyWith(clearDraftSession: true);
+      await profileProvider.saveUserPreferences(newPrefs);
+
+      AppLoggers.system.info(
+        'After clearing draft session',
+        metadata: {'has_draft_session': newPrefs.draftSession != null},
+      );
+
+      // Mark as checked and rebuild to show SessionScreen
+      if (mounted) {
+        setState(() {
+          _draftSessionChecked = true;
+        });
+      }
+    }
+  }
+
+  /// Clear corrupted draft session and continue
+  Future<void> _clearCorruptedDraftSession() async {
+    final profileProvider = context.read<UserProfileProvider>();
+    final profile = profileProvider.profile!;
+
+    // Clear the corrupted draft session
+    final prefs = profile.preferences;
+    final newPrefs = prefs.copyWith(clearDraftSession: true);
+    await profileProvider.saveUserPreferences(newPrefs);
+
+    // Mark as checked and rebuild to show SessionScreen
+    if (mounted) {
+      setState(() {
+        _draftSessionChecked = true;
+      });
+    }
+  }
+
+  String _formatSessionDateTime(DateTime dateTime) {
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  String _formatDurationHuman(int seconds) {
+    final hours = seconds ~/ 3600;
+    final minutes = (seconds % 3600) ~/ 60;
+    final secs = seconds % 60;
+
+    if (hours > 0) {
+      return '${hours}h ${minutes}m ${secs}s';
+    } else if (minutes > 0) {
+      return '${minutes}m ${secs}s';
+    } else {
+      return '${secs}s';
+    }
   }
 
   void showLinkDialog(String url) {

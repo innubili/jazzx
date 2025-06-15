@@ -59,15 +59,19 @@ class SearchBarWidget extends StatelessWidget {
     onKindsChanged(allowed);
 
     // Remove any trailing site:... or OR site:... from the text
-    final base = controller.text
-        .replaceAll(RegExp(r'(site:[^ ]+|OR site:[^ ]+)', caseSensitive: false), '')
-        .split(
-          RegExp(
-            r'(backing track|playlist|lesson|sheet music)',
-            caseSensitive: false,
-          ),
-        )[0]
-        .trim();
+    final base =
+        controller.text
+            .replaceAll(
+              RegExp(r'(site:[^ ]+|OR site:[^ ]+)', caseSensitive: false),
+              '',
+            )
+            .split(
+              RegExp(
+                r'(backing track|playlist|lesson|sheet music)',
+                caseSensitive: false,
+              ),
+            )[0]
+            .trim();
     final updated = '$base ${_categorySuffix(category)}'.trim();
     controller.text = updated;
     onQueryChanged(updated);
@@ -80,10 +84,16 @@ class SearchBarWidget extends StatelessWidget {
     // Launch external app or picker based on kind
     switch (kind) {
       case LinkKind.youtube:
-        _launchExternalApp(context, 'https://www.youtube.com/results?search_query=${Uri.encodeComponent(query)}');
+        _launchExternalApp(
+          context,
+          'https://www.youtube.com/results?search_query=${Uri.encodeComponent(query)}',
+        );
         break;
       case LinkKind.spotify:
-        _launchExternalApp(context, 'spotify:search:${Uri.encodeComponent(query)}');
+        _launchExternalApp(
+          context,
+          'spotify:search:${Uri.encodeComponent(query)}',
+        );
         break;
       case LinkKind.media:
         _launchFilePicker(context);
@@ -111,16 +121,20 @@ class SearchBarWidget extends StatelessWidget {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to launch: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to launch: $e')));
     }
   }
 
   void _launchFilePicker(BuildContext context) async {
-    // TODO: file_picker is commented out in pubspec.yaml. Uncomment it and run `flutter pub get` to enable file picking.
+    // todo: file_picker is commented out in pubspec.yaml. Uncomment it and run `flutter pub get` to enable file picking.
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('File picker is not enabled. Please enable file_picker in pubspec.yaml.')),
+      const SnackBar(
+        content: Text(
+          'File picker is not enabled. Please enable file_picker in pubspec.yaml.',
+        ),
+      ),
     );
     // Example code if file_picker is enabled:
     // import 'package:file_picker/file_picker.dart';
@@ -175,10 +189,10 @@ class SearchBarWidget extends StatelessWidget {
           Text('Sources:', style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 4),
           LinkKindPicker(
-          selected: selectedKinds,
-          onChanged: (kinds) => _handleKindChange(context, kinds),
-          allowedKinds: allowedKinds,
-        ),
+            selected: selectedKinds,
+            onChanged: (kinds) => _handleKindChange(context, kinds),
+            allowedKinds: allowedKinds,
+          ),
         ],
       ),
     );

@@ -29,50 +29,25 @@ void defLog(String message) {
   logBuffer += '\n${_shortTime(DateTime.now())} $message';
 }
 
+// Legacy logging functions - deprecated in favor of structured logging
+@Deprecated('Use AppLoggers.error.error() instead')
 void defLogErr(String message) {
   logBuffer += '\n${_shortTime(DateTime.now())} ERROR: $message';
 }
 
+@Deprecated('Use structured logging instead')
 void defLogClear() {
   logBuffer = '';
 }
 
+@Deprecated('Use Log Viewer in Admin screen instead')
 void defLogShow() {
-  log.info('\t=== BUFFERED LOG start... ===');
-  while (logBuffer.length > 1000) {
-    log.info(logBuffer.substring(0, 1000));
-    logBuffer = logBuffer.substring(1000);
-  }
-  if (logBuffer.isNotEmpty) {
-    log.info(logBuffer);
-  }
-  log.info('\t=== ...end BUFFERED LOG ===');
-  defLogClear(); // Keep clear commented for now, or clear based on button press logic
+  // Legacy function - use structured logging instead
 }
 
+@Deprecated('Use structured logging instead')
 void setupLogging() {
-  Logger.root.level = Level.ALL; // Log everything
-  Logger.root.onRecord.listen(
-    (record) {
-      // ignore: avoid_print
-      print(
-        '${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}',
-      );
-      if (record.error != null) {
-        // ignore: avoid_print
-        print('  ERROR: ${record.error}');
-      }
-      if (record.stackTrace != null) {
-        // ignore: avoid_print
-        print('  STACKTRACE:\n${record.stackTrace}');
-      }
-    },
-    onError: (Object error, StackTrace stackTrace) {
-      // This handles errors from the stream itself, or within the listen callback.
-      // ignore: avoid_print
-      print('[SEVERE] Error in logging system listener: $error\n$stackTrace');
-    },
-  );
+  // Old logging system disabled - use structured logging instead
 }
 
 String sanitizeLinkKey(String url) {
@@ -159,4 +134,33 @@ String prettyPrintJson(dynamic json, {int indent = 1}) {
     sb.writeln('$tab$json');
   }
   return sb.toString();
+}
+
+/// Formats a DateTime relative to now for display in draft session dialogs
+String formatSessionDateTime(DateTime dateTime) {
+  final now = DateTime.now();
+  final difference = now.difference(dateTime);
+
+  if (difference.inMinutes < 60) {
+    return '${difference.inMinutes} minutes ago';
+  } else if (difference.inHours < 24) {
+    return '${difference.inHours} hours ago';
+  } else {
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+}
+
+/// Formats duration in seconds to a human-readable string
+String formatDurationHuman(int seconds) {
+  final hours = seconds ~/ 3600;
+  final minutes = (seconds % 3600) ~/ 60;
+  final remainingSeconds = seconds % 60;
+
+  if (hours > 0) {
+    return '${hours}h ${minutes}m ${remainingSeconds}s';
+  } else if (minutes > 0) {
+    return '${minutes}m ${remainingSeconds}s';
+  } else {
+    return '${remainingSeconds}s';
+  }
 }

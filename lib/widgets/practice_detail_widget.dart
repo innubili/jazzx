@@ -72,7 +72,12 @@ class _PracticeDetailWidgetState extends State<PracticeDetailWidget> {
             : null;
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(
+        8.0,
+        8.0,
+        16.0,
+        16.0,
+      ), // Reduced left/top padding
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,9 +236,10 @@ class _PracticeDetailWidgetState extends State<PracticeDetailWidget> {
                         if (!mounted) return;
                         final confirmed = await showDialog<Link>(
                           context: this.context,
-                          builder: (_) => LinkConfirmationDialog(
-                            initialLink: selectedLink,
-                          ),
+                          builder:
+                              (_) => LinkConfirmationDialog(
+                                initialLink: selectedLink,
+                              ),
                         );
                         if (confirmed != null) {
                           if (!mounted) return;

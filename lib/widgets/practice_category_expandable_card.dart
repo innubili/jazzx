@@ -33,7 +33,12 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final topBar = Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.fromLTRB(
+        8.0,
+        8.0,
+        12.0,
+        12.0,
+      ), // Reduced left/top padding
       child: Row(
         children: [
           Icon(
@@ -76,7 +81,12 @@ class PracticeCategoryExpandableCard extends StatelessWidget {
     );
 
     final editor = Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.fromLTRB(
+        8.0,
+        8.0,
+        12.0,
+        12.0,
+      ), // Reduced left/top padding
       child: PracticeDetailWidget(
         category: category,
         note: data.note ?? '',

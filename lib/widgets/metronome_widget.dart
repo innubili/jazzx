@@ -105,18 +105,32 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
 
     // Temporary test for direct asset loading
     log.info('[DIAGNOSTIC] Attempting to load tack.mp3 directly...');
-    rootBundle.load('assets/sounds/tack.mp3').then((data) {
-      log.info('[DIAGNOSTIC] SUCCESS: tack.mp3 loaded directly, size: ${data.lengthInBytes}');
-    }).catchError((error) {
-      log.info('[DIAGNOSTIC] ERROR: tack.mp3 failed to load directly: $error');
-    });
+    rootBundle
+        .load('assets/sounds/tack.mp3')
+        .then((data) {
+          log.info(
+            '[DIAGNOSTIC] SUCCESS: tack.mp3 loaded directly, size: ${data.lengthInBytes}',
+          );
+        })
+        .catchError((error) {
+          log.info(
+            '[DIAGNOSTIC] ERROR: tack.mp3 failed to load directly: $error',
+          );
+        });
 
     log.info('[DIAGNOSTIC] Attempting to load tick.mp3 directly...');
-    rootBundle.load('assets/sounds/tick.mp3').then((data) {
-      log.info('[DIAGNOSTIC] SUCCESS: tick.mp3 loaded directly, size: ${data.lengthInBytes}');
-    }).catchError((error) {
-      log.info('[DIAGNOSTIC] ERROR: tick.mp3 failed to load directly: $error');
-    });
+    rootBundle
+        .load('assets/sounds/tick.mp3')
+        .then((data) {
+          log.info(
+            '[DIAGNOSTIC] SUCCESS: tick.mp3 loaded directly, size: ${data.lengthInBytes}',
+          );
+        })
+        .catchError((error) {
+          log.info(
+            '[DIAGNOSTIC] ERROR: tick.mp3 failed to load directly: $error',
+          );
+        });
 
     _stopwatch = Stopwatch();
   }
@@ -135,7 +149,9 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
   void startMetronome() {
     // Guard to ensure sound player is ready
     if (!_isSoundPlayerReady) {
-      log.info('[METRONOME_WIDGET] Attempted to start metronome, but sound player is not ready yet.');
+      log.info(
+        '[METRONOME_WIDGET] Attempted to start metronome, but sound player is not ready yet.',
+      );
       // Optionally, inform the user or queue the start request.
       // For now, we just prevent starting if not ready.
       return;
@@ -349,14 +365,16 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
       });
       log.info('[METRONOME_WIDGET] Sound player initialized and ready.');
     } else {
-      log.info('[METRONOME_WIDGET] Sound player initialized, but widget no longer mounted.');
+      log.info(
+        '[METRONOME_WIDGET] Sound player initialized, but widget no longer mounted.',
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(8, 12, 12, 12), // Reduced left padding
       decoration: BoxDecoration(
         color: Colors.grey.shade900,
         borderRadius: BorderRadius.circular(12),
@@ -365,8 +383,10 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          // Use Wrap to prevent overflow and make responsive
+          Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               IconButton(
                 icon: Icon(
@@ -375,6 +395,7 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
                 ),
                 onPressed: toggleMetronome,
                 tooltip: isPlaying ? 'Metronome On' : 'Metronome Off',
+                iconSize: 20,
               ),
               IconButton(
                 icon: const Icon(Icons.numbers, color: Colors.white),
@@ -385,19 +406,25 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
                       timeSignature,
                       setTimeSignature,
                     ),
+                iconSize: 20,
               ),
               IconButton(
                 icon: const Icon(Icons.remove, color: Colors.white),
                 onPressed: decrementBpm,
+                iconSize: 20,
               ),
               TextButton(
                 onPressed:
                     () =>
                         _pick(List.generate(169, (i) => (i + 40)), bpm, setBpm),
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(60, 36),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                ),
                 child: Text(
                   '$bpm',
                   style: const TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -406,10 +433,12 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
               IconButton(
                 icon: const Icon(Icons.add, color: Colors.white),
                 onPressed: incrementBpm,
+                iconSize: 20,
               ),
               IconButton(
                 icon: const Icon(Icons.touch_app, color: Colors.white),
                 onPressed: tapTempo,
+                iconSize: 20,
               ),
               IconButton(
                 icon: const Icon(Icons.more_horiz, color: Colors.white),
@@ -417,6 +446,7 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
                 onPressed:
                     () =>
                         _pick(bitsPatternPicklist, bitsPattern, setBitsPattern),
+                iconSize: 20,
               ),
             ],
           ),
@@ -431,27 +461,39 @@ class MetronomeWidgetState extends State<MetronomeWidget> {
               maintainState: true,
               child: SizedBox(
                 height: 16,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(beatsPerMeasure, (index) {
-                    final isActive =
-                        (index == (tickCount - 1) % beatsPerMeasure);
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 100),
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: 40,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color:
-                            isCountInFlash
-                                ? Colors.red
-                                : ((tickCount > 0 && isActive)
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Calculate available width for beat indicators
+                    final availableWidth = constraints.maxWidth;
+                    final totalMargin =
+                        (beatsPerMeasure - 1) * 8; // 4px margin on each side
+                    final availableForBeats = availableWidth - totalMargin;
+                    final beatWidth = (availableForBeats / beatsPerMeasure)
+                        .clamp(8.0, 40.0);
+
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(beatsPerMeasure, (index) {
+                        final isActive =
+                            (index == (tickCount - 1) % beatsPerMeasure);
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 100),
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          width: beatWidth,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color:
+                                isCountInFlash
                                     ? Colors.red
-                                    : Colors.grey.shade600),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
+                                    : ((tickCount > 0 && isActive)
+                                        ? Colors.red
+                                        : Colors.grey.shade600),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        );
+                      }),
                     );
-                  }),
+                  },
                 ),
               ),
             ),
