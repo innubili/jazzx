@@ -18,8 +18,6 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   int? _initialTimerValue; // Initial timer value when started
 
   // User preferences for auto-pause and BPM settings
-  int _warmupTime = 1200; // Default 20 minutes
-  int _pauseDurationTime = 300; // Default 5 minutes
   int _warmupBpm = 80; // Default warmup BPM
 
   SessionBloc({AppClock? clock})

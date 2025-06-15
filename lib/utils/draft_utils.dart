@@ -1,7 +1,5 @@
 // import 'package:provider/provider.dart';
-import 'dart:math';
 import '../models/session.dart';
-import '../models/practice_category.dart';
 import '../providers/user_profile_provider.dart';
 import '../utils/utils.dart'; // For log
 

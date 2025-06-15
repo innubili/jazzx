@@ -26,14 +26,12 @@ import '../bloc/session_bloc.dart';
 import '../models/session.dart';
 import '../providers/user_profile_provider.dart';
 import '../utils/draft_utils.dart';
-import 'package:collection/collection.dart';
 import '../widgets/practice_timer_display_widget.dart';
 import '../widgets/metronome_widget.dart';
 import '../widgets/metronome_controller.dart';
 
 import 'dart:async';
 import '../core/logging/app_loggers.dart';
-import '../utils/utils.dart';
 
 class SessionScreen extends StatefulWidget {
   const SessionScreen({super.key});
@@ -961,7 +959,8 @@ class _SessionScreenViewState extends State<_SessionScreenView> {
                     if (!mounted) return;
 
                     final secondAction = await showDialog<String>(
-                      context: dialogContext,
+                      // ignore: use_build_context_synchronously
+                      context: context,
                       barrierDismissible: false,
                       builder:
                           (context) => AlertDialog(
